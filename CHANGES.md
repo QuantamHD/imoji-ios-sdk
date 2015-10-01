@@ -1,10 +1,16 @@
 # Imoji SDK Changes
 
-### Version 0.2.12
+### Version 0.2.13
 
 * IMImojiSession clearUserSynchronizationStatus callback is actually nullable (thanks @benpious!)
 * Bug fix for uploading Imoji images, we were calling the wrong NSURLSession method
 
+### Version 0.2.12
+
+* Adds the following 
+  * Adds nonnull nullable annotations to all headers
+  * Addresses an error while using BFTask taskFromExecutor from Bolts 1.3
+  
 ### Version 0.2.11
 
 * Adds the following 
