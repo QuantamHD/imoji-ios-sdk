@@ -613,11 +613,17 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
                                 retryCount:(int)retryCount
                       taskCompletionSource:(BFTaskCompletionSource *)taskCompletionSource {
     [BFTask im_concurrentBackgroundTaskWithBlock:^id(BFTask *task) {
-        NSMutableURLRequest *request = [NSMutableURLRequest PUTRequestWithURL:uploadUrl parameters:@{}];
+        NSMutableURLRequest *request = [NSMutableURLRequest new];
 
-        request.HTTPBody = UIImagePNGRepresentation(image);
+        request.timeoutInterval = 15.0;
+        request.HTTPMethod = @"PUT";
+        request.URL = uploadUrl;
+        
+        [request addValue:@"image/png" forHTTPHeaderField:@"Content-Type"];
 
-        [[[IMImojiSession uploadInBackgroundURLSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        [[[IMImojiSession uploadInBackgroundURLSession] uploadTaskWithRequest:request
+                                                                    fromData:UIImagePNGRepresentation(image)
+                                                           completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
             if (error) {
                 if (retryCount == 0) {
                     taskCompletionSource.error = error;
