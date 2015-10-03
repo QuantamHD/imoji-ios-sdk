@@ -165,7 +165,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
     }
 
     NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithDictionary:@{
-            @"query" : searchTerm,
+            @"query" : searchTerm != nil ? searchTerm : @"",
             @"numResults" : numberOfResults != nil ? numberOfResults : [NSNull null],
             @"offset" : offset != nil ? offset : @0
     }];
