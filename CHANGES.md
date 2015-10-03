@@ -1,5 +1,9 @@
 # Imoji SDK Changes
 
+### Version 0.2.14
+
+* Addresses crash that occurs when sending nil to searchImojisWithTerm
+
 ### Version 0.2.13
 
 * IMImojiSession clearUserSynchronizationStatus callback is actually nullable (thanks @benpious!)
