@@ -29,7 +29,7 @@ extern IMPhotoImageFormat const IMImojiPreferredImageFormat;
 
 - (void)readAuthenticationFromDictionary:(NSDictionary *)authenticationInfo;
 
-- (BFTask *)readAuthenticationCredentials;
+- (void)readAuthenticationCredentials;
 
 - (BFTask *)writeAuthenticationCredentials;
 

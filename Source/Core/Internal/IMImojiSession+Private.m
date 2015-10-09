@@ -37,27 +37,23 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
     [self updateImojiState:[IMImojiSession credentials].accountSynchronized ? IMImojiSessionStateConnectedSynchronized : IMImojiSessionStateConnected];
 }
 
-- (BFTask *)readAuthenticationCredentials {
-    return [BFTask im_serialBackgroundTaskWithBlock:^id(BFTask *task) {
-        NSString *sessionFile = self.sessionFilePath;
-        if ([[NSFileManager defaultManager] fileExistsAtPath:sessionFile]) {
-            NSError *error;
-            NSData *data = [NSData dataWithContentsOfFile:sessionFile options:0 error:&error];
+- (void)readAuthenticationCredentials {
+    NSString *sessionFile = self.sessionFilePath;
+    if ([[NSFileManager defaultManager] fileExistsAtPath:sessionFile]) {
+        NSError *error;
+        NSData *data = [NSData dataWithContentsOfFile:sessionFile options:0 error:&error];
+
+        if (!error) {
+            NSDictionary *jsonInfo = [NSJSONSerialization JSONObjectWithData:data
+                                                                     options:NSJSONReadingAllowFragments
+                                                                       error:&error];
 
             if (!error) {
-                NSDictionary *jsonInfo = [NSJSONSerialization JSONObjectWithData:data
-                                                                         options:NSJSONReadingAllowFragments
-                                                                           error:&error];
-
-                if (!error) {
-                    [self readAuthenticationFromDictionary:jsonInfo];
-                }
+                [self readAuthenticationFromDictionary:jsonInfo];
             }
-
         }
 
-        return nil;
-    }];
+    }
 }
 
 - (BFTask *)writeAuthenticationCredentials {
