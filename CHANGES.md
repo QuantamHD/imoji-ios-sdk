@@ -1,5 +1,10 @@
 # Imoji SDK Changes
 
+### Version 0.2.15
+
+* Reads session credentials synchronously upon creation of IMImojiSession to avoid running into cases where callers want to immediately make API calls after session creation
+* Minor warning fix IMImojiSession+Sync
+
 ### Version 0.2.14
 
 * Addresses crash that occurs when sending nil to searchImojisWithTerm
