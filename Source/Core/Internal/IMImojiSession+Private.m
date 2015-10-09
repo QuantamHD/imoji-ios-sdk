@@ -121,6 +121,14 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
                                      headers:@{}];
 }
 
+- (BFTask *)runValidatedPutTaskWithPath:(NSString *)path
+                           andParameters:(NSDictionary *)parameters {
+    return [self runValidatedImojiURLRequest:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", ImojiSDKServerURL, path]]
+                                  parameters:parameters
+                                      method:@"PUT"
+                                     headers:@{}];
+}
+
 - (BFTask *)runValidatedPostTaskWithPath:(NSString *)path
                            andParameters:(NSDictionary *)parameters {
     return [self runValidatedImojiURLRequest:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", ImojiSDKServerURL, path]]

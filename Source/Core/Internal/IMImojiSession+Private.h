@@ -41,6 +41,8 @@ extern IMPhotoImageFormat const IMImojiPreferredImageFormat;
 
 - (BFTask *)runValidatedGetTaskWithPath:(NSString *)path andParameters:(NSDictionary *)parameters;
 
+- (BFTask *)runValidatedPutTaskWithPath:(NSString *)path andParameters:(NSDictionary *)parameters;
+
 - (BFTask *)runValidatedPostTaskWithPath:(NSString *)path andParameters:(NSDictionary *)parameters;
 
 - (BFTask *)runValidatedDeleteTaskWithPath:(NSString *)path andParameters:(NSDictionary *)parameters;
