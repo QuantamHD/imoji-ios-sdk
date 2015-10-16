@@ -419,7 +419,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
                              callback:(IMImojiSessionCreationResponseCallback)callback {
     NSOperation *cancellationToken = self.cancellationTokenOperation;
 
-    __block IMMutableImojiObject *imojiObject;
+    __block NSString *imojiId;
     [[[[self runValidatedPostTaskWithPath:@"/imoji/create" andParameters:@{
             @"tags" : tags != nil ? tags : [NSNull null]
     }] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *getTask) {
@@ -443,14 +443,8 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
     }] continueWithSuccessBlock:^id(BFTask *task) {
         NSDictionary *response = (NSDictionary *) task.result;
         NSString *fullImageUrl = response[@"fullImageUrl"];
-        NSString *persistentIdentifier = response[@"imojiId"];
 
-        imojiObject = [IMMutableImojiObject imojiWithIdentifier:persistentIdentifier
-                                                           tags:tags
-                                                   thumbnailURL:nil
-                                                        fullURL:nil
-                                                        allUrls:@{}
-                                                         format:IMPhotoImageFormatWebP];
+        imojiId = response[@"imojiId"];
 
         CGSize maxDimensions = CGSizeMake(
                 [(NSNumber *) response[@"fullImageResizeWidth"] floatValue],
@@ -473,9 +467,12 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
             return task.error;
         }
 
-        dispatch_async(dispatch_get_main_queue(), ^{
-            callback(imojiObject, nil);
-        });
+        [self fetchImojisByIdentifiers:@[imojiId]
+               fetchedResponseCallback:^(IMImojiObject *imoji, NSUInteger index, NSError *error) {
+                   dispatch_async(dispatch_get_main_queue(), ^{
+                       callback(imoji, error);
+                   });
+               }];
 
         return nil;
     }];
