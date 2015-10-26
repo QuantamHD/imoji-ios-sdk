@@ -62,7 +62,9 @@
 }
 
 - (nullable NSURL *)getUrlForRenderingOptions:(nonnull IMImojiObjectRenderingOptions *)renderingOptions {
-    id url = self.urls[renderingOptions];
+    id url = self.urls[[IMImojiObjectRenderingOptions optionsWithRenderSize:renderingOptions.renderSize
+                                                                borderStyle:renderingOptions.borderStyle
+                                                                imageFormat:renderingOptions.imageFormat]];
 
     if (url && [url isKindOfClass:[NSURL class]]) {
         return url;
