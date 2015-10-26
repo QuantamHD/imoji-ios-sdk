@@ -28,14 +28,57 @@
 @implementation IMImojiObjectRenderingOptions {
 
 }
-
-- (instancetype)initWithRenderSize:(IMImojiObjectRenderSize)renderSize {
+- (instancetype)init {
     self = [super init];
     if (self) {
-        self.renderSize = renderSize;
+        self.renderSize = IMImojiObjectRenderSizeThumbnail;
+        self.borderStyle = IMImojiObjectBorderStyleSticker;
+        self.imageFormat = IMImojiObjectImageFormatWebP;
     }
 
     return self;
+}
+
+- (instancetype)initWithRenderSize:(IMImojiObjectRenderSize)renderSize
+                       borderStyle:(IMImojiObjectBorderStyle)borderStyle
+                       imageFormat:(IMImojiObjectImageFormat)imageFormat {
+    self = [super init];
+    if (self) {
+        self.renderSize = renderSize;
+        self.borderStyle = borderStyle;
+        self.imageFormat = imageFormat;
+    }
+
+    return self;
+}
+
+- (BOOL)isEqual:(id)other {
+    if (other == self)
+        return YES;
+    if (!other || ![[other class] isEqual:[self class]])
+        return NO;
+
+    return [self isEqualToOptions:other];
+}
+
+- (BOOL)isEqualToOptions:(IMImojiObjectRenderingOptions *)options {
+    if (self == options)
+        return YES;
+    if (options == nil)
+        return NO;
+    if (self.aspectRatio != options.aspectRatio && ![self.aspectRatio isEqualToValue:options.aspectRatio])
+        return NO;
+    if (self.renderSize != options.renderSize)
+        return NO;
+    if (self.targetSize != options.targetSize && ![self.targetSize isEqualToValue:options.targetSize])
+        return NO;
+    if (self.maximumRenderSize != options.maximumRenderSize && ![self.maximumRenderSize isEqualToValue:options.maximumRenderSize])
+        return NO;
+    if (self.borderStyle != options.borderStyle)
+        return NO;
+    if (self.imageFormat != options.imageFormat)
+        return NO;
+    return YES;
 }
 
 - (NSUInteger)hash {
@@ -43,11 +86,40 @@
     hash = hash * 31u + (NSUInteger) self.renderSize;
     hash = hash * 31u + [self.targetSize hash];
     hash = hash * 31u + [self.maximumRenderSize hash];
+    hash = hash * 31u + (NSUInteger) self.borderStyle;
+    hash = hash * 31u + (NSUInteger) self.imageFormat;
     return hash;
 }
 
+- (id)copyWithZone:(NSZone *)zone {
+    IMImojiObjectRenderingOptions *copy = [[IMImojiObjectRenderingOptions allocWithZone:zone] init];
+
+    if (copy != nil) {
+        copy.aspectRatio = self.aspectRatio;
+        copy.renderSize = self.renderSize;
+        copy.targetSize = self.targetSize;
+        copy.maximumRenderSize = self.maximumRenderSize;
+        copy.borderStyle = self.borderStyle;
+        copy.imageFormat = self.imageFormat;
+    }
+
+    return copy;
+}
+
+
 + (instancetype)optionsWithRenderSize:(IMImojiObjectRenderSize)renderSize {
-    return [[self alloc] initWithRenderSize:renderSize];
+    return [[self alloc] initWithRenderSize:renderSize borderStyle:IMImojiObjectBorderStyleSticker imageFormat:IMImojiObjectImageFormatWebP];
+}
+
++ (instancetype)optionsWithRenderSize:(IMImojiObjectRenderSize)renderSize
+                          borderStyle:(IMImojiObjectBorderStyle)borderStyle {
+    return [[self alloc] initWithRenderSize:renderSize borderStyle:borderStyle imageFormat:IMImojiObjectImageFormatWebP];
+}
+
++ (instancetype)optionsWithRenderSize:(IMImojiObjectRenderSize)renderSize
+                          borderStyle:(IMImojiObjectBorderStyle)borderStyle
+                          imageFormat:(IMImojiObjectImageFormat)imageFormat {
+    return [[self alloc] initWithRenderSize:renderSize borderStyle:borderStyle imageFormat:imageFormat];
 }
 
 @end

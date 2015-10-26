@@ -25,6 +25,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import "IMImojiObjectRenderingOptions.h"
 
 /**
 * An ImojiObject is a reference to a sticker within the ImojiSDK. Consumers should not create this object directly,
@@ -43,11 +44,15 @@
 @property(nonatomic, strong, readonly, nonnull) NSArray *tags;
 
 /**
- * @abstract A dictionary representation of all the URL's of the Imoji images. The keys are set to NSNumber
- * representations of IMImojiObjectRenderSizes. To fetch a thumbnail URL for example, you would call
- * urls[@(IMImojiObjectRenderSizeThumbnail)];
+ * @abstract A dictionary representation of all the URL's of the Imoji images with IMImojiObjectRenderingOptions
+ * as the key. Missing values will contain an NSNull value. Use getUrlForRenderingOptions: for convenience for
+ * handling NSNull values.
  */
 @property(nonatomic, strong, readonly, nonnull) NSDictionary *urls;
 
+/**
+ * @abstract Gets a download URL for an Imoji given the requested rendering options
+ */
+- (nullable NSURL *)getUrlForRenderingOptions:(nonnull IMImojiObjectRenderingOptions *)renderingOptions;
 
 @end

@@ -171,7 +171,7 @@ typedef void (^IMImojiSessionCreationResponseCallback)(IMImojiObject *__nullable
 * @abstract Creates a imoji session object.
 * @param storagePolicy The storage policy to use for persisting imojis.
 */
-- (nonnull instancetype)initWithStoragePolicy:(IMImojiSessionStoragePolicy *__nonnull)storagePolicy;
+- (nonnull instancetype)initWithStoragePolicy:(nonnull IMImojiSessionStoragePolicy *)storagePolicy;
 
 /**
 * @abstract Creates a imoji session object with a default temporary file system storage policy.
@@ -182,7 +182,7 @@ typedef void (^IMImojiSessionCreationResponseCallback)(IMImojiObject *__nullable
 * @abstract Creates a imoji session object.
 * @param storagePolicy The storage policy to use for persisting imojis.
 */
-+ (nonnull instancetype)imojiSessionWithStoragePolicy:(IMImojiSessionStoragePolicy *__nonnull)storagePolicy;
++ (nonnull instancetype)imojiSessionWithStoragePolicy:(nonnull IMImojiSessionStoragePolicy *)storagePolicy;
 
 /**
 * @abstract The current state of the session
@@ -199,8 +199,15 @@ typedef void (^IMImojiSessionCreationResponseCallback)(IMImojiObject *__nullable
 */
 @property(nonatomic, strong, nullable) NSCache *contentCache;
 
-
+/**
+ * @abstract The storage policy used for determining how to store Imojis on the local file store.
+ */
 @property(nonatomic, readonly, nonnull) IMImojiSessionStoragePolicy *storagePolicy;
+
+/**
+ * @abstract The default rendering options that are used to render Imoji's in IMImojiSessionImojiFetchedResponseCallback.
+ */
+@property(nonatomic, nonnull) IMImojiObjectRenderingOptions *fetchRenderingOptions;
 
 @end
 
@@ -215,8 +222,8 @@ typedef void (^IMImojiSessionCreationResponseCallback)(IMImojiObject *__nullable
 * @param callback Block callback to call when categories have been downloaded.
 * @return An operation reference that can be used to cancel the request.
 */
-- (NSOperation *__nonnull)getImojiCategoriesWithClassification:(IMImojiSessionCategoryClassification)classification
-                                                      callback:(IMImojiSessionImojiCategoriesResponseCallback __nonnull)callback;
+- (nonnull NSOperation *)getImojiCategoriesWithClassification:(IMImojiSessionCategoryClassification)classification
+                                                     callback:(nonnull IMImojiSessionImojiCategoriesResponseCallback)callback;
 
 /**
 * @abstract Searches the imojis database with a given search term. The resultSetResponseCallback block is called once the results are available.
@@ -228,11 +235,11 @@ typedef void (^IMImojiSessionCreationResponseCallback)(IMImojiObject *__nullable
 * @param imojiResponseCallback Callback triggered when an imoji is available to render.
 * @return An operation reference that can be used to cancel the request.
 */
-- (NSOperation *__nonnull)searchImojisWithTerm:(NSString *__nullable)searchTerm
-                                        offset:(NSNumber *__nullable)offset
-                               numberOfResults:(NSNumber *__nullable)numberOfResults
-                     resultSetResponseCallback:(IMImojiSessionResultSetResponseCallback __nonnull)resultSetResponseCallback
-                         imojiResponseCallback:(IMImojiSessionImojiFetchedResponseCallback __nonnull)imojiResponseCallback;
+- (nonnull NSOperation *)searchImojisWithTerm:(nullable NSString *)searchTerm
+                                       offset:(nullable NSNumber *)offset
+                              numberOfResults:(nullable NSNumber *)numberOfResults
+                    resultSetResponseCallback:(nonnull IMImojiSessionResultSetResponseCallback)resultSetResponseCallback
+                        imojiResponseCallback:(nonnull IMImojiSessionImojiFetchedResponseCallback)imojiResponseCallback;
 
 /**
 * @abstract Gets a random set of featured imojis. The resultSetResponseCallback block is called once the results are available.
@@ -242,9 +249,9 @@ typedef void (^IMImojiSessionCreationResponseCallback)(IMImojiObject *__nullable
 * @param imojiResponseCallback Callback triggered when an imoji is available to render.
 * @return An operation reference that can be used to cancel the request.
 */
-- (NSOperation *__nonnull)getFeaturedImojisWithNumberOfResults:(NSNumber *__nullable)numberOfResults
-                                     resultSetResponseCallback:(IMImojiSessionResultSetResponseCallback __nonnull)resultSetResponseCallback
-                                         imojiResponseCallback:(IMImojiSessionImojiFetchedResponseCallback __nonnull)imojiResponseCallback;
+- (nonnull NSOperation *)getFeaturedImojisWithNumberOfResults:(nullable NSNumber *)numberOfResults
+                                    resultSetResponseCallback:(nonnull IMImojiSessionResultSetResponseCallback)resultSetResponseCallback
+                                        imojiResponseCallback:(nonnull IMImojiSessionImojiFetchedResponseCallback)imojiResponseCallback;
 
 /**
 * @abstract Gets corresponding IMImojiObject's for one or more imoji identifiers as NSString's
@@ -253,8 +260,8 @@ typedef void (^IMImojiSessionCreationResponseCallback)(IMImojiObject *__nullable
 * @param fetchedResponseCallback Callback triggered when an imoji is available to render
 * @return An operation reference that can be used to cancel the request.
 */
-- (NSOperation *__nonnull)fetchImojisByIdentifiers:(NSArray *__nonnull)imojiObjectIdentifiers
-                           fetchedResponseCallback:(IMImojiSessionImojiFetchedResponseCallback __nonnull)fetchedResponseCallback;
+- (nonnull NSOperation *)fetchImojisByIdentifiers:(nonnull NSArray *)imojiObjectIdentifiers
+                          fetchedResponseCallback:(nonnull IMImojiSessionImojiFetchedResponseCallback)fetchedResponseCallback;
 
 /**
  * @abstract Searches the imojis database with a complete sentence. The service performs keyword parsing to find best matched imojis.
@@ -264,10 +271,10 @@ typedef void (^IMImojiSessionCreationResponseCallback)(IMImojiObject *__nullable
  * @param imojiResponseCallback Callback triggered when an imoji is available to render.
  * @return An operation reference that can be used to cancel the request.
  */
-- (NSOperation *__nonnull)searchImojisWithSentence:(NSString *__nonnull)sentence
-                                   numberOfResults:(NSNumber *__nullable)numberOfResults
-                         resultSetResponseCallback:(IMImojiSessionResultSetResponseCallback __nonnull)resultSetResponseCallback
-                             imojiResponseCallback:(IMImojiSessionImojiFetchedResponseCallback __nonnull)imojiResponseCallback;
+- (nonnull NSOperation *)searchImojisWithSentence:(nonnull NSString *)sentence
+                                  numberOfResults:(nullable NSNumber *)numberOfResults
+                        resultSetResponseCallback:(nonnull IMImojiSessionResultSetResponseCallback)resultSetResponseCallback
+                            imojiResponseCallback:(nonnull IMImojiSessionImojiFetchedResponseCallback)imojiResponseCallback;
 
 @end
 
@@ -283,9 +290,9 @@ typedef void (^IMImojiSessionCreationResponseCallback)(IMImojiObject *__nullable
 * @param callback Called once the imoji UIImage has been rendered
 * @return An operation reference that can be used to cancel the request.
 */
-- (NSOperation *__nonnull)renderImoji:(IMImojiObject *__nonnull)imoji
-                              options:(IMImojiObjectRenderingOptions *__nonnull)options
-                             callback:(IMImojiSessionImojiRenderResponseCallback __nonnull)callback;
+- (nonnull NSOperation *)renderImoji:(nonnull IMImojiObject *)imoji
+                             options:(nonnull IMImojiObjectRenderingOptions *)options
+                            callback:(nonnull IMImojiSessionImojiRenderResponseCallback)callback;
 
 @end
 
@@ -298,8 +305,8 @@ typedef void (^IMImojiSessionCreationResponseCallback)(IMImojiObject *__nullable
 * @param imojiResponseCallback Callback triggered when an imoji is available to render.
 * @return An operation reference that can be used to cancel the request.
 */
-- (NSOperation *__nonnull)getImojisForAuthenticatedUserWithResultSetResponseCallback:(IMImojiSessionResultSetResponseCallback __nonnull)resultSetResponseCallback
-                                                               imojiResponseCallback:(IMImojiSessionImojiFetchedResponseCallback __nonnull)imojiResponseCallback;
+- (nonnull NSOperation *)getImojisForAuthenticatedUserWithResultSetResponseCallback:(nonnull IMImojiSessionResultSetResponseCallback)resultSetResponseCallback
+                                                              imojiResponseCallback:(nonnull IMImojiSessionImojiFetchedResponseCallback)imojiResponseCallback;
 
 /**
 * @abstract Adds a given IMImojiObject to a users collection which is also synchronized with their account.
@@ -308,8 +315,8 @@ typedef void (^IMImojiSessionCreationResponseCallback)(IMImojiObject *__nullable
 * @param callback Called once the save operation is complete
 * @return An operation reference that can be used to cancel the request.
 */
-- (NSOperation *__nonnull)addImojiToUserCollection:(IMImojiObject *__nonnull)imojiObject
-                                          callback:(IMImojiSessionAsyncResponseCallback __nonnull)callback;
+- (nonnull NSOperation *)addImojiToUserCollection:(nonnull IMImojiObject *)imojiObject
+                                         callback:(nonnull IMImojiSessionAsyncResponseCallback)callback;
 
 @end
 
@@ -322,9 +329,9 @@ typedef void (^IMImojiSessionCreationResponseCallback)(IMImojiObject *__nullable
  * @param callback Called once the save operation is complete
  * @return An operation reference that can be used to cancel the request.
  */
-- (NSOperation *__nonnull)createImojiWithImage:(UIImage *__nonnull)image
-                                          tags:(NSArray *__nullable)tags
-                                      callback:(IMImojiSessionCreationResponseCallback __nonnull)callback;
+- (nonnull NSOperation *)createImojiWithImage:(nonnull UIImage *)image
+                                         tags:(nullable NSArray *)tags
+                                     callback:(nonnull IMImojiSessionCreationResponseCallback)callback;
 
 
 /**
@@ -333,8 +340,8 @@ typedef void (^IMImojiSessionCreationResponseCallback)(IMImojiObject *__nullable
  * @param callback Called once the save operation is complete
  * @return An operation reference that can be used to cancel the request.
  */
-- (NSOperation *__nonnull)removeImoji:(IMImojiObject *__nonnull)imojiObject
-                             callback:(IMImojiSessionAsyncResponseCallback __nonnull)callback;
+- (nonnull NSOperation *)removeImoji:(nonnull IMImojiObject *)imojiObject
+                            callback:(nonnull IMImojiSessionAsyncResponseCallback)callback;
 
 /**
  * @abstract Reports an Imoji sticker as abusive. You may expose this method in your application in order for users to have the ability to flag
@@ -344,9 +351,9 @@ typedef void (^IMImojiSessionCreationResponseCallback)(IMImojiObject *__nullable
  * @param callback Called once the save operation is complete
  * @return An operation reference that can be used to cancel the request.
  */
-- (NSOperation *__nonnull)reportImojiAsAbusive:(IMImojiObject *__nonnull)imojiObject
-                                        reason:(NSString *__nullable)reason
-                                      callback:(IMImojiSessionAsyncResponseCallback __nonnull)callback;
+- (nonnull NSOperation *)reportImojiAsAbusive:(nonnull IMImojiObject *)imojiObject
+                                       reason:(nullable NSString *)reason
+                                     callback:(nonnull IMImojiSessionAsyncResponseCallback)callback;
 
 @end
 
@@ -363,6 +370,6 @@ typedef void (^IMImojiSessionCreationResponseCallback)(IMImojiObject *__nullable
 * @param newState The current state
 * @param oldState The previous state
 */
-- (void)imojiSession:(IMImojiSession *__nonnull)session stateChanged:(IMImojiSessionState)newState fromState:(IMImojiSessionState)oldState;
+- (void)imojiSession:(nonnull IMImojiSession *)session stateChanged:(IMImojiSessionState)newState fromState:(IMImojiSessionState)oldState;
 
 @end

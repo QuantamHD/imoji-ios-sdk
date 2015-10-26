@@ -70,31 +70,29 @@ NSUInteger const IMMutableImojiSessionStoragePolicyDefaultExpirationTimeInSecond
 }
 
 - (BFTask *)writeImoji:(IMImojiObject *)imoji
-               quality:(IMImojiObjectRenderSize)quality
-                format:(IMPhotoImageFormat)format
+      renderingOptions:(IMImojiObjectRenderingOptions *)renderingOptions
          imageContents:(NSData *)imageContents
            synchronous:(BOOL)synchronous {
-    
+
     return [[BFTask taskWithDelay:0] continueWithExecutor:synchronous ? [BFExecutor mainThreadExecutor] : [BFTask im_concurrentBackgroundExecutor]
                                                 withBlock:^id(BFTask *task) {
-                                                    NSString *fullImojiPath = [NSString stringWithFormat:@"%@/%@-%@.%@", self.cachePath.path, @(quality), imoji.identifier, @(format)];
+                                                    NSString *fullImojiPath = [self filePathFromImoji:imoji renderingOptions:renderingOptions];
                                                     NSError *error;
-                                                    
+
                                                     [imageContents writeToFile:fullImojiPath options:NSDataWritingAtomic error:&error];
-                                                    
+
                                                     NSURL *pathUrl = [NSURL fileURLWithPath:fullImojiPath];
                                                     [pathUrl setResourceValue:@YES
                                                                        forKey:NSURLIsExcludedFromBackupKey
                                                                         error:&error];
-                                                    
+
                                                     return nil;
                                                 }];
 }
 
 - (NSData *)readImojiImage:(IMImojiObject *)imoji
-                   quality:(IMImojiObjectRenderSize)quality
-                    format:(IMPhotoImageFormat)format {
-    NSString *fullImojiPath = [NSString stringWithFormat:@"%@/%@-%@.%@", self.cachePath.path, @(quality), imoji.identifier, @(format)];
+          renderingOptions:(IMImojiObjectRenderingOptions *)renderingOptions {
+    NSString *fullImojiPath = [self filePathFromImoji:imoji renderingOptions:renderingOptions];
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if ([fileManager fileExistsAtPath:fullImojiPath]) {
         __block NSError *error;
@@ -119,10 +117,19 @@ NSUInteger const IMMutableImojiSessionStoragePolicyDefaultExpirationTimeInSecond
 }
 
 - (BOOL)imojiExists:(IMImojiObject *)imoji
-            quality:(IMImojiObjectRenderSize)quality
-             format:(IMPhotoImageFormat)format {
-    NSString *fullImojiPath = [NSString stringWithFormat:@"%@/%@-%@.%@", self.cachePath.path, @(quality), imoji.identifier, @(format)];
+   renderingOptions:(IMImojiObjectRenderingOptions *)renderingOptions {
+    NSString *fullImojiPath = [self filePathFromImoji:imoji renderingOptions:renderingOptions];
     return [[NSFileManager defaultManager] fileExistsAtPath:fullImojiPath];
+}
+
+- (NSString *)filePathFromImoji:(IMImojiObject *)imoji renderingOptions:(IMImojiObjectRenderingOptions *)renderingOptions {
+    return [NSString stringWithFormat:@"%@/%@-%@-%@.%@",
+                                      self.cachePath.path,
+                                      @(renderingOptions.renderSize),
+                                      @(renderingOptions.borderStyle),
+                                      imoji.identifier,
+                                      @(renderingOptions.imageFormat)
+    ];
 }
 
 + (void)removeFile:(NSString *)path {

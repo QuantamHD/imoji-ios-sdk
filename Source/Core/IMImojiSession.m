@@ -27,14 +27,12 @@
 #import <Bolts/BFTask.h>
 #import <Bolts/BFExecutor.h>
 #import "ImojiSDK.h"
-#import "UIImage+Formats.h"
 #import "NSDictionary+Utils.h"
 #import "IMMutableImojiObject.h"
 #import "UIImage+Extensions.h"
 #import "IMMutableCategoryObject.h"
 #import "BFTask+Utils.h"
 #import "IMMutableImojiSessionStoragePolicy.h"
-#import "NSArray+Utils.h"
 #import "IMImojiSession+Private.h"
 
 NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
@@ -67,20 +65,23 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
     NSAssert([storagePolicy isKindOfClass:[IMMutableImojiSessionStoragePolicy class]], @"storage policy must be created with one of the factory methods (ex: temporaryDiskStoragePolicy)");
 
     _storagePolicy = storagePolicy;
+    _fetchRenderingOptions = [IMImojiObjectRenderingOptions optionsWithRenderSize:IMImojiObjectRenderSizeThumbnail
+                                                                      borderStyle:IMImojiObjectBorderStyleSticker
+                                                                      imageFormat:IMImojiObjectImageFormatWebP];
     [self readAuthenticationCredentials];
 }
 
 - (BFTask *)downloadImojiContents:(IMMutableImojiObject *)imoji
-                          quality:(IMImojiObjectRenderSize)quality
+                  renderingOtions:(IMImojiObjectRenderingOptions *)renderingOtions
                 cancellationToken:cancellationToken {
     BFTaskCompletionSource *taskCompletionSource = [BFTaskCompletionSource taskCompletionSource];
     [[self validateSession] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
         if (task.error) {
             taskCompletionSource.error = task.error;
         } else {
-            if ([(IMMutableImojiSessionStoragePolicy *) self.storagePolicy imojiExists:imoji quality:quality format:imoji.imageFormat]) {
+            if ([(IMMutableImojiSessionStoragePolicy *) self.storagePolicy imojiExists:imoji renderingOptions:renderingOtions]) {
                 taskCompletionSource.result = imoji;
-            } else if (!imoji.thumbnailURL || !imoji.fullURL) {
+            } else if (!imoji.urls) {
                 taskCompletionSource.error = [NSError errorWithDomain:IMImojiSessionErrorDomain
                                                                  code:IMImojiSessionErrorCodeImojiDoesNotExist
                                                              userInfo:@{
@@ -88,7 +89,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
                                                              }];
             } else {
                 [self downloadImojiImageAsync:imoji
-                                      quality:quality
+                             renderingOptions:self.fetchRenderingOptions
                                    imojiIndex:0
                             cancellationToken:cancellationToken
                         imojiResponseCallback:^(IMImojiObject *imojiObject, NSUInteger index, NSError *error) {
@@ -179,7 +180,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
             resultSetResponseCallback(nil, error);
         } else {
             [self handleImojiFetchResponse:[self convertServerDataSetToImojiArray:results]
-                                   quality:IMImojiObjectRenderSizeThumbnail
+                          renderingOptions:self.fetchRenderingOptions
                          cancellationToken:cancellationToken
                     searchResponseCallback:resultSetResponseCallback
                      imojiResponseCallback:imojiResponseCallback];
@@ -225,7 +226,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
             resultSetResponseCallback(nil, error);
         } else {
             [self handleImojiFetchResponse:[self convertServerDataSetToImojiArray:results]
-                                   quality:IMImojiObjectRenderSizeThumbnail
+                          renderingOptions:self.fetchRenderingOptions
                          cancellationToken:cancellationToken
                     searchResponseCallback:resultSetResponseCallback
                      imojiResponseCallback:imojiResponseCallback];
@@ -284,7 +285,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
             NSMutableArray *imojiObjects = [NSMutableArray arrayWithArray:[self convertServerDataSetToImojiArray:results]];
 
             [self handleImojiFetchResponse:imojiObjects
-                                   quality:IMImojiObjectRenderSizeThumbnail
+                          renderingOptions:self.fetchRenderingOptions
                          cancellationToken:cancellationToken
                     searchResponseCallback:nil
                      imojiResponseCallback:fetchedResponseCallback];
@@ -320,7 +321,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
             resultSetResponseCallback(nil, error);
         } else {
             [self handleImojiFetchResponse:[self convertServerDataSetToImojiArray:results]
-                                   quality:IMImojiObjectRenderSizeThumbnail
+                          renderingOptions:self.fetchRenderingOptions
                          cancellationToken:cancellationToken
                     searchResponseCallback:resultSetResponseCallback
                      imojiResponseCallback:imojiResponseCallback];
@@ -396,7 +397,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
             resultSetResponseCallback(nil, error);
         } else {
             [self handleImojiFetchResponse:[self convertServerDataSetToImojiArray:results]
-                                   quality:IMImojiObjectRenderSizeThumbnail
+                          renderingOptions:self.fetchRenderingOptions
                          cancellationToken:cancellationToken
                     searchResponseCallback:resultSetResponseCallback
                      imojiResponseCallback:imojiResponseCallback];
@@ -545,7 +546,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
                     callback:(IMImojiSessionImojiRenderResponseCallback)callback {
     NSOperation *cancellationToken = self.cancellationTokenOperation;
 
-    if (!imoji || ![imoji isKindOfClass:[IMImojiObject class]] || !imoji.identifier) {
+    if (!imoji || !imoji.identifier) {
         NSError *error = [NSError errorWithDomain:IMImojiSessionErrorDomain
                                              code:IMImojiSessionErrorCodeImojiDoesNotExist
                                          userInfo:@{
@@ -563,7 +564,8 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
                    }
 
                    [self renderImoji:(IMMutableImojiObject *) internalImoji
-                             options:options callback:callback
+                             options:options
+                            callback:callback
                    cancellationToken:cancellationToken];
                }];
     } else {
@@ -580,32 +582,35 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
            callback:(IMImojiSessionImojiRenderResponseCallback)callback
   cancellationToken:(NSOperation *)cancellationToken {
 
-    [[self downloadImojiContents:imoji quality:options.renderSize cancellationToken:cancellationToken] continueWithBlock:^id(BFTask *task) {
-        if (cancellationToken.cancelled) {
-            return [BFTask cancelledTask];
-        }
+    [[self downloadImojiContents:imoji
+                 renderingOtions:options
+               cancellationToken:cancellationToken]
+            continueWithBlock:^id(BFTask *task) {
+                if (cancellationToken.cancelled) {
+                    return [BFTask cancelledTask];
+                }
 
-        if (task.error) {
-            callback(nil, task.error);
-        } else {
-            [BFTask im_serialBackgroundTaskWithBlock:^id(BFTask *bgTask) {
-                NSError *error;
-                UIImage *image = [self renderImoji:imoji
-                                           options:options
-                                             error:&error];
+                if (task.error) {
+                    callback(nil, task.error);
+                } else {
+                    [BFTask im_serialBackgroundTaskWithBlock:^id(BFTask *bgTask) {
+                        NSError *error;
+                        UIImage *image = [self renderImoji:imoji
+                                                   options:options
+                                                     error:&error];
 
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if (!cancellationToken.cancelled) {
-                        callback(image, error);
-                    }
-                });
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            if (!cancellationToken.cancelled) {
+                                callback(image, error);
+                            }
+                        });
+
+                        return nil;
+                    }];
+                }
 
                 return nil;
             }];
-        }
-
-        return nil;
-    }];
 }
 
 - (UIImage *)renderImoji:(IMMutableImojiObject *)imoji
@@ -624,7 +629,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
         }
     }
 
-    NSData *imojiData = [(IMMutableImojiSessionStoragePolicy *) self.storagePolicy readImojiImage:imoji quality:options.renderSize format:imoji.imageFormat];
+    NSData *imojiData = [(IMMutableImojiSessionStoragePolicy *) self.storagePolicy readImojiImage:imoji renderingOptions:options];
     if (imojiData) {
         UIImage *image = [UIImage imageWithData:imojiData];
 

@@ -25,7 +25,6 @@
 
 #import <Foundation/Foundation.h>
 #import "IMImojiObject.h"
-#import "UIImage+Formats.h"
 
 @interface IMMutableImojiObject : IMImojiObject {
 @private
@@ -34,15 +33,8 @@
     NSDictionary *__nonnull _urls;
 }
 
-@property(nonatomic, strong, nullable) NSURL *thumbnailURL;
-@property(nonatomic, strong, nullable) NSURL *fullURL;
-@property(nonatomic) IMPhotoImageFormat imageFormat;
-
-+ (nonnull instancetype)imojiWithIdentifier:(NSString *__nonnull)identifier
-                                       tags:(NSArray *__nonnull)tags
-                               thumbnailURL:(NSURL *__nullable)thumbnailURL
-                                    fullURL:(NSURL *__nullable)fullURL
-                                    allUrls:(NSDictionary *__nonnull)allUrls
-                                     format:(IMPhotoImageFormat)format;
++ (nonnull instancetype)imojiWithIdentifier:(nonnull NSString *)identifier
+                                       tags:(nonnull NSArray *)tags
+                                       urls:(nonnull NSDictionary *)urls;
 
 @end

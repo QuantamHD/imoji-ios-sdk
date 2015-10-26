@@ -31,19 +31,13 @@
 @implementation IMMutableImojiObject {
 
 }
-- (instancetype)initWWithIdentifier:(NSString *__nonnull)identifier
-                               tags:(NSArray *__nonnull)tags
-                       thumbnailURL:(NSURL *__nullable)thumbnailURL
-                            fullURL:(NSURL *__nullable)fullURL
-                            allUrls:(NSDictionary *__nonnull)allUrls
-                             format:(IMPhotoImageFormat)format {
+- (instancetype)initWWithIdentifier:(nonnull NSString *)identifier
+                               tags:(nonnull NSArray *)tags
+                               urls:(nonnull NSDictionary *)urls {
     self = [super init];
     if (self) {
-        _fullURL = fullURL;
-        _thumbnailURL = thumbnailURL;
-        _imageFormat = format;
         _identifier = identifier;
-        _urls = allUrls;
+        _urls = urls;
         _tags = tags;
     }
 
@@ -62,18 +56,12 @@
     return _urls;
 }
 
-+ (nonnull instancetype)imojiWithIdentifier:(NSString *__nonnull)identifier
-                                       tags:(NSArray *__nonnull)tags
-                               thumbnailURL:(NSURL *__nullable)thumbnailURL
-                                    fullURL:(NSURL *__nullable)fullURL
-                                    allUrls:(NSDictionary *__nonnull)allUrls
-                                     format:(IMPhotoImageFormat)format {
++ (nonnull instancetype)imojiWithIdentifier:(nonnull NSString *)identifier
+                                       tags:(nonnull NSArray *)tags
+                                       urls:(nonnull NSDictionary *)urls {
     return [[IMMutableImojiObject alloc] initWWithIdentifier:identifier
                                                         tags:tags
-                                                thumbnailURL:thumbnailURL
-                                                     fullURL:fullURL
-                                                     allUrls:allUrls
-                                                      format:format];
+                                                        urls:urls];
 }
 
 @end

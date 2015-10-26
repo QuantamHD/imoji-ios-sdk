@@ -42,13 +42,49 @@ typedef NS_ENUM(NSUInteger, IMImojiObjectRenderSize) {
     * @abstract When used, a high resolution image of the Imoji is downloaded and rendered. This setting is useful when
     * the consumer wishes to export the imoji to another application or to simply display a large version of it.
     */
-            IMImojiObjectRenderSizeFullResolution
+            IMImojiObjectRenderSizeFullResolution,
+
+    /**
+    * @abstract Renders an Imoji image with a maximum dimension of 320x320 pixels. Ideal for high resolution
+     * large displays in which the thumbnail size lacks the desired quality.
+    */
+            IMImojiObjectRenderSize320,
+
+    /**
+    * @abstract Renders an Imoji image with a maximum dimension of 512x512 pixels.
+    */
+            IMImojiObjectRenderSize512
+};
+
+typedef NS_ENUM(NSUInteger, IMImojiObjectBorderStyle) {
+    /**
+    * @abstract The default option for rendering Imoji images. Results will show a white border with a small
+     * gray shadow like a sticker.
+    */
+            IMImojiObjectBorderStyleSticker,
+
+    /**
+    * @abstract When used, the Imoji image will have no border.
+    */
+            IMImojiObjectBorderStyleNone
+};
+
+typedef NS_ENUM(NSUInteger, IMImojiObjectImageFormat) {
+    /**
+     * @abstract PNG photo format. Using this results is larger file sizes.
+     */
+            IMImojiObjectImageFormatPNG,
+
+    /**
+     * @abstract WebP photo format. Using this results in smaller file sizes with minimal quality degradation.
+     */
+            IMImojiObjectImageFormatWebP
 };
 
 /**
 * @abstract Defines multiple options for rendering IMImojiObjects to images
 */
-@interface IMImojiObjectRenderingOptions : NSObject
+@interface IMImojiObjectRenderingOptions : NSObject<NSCopying>
 
 /**
 * @abstract The desired size of the image to load. For best performance, use IMImojiObjectRenderSizeThumbnail. For
@@ -79,6 +115,23 @@ typedef NS_ENUM(NSUInteger, IMImojiObjectRenderSize) {
 */
 @property(nonatomic, strong, nullable) NSValue *aspectRatio;
 
+/**
+* @abstract The desired border style. Defaults to IMImojiObjectBorderStyleSticker.
+*/
+@property(nonatomic) IMImojiObjectBorderStyle borderStyle;
+
+/**
+* @abstract The desired image format (used for optimizing downloading sizes). Defaults to IMImojiObjectImageFormatWebP.
+*/
+@property(nonatomic) IMImojiObjectImageFormat imageFormat;
+
 + (nonnull instancetype)optionsWithRenderSize:(IMImojiObjectRenderSize)renderSize;
+
++ (nonnull instancetype)optionsWithRenderSize:(IMImojiObjectRenderSize)renderSize
+                                  borderStyle:(IMImojiObjectBorderStyle)borderStyle;
+
++ (nonnull instancetype)optionsWithRenderSize:(IMImojiObjectRenderSize)renderSize
+                                  borderStyle:(IMImojiObjectBorderStyle)borderStyle
+                                  imageFormat:(IMImojiObjectImageFormat)imageFormat;
 
 @end

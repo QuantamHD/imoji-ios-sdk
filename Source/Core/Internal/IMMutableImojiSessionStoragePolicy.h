@@ -27,7 +27,6 @@
 #import "IMImojiObject.h"
 #import "IMImojiSessionStoragePolicy.h"
 #import "IMImojiObjectRenderingOptions.h"
-#import "UIImage+Formats.h"
 
 @class BFTask;
 
@@ -39,17 +38,14 @@
 @property(nonatomic, strong, readonly) NSURL *persistentPath;
 
 - (BFTask *)writeImoji:(IMImojiObject *)imoji
-               quality:(IMImojiObjectRenderSize)quality
-                format:(IMPhotoImageFormat)format
+      renderingOptions:(IMImojiObjectRenderingOptions *)renderingOptions
          imageContents:(NSData *)imageContents
            synchronous:(BOOL)synchronous;
 
 - (NSData *)readImojiImage:(IMImojiObject *)imoji
-                   quality:(IMImojiObjectRenderSize)quality
-                    format:(IMPhotoImageFormat)format;
+          renderingOptions:(IMImojiObjectRenderingOptions *)renderingOptions;
 
 - (BOOL)imojiExists:(IMImojiObject *)imoji
-            quality:(IMImojiObjectRenderSize)quality
-             format:(IMPhotoImageFormat)format;
+   renderingOptions:(IMImojiObjectRenderingOptions *)renderingOptions;
 
 @end

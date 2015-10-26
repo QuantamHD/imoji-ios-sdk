@@ -5,13 +5,11 @@
 
 #import <Foundation/Foundation.h>
 #import "IMImojiSession.h"
-#import "UIImage+Formats.h"
+#import "IMImojiObject.h"
 
 @class IMImojiSessionCredentials;
 @class IMMutableImojiObject;
 @class BFTask;
-
-extern IMPhotoImageFormat const IMImojiPreferredImageFormat;
 
 @interface IMImojiSession (Private)
 
@@ -56,13 +54,13 @@ extern IMPhotoImageFormat const IMImojiPreferredImageFormat;
 - (NSArray *)convertServerDataSetToImojiArray:(NSDictionary *)serverResponse;
 
 - (void)handleImojiFetchResponse:(NSArray *)imojiObjects
-                         quality:(IMImojiObjectRenderSize)quality
+                renderingOptions:(IMImojiObjectRenderingOptions *)renderingOptions
                cancellationToken:(NSOperation *)cancellationToken
           searchResponseCallback:(IMImojiSessionResultSetResponseCallback)searchResponseCallback
            imojiResponseCallback:(IMImojiSessionImojiFetchedResponseCallback)imojiResponseCallback;
 
 - (void)downloadImojiImageAsync:(IMMutableImojiObject *)imoji
-                        quality:(IMImojiObjectRenderSize)quality
+               renderingOptions:(IMImojiObjectRenderingOptions *)renderingOptions
                      imojiIndex:(NSUInteger)imojiIndex
               cancellationToken:(NSOperation *)cancellationToken
           imojiResponseCallback:(IMImojiSessionImojiFetchedResponseCallback)imojiResponseCallback;

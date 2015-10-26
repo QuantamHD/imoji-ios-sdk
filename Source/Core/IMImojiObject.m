@@ -54,12 +54,21 @@
     return [self.identifier hash];
 }
 
-
 - (NSString *)description {
     NSMutableString *description = [NSMutableString stringWithFormat:@"<%@: ", NSStringFromClass([self class])];
     [description appendFormat:@"self.identifier=%@", self.identifier];
     [description appendString:@">"];
     return description;
+}
+
+- (nullable NSURL *)getUrlForRenderingOptions:(nonnull IMImojiObjectRenderingOptions *)renderingOptions {
+    id url = self.urls[renderingOptions];
+
+    if (url && [url isKindOfClass:[NSURL class]]) {
+        return url;
+    }
+
+    return nil;
 }
 
 @end

@@ -15,9 +15,8 @@
 #import "IMMutableImojiSessionStoragePolicy.h"
 #import "IMMutableImojiObject.h"
 #import "NSDictionary+Utils.h"
-#import "NSArray+Utils.h"
+#import "UIImage+WebP.h"
 
-IMPhotoImageFormat const IMImojiPreferredImageFormat = IMPhotoImageFormatWebP;
 NSString *const IMImojiSessionFileAccessTokenKey = @"at";
 NSString *const IMImojiSessionFileRefreshTokenKey = @"rt";
 NSString *const IMImojiSessionFileExpirationKey = @"ex";
@@ -118,7 +117,7 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
 }
 
 - (BFTask *)runValidatedPutTaskWithPath:(NSString *)path
-                           andParameters:(NSDictionary *)parameters {
+                          andParameters:(NSDictionary *)parameters {
     return [self runValidatedImojiURLRequest:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@", ImojiSDKServerURL, path]]
                                   parameters:parameters
                                       method:@"PUT"
@@ -478,7 +477,7 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
 
 - (NSArray *)convertServerDataSetToImojiArray:(NSDictionary *)serverResponse {
     NSArray *results = serverResponse[@"results"];
-    if (!results.im_isEmpty) {
+    if (!results.count == 0) {
         NSMutableArray *imojiObjectsArray = [NSMutableArray arrayWithCapacity:results.count];
         for (NSDictionary *result in results) {
             [imojiObjectsArray addObject:[self readImojiObject:result]];
@@ -491,7 +490,7 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
 }
 
 - (void)handleImojiFetchResponse:(NSArray *)imojiObjects
-                         quality:(IMImojiObjectRenderSize)quality
+                renderingOptions:(IMImojiObjectRenderingOptions *)renderingOptions
                cancellationToken:(NSOperation *)cancellationToken
           searchResponseCallback:(IMImojiSessionResultSetResponseCallback)searchResponseCallback
            imojiResponseCallback:(IMImojiSessionImojiFetchedResponseCallback)imojiResponseCallback {
@@ -504,9 +503,9 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
     }
 
     for (IMMutableImojiObject *imoji in imojiObjects) {
-        if (![(IMMutableImojiSessionStoragePolicy *) self.storagePolicy imojiExists:imoji quality:quality format:imoji.imageFormat]) {
+        if (![(IMMutableImojiSessionStoragePolicy *) self.storagePolicy imojiExists:imoji renderingOptions:renderingOptions]) {
             [self downloadImojiImageAsync:imoji
-                                  quality:quality
+                         renderingOptions:renderingOptions
                                imojiIndex:[imojiObjects indexOfObject:imoji]
                         cancellationToken:cancellationToken
                     imojiResponseCallback:imojiResponseCallback];
@@ -519,12 +518,12 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
 }
 
 - (void)downloadImojiImageAsync:(IMMutableImojiObject *)imoji
-                        quality:(IMImojiObjectRenderSize)quality
+               renderingOptions:(IMImojiObjectRenderingOptions *)renderingOptions
                      imojiIndex:(NSUInteger)imojiIndex
               cancellationToken:(NSOperation *)cancellationToken
           imojiResponseCallback:(IMImojiSessionImojiFetchedResponseCallback)imojiResponseCallback {
     [self downloadImojiImageAsync:imoji
-                          quality:quality
+                 renderingOptions:renderingOptions
                       retriesLeft:IMImojiSessionNumberOfRetriesForImojiDownload
                        imojiIndex:imojiIndex
                 cancellationToken:cancellationToken
@@ -532,22 +531,12 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
 }
 
 - (void)downloadImojiImageAsync:(IMMutableImojiObject *)imoji
-                        quality:(IMImojiObjectRenderSize)quality
+               renderingOptions:(IMImojiObjectRenderingOptions *)renderingOptions
                     retriesLeft:(NSUInteger)retriesLeft
                      imojiIndex:(NSUInteger)imojiIndex
               cancellationToken:(NSOperation *)cancellationToken
           imojiResponseCallback:(IMImojiSessionImojiFetchedResponseCallback)imojiResponseCallback {
-    NSURL *url;
-    switch (quality) {
-        case IMImojiObjectRenderSizeFullResolution:
-            url = imoji.fullURL;
-            break;
-
-        case IMImojiObjectRenderSizeThumbnail:
-            url = imoji.thumbnailURL;
-            break;
-    }
-
+    NSURL *url = [imoji getUrlForRenderingOptions:renderingOptions];
     [BFTask im_concurrentBackgroundTaskWithBlock:^id(BFTask *task) {
         if (cancellationToken.isCancelled) {
             return [BFTask cancelledTask];
@@ -562,7 +551,7 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
                     dispatch_async(dispatch_get_main_queue(), ^{
                         if (retriesLeft > 0) {
                             [self downloadImojiImageAsync:imoji
-                                                  quality:quality
+                                         renderingOptions:renderingOptions
                                               retriesLeft:retriesLeft - 1
                                                imojiIndex:imojiIndex
                                         cancellationToken:cancellationToken
@@ -578,10 +567,21 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
                     });
                 }
             } else {
-                UIImage *image = [UIImage im_imageWithData:urlTask.result format:imoji.imageFormat];
+                UIImage *image;
+                switch (renderingOptions.imageFormat) {
+                    case IMImojiObjectImageFormatWebP:
+                        image = [UIImage im_imageWithWebPData:urlTask.result];
+                        break;
+
+                    case IMImojiObjectImageFormatPNG:
+                    default:
+                        image = [UIImage imageWithData:urlTask.result];
+                        break;
+
+                }
+
                 [[(IMMutableImojiSessionStoragePolicy *) self.storagePolicy writeImoji:imoji
-                                                                               quality:quality
-                                                                                format:imoji.imageFormat
+                                                                      renderingOptions:renderingOptions
                                                                          imageContents:UIImagePNGRepresentation(image)
                                                                            synchronous:YES]
                         continueWithExecutor:[BFExecutor mainThreadExecutor]
@@ -622,22 +622,22 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
         request.timeoutInterval = 15.0;
         request.HTTPMethod = @"PUT";
         request.URL = uploadUrl;
-        
+
         [request addValue:@"image/png" forHTTPHeaderField:@"Content-Type"];
 
         [[[IMImojiSession uploadInBackgroundURLSession] uploadTaskWithRequest:request
-                                                                    fromData:UIImagePNGRepresentation(image)
-                                                           completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-            if (error) {
-                if (retryCount == 0) {
-                    taskCompletionSource.error = error;
-                } else {
-                    [self uploadImageInBackgroundWithRetries:image uploadUrl:uploadUrl retryCount:retryCount - 1 taskCompletionSource:taskCompletionSource];
-                }
-            } else {
-                taskCompletionSource.result = @YES;
-            }
-        }] resume];
+                                                                     fromData:UIImagePNGRepresentation(image)
+                                                            completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+                                                                if (error) {
+                                                                    if (retryCount == 0) {
+                                                                        taskCompletionSource.error = error;
+                                                                    } else {
+                                                                        [self uploadImageInBackgroundWithRetries:image uploadUrl:uploadUrl retryCount:retryCount - 1 taskCompletionSource:taskCompletionSource];
+                                                                    }
+                                                                } else {
+                                                                    taskCompletionSource.result = @YES;
+                                                                }
+                                                            }] resume];
 
         return nil;
     }];
@@ -648,33 +648,76 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
         NSString *imojiId = [result im_checkedStringForKey:@"imojiId"] ? [result im_checkedStringForKey:@"imojiId"] : [result im_checkedStringForKey:@"id"];
         NSArray *tags = [result[@"tags"] isKindOfClass:[NSArray class]] ? result[@"tags"] : @[];
 
-        NSURL *thumbURL;
-        NSURL *fullURL;
-        NSMutableDictionary *imageUrls = [NSMutableDictionary dictionary];
-        if (result[@"images"]) {
-            NSDictionary *imagesDictionary = result[@"images"];
-            thumbURL = [NSURL URLWithString:imagesDictionary[@"webp"][@"150"][@"url"]];
-            fullURL = [NSURL URLWithString:imagesDictionary[@"webp"][@"1200"][@"url"]];
-        } else {
-            NSDictionary *imagesDictionary = result[@"urls"];
-            thumbURL = [NSURL URLWithString:imagesDictionary[@"webp"][@"thumb"]];
-            fullURL = [NSURL URLWithString:imagesDictionary[@"webp"][@"full"]];
-        }
+        NSDictionary *imagesDictionary = result[@"urls"];
+        NSMutableDictionary *imageUrls = [NSMutableDictionary new];
 
-        if (thumbURL) {
-            imageUrls[@(IMImojiObjectRenderSizeThumbnail)] = thumbURL;
-        }
+        for (NSNumber *renderSize in @[@(IMImojiObjectRenderSizeThumbnail), @(IMImojiObjectRenderSizeFullResolution), @(IMImojiObjectRenderSize320), @(IMImojiObjectRenderSize512)]) {
+            for (NSNumber *borderStyle in @[@(IMImojiObjectBorderStyleSticker), @(IMImojiObjectBorderStyleNone)]) {
+                for (NSNumber *imageFormat in @[@(IMImojiObjectImageFormatWebP), @(IMImojiObjectImageFormatPNG)]) {
+                    IMImojiObjectRenderingOptions *renderingOptions = [IMImojiObjectRenderingOptions optionsWithRenderSize:(IMImojiObjectRenderSize) renderSize.unsignedIntegerValue
+                                                                                                               borderStyle:(IMImojiObjectBorderStyle) borderStyle.unsignedIntegerValue
+                                                                                                               imageFormat:(IMImojiObjectImageFormat) imageFormat.unsignedIntegerValue];
 
-        if (fullURL) {
-            imageUrls[@(IMImojiObjectRenderSizeFullResolution)] = fullURL;
+                    id path;
+                    switch (renderingOptions.imageFormat) {
+                        case IMImojiObjectImageFormatPNG:
+                            path = imagesDictionary[@"png"];
+                            break;
+                        case IMImojiObjectImageFormatWebP:
+                            path = imagesDictionary[@"webp"];
+                            break;
+                    }
+
+                    if (!path || ![path isKindOfClass:[NSDictionary class]]) {
+                        imageUrls[renderingOptions] = [NSNull null];
+                        continue;
+                    }
+
+                    switch (renderingOptions.borderStyle) {
+                        case IMImojiObjectBorderStyleSticker:
+                            break;
+
+                        case IMImojiObjectBorderStyleNone:
+                            path = path[@"raw"];
+                            break;
+                    }
+
+                    if (!path || ![path isKindOfClass:[NSDictionary class]]) {
+                        imageUrls[renderingOptions] = [NSNull null];
+                        continue;
+                    }
+
+                    id url;
+                    switch (renderingOptions.renderSize) {
+                        case IMImojiObjectRenderSizeThumbnail:
+                            url = path[@"thumb"];
+                            break;
+
+                        case IMImojiObjectRenderSizeFullResolution:
+                            url = path[@"full"];
+                            break;
+
+                        case IMImojiObjectRenderSize320:
+                            url = path[@"320"];
+                            break;
+
+                        case IMImojiObjectRenderSize512:
+                            url = path[@"512"];
+                            break;
+                    }
+
+                    if (!url || ![url isKindOfClass:[NSString class]]) {
+                        imageUrls[renderingOptions] = [NSNull null];
+                    } else {
+                        imageUrls[renderingOptions] = [NSURL URLWithString:url];
+                    }
+                }
+            }
         }
 
         return [IMMutableImojiObject imojiWithIdentifier:imojiId
                                                     tags:tags
-                                            thumbnailURL:thumbURL
-                                                 fullURL:fullURL
-                                                 allUrls:imageUrls
-                                                  format:IMImojiPreferredImageFormat];
+                                                    urls:imageUrls];
     } else {
         return nil;
     }
