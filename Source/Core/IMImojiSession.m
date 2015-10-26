@@ -72,14 +72,14 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
 }
 
 - (BFTask *)downloadImojiContents:(IMMutableImojiObject *)imoji
-                  renderingOtions:(IMImojiObjectRenderingOptions *)renderingOtions
+                  renderingOtions:(IMImojiObjectRenderingOptions *)renderingOptions
                 cancellationToken:cancellationToken {
     BFTaskCompletionSource *taskCompletionSource = [BFTaskCompletionSource taskCompletionSource];
     [[self validateSession] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
         if (task.error) {
             taskCompletionSource.error = task.error;
         } else {
-            if ([(IMMutableImojiSessionStoragePolicy *) self.storagePolicy imojiExists:imoji renderingOptions:renderingOtions]) {
+            if ([(IMMutableImojiSessionStoragePolicy *) self.storagePolicy imojiExists:imoji renderingOptions:renderingOptions]) {
                 taskCompletionSource.result = imoji;
             } else if (!imoji.urls) {
                 taskCompletionSource.error = [NSError errorWithDomain:IMImojiSessionErrorDomain
@@ -89,7 +89,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
                                                              }];
             } else {
                 [self downloadImojiImageAsync:imoji
-                             renderingOptions:self.fetchRenderingOptions
+                             renderingOptions:renderingOptions
                                    imojiIndex:0
                             cancellationToken:cancellationToken
                         imojiResponseCallback:^(IMImojiObject *imojiObject, NSUInteger index, NSError *error) {

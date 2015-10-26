@@ -1,5 +1,10 @@
 # Imoji SDK Changes
 
+### Version 0.2.17
+
+* Expands IMImojiObject urls property to include both webp and png images as well bordered and unbordered ones. The keys to the urls property is now an IMImojiObjectRenderingOptions object.
+* Exposes fetchRenderingOptions which can be set to override the style of images downloaded for any of the fetch requests (ex: searchImojisWithTerm, getFeaturedImojisWithNumberOfResults, etc)
+
 ### Version 0.2.16
 
 * Fixes a bug in which the IMIMojiObject returned after creating an Imoji wasn't rendering properly
