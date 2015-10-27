@@ -16,6 +16,8 @@
 #import "IMMutableImojiObject.h"
 #import "NSDictionary+Utils.h"
 #import "UIImage+WebP.h"
+#import "UIImage+Extensions.h"
+#import "NSString+Utils.h"
 
 NSString *const IMImojiSessionFileAccessTokenKey = @"at";
 NSString *const IMImojiSessionFileRefreshTokenKey = @"rt";
@@ -407,6 +409,73 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
                 [self.delegate imojiSession:self stateChanged:newState fromState:oldState];
             }
         });
+    }
+}
+
+- (BFTask *)createLocalImojiWithRawImage:(UIImage *)rawImage
+                           borderedImage:(UIImage *)borderedImage
+                                    tags:(NSArray *)tags {
+    IMMutableImojiObject *imojiObject = [IMMutableImojiObject imojiWithIdentifier:[NSString im_stringWithRandomUUID]
+                                                                             tags:tags
+                                                                             urls:@{}];
+
+    NSDictionary *renderingOptions = @{
+            [IMImojiObjectRenderingOptions optionsWithRenderSize:IMImojiObjectRenderSizeThumbnail
+                                                     borderStyle:IMImojiObjectBorderStyleNone
+                                                     imageFormat:IMImojiObjectImageFormatWebP] : [rawImage im_resizedImageToFitInSize:CGSizeMake(150.f, 150.f) scaleIfSmaller:NO],
+
+            [IMImojiObjectRenderingOptions optionsWithRenderSize:IMImojiObjectRenderSizeFullResolution
+                                                     borderStyle:IMImojiObjectBorderStyleNone
+                                                     imageFormat:IMImojiObjectImageFormatWebP] : rawImage,
+
+            [IMImojiObjectRenderingOptions optionsWithRenderSize:IMImojiObjectRenderSizeThumbnail
+                                                     borderStyle:IMImojiObjectBorderStyleSticker
+                                                     imageFormat:IMImojiObjectImageFormatWebP] : [borderedImage im_resizedImageToFitInSize:CGSizeMake(150.f, 150.f) scaleIfSmaller:NO],
+
+            [IMImojiObjectRenderingOptions optionsWithRenderSize:IMImojiObjectRenderSizeFullResolution
+                                                     borderStyle:IMImojiObjectBorderStyleSticker
+                                                     imageFormat:IMImojiObjectImageFormatWebP] : borderedImage
+    };
+
+    NSMutableDictionary *urls = [NSMutableDictionary new];
+    NSMutableArray *tasks = [NSMutableArray new];
+    for (IMImojiObjectRenderingOptions *renderingOption in renderingOptions.allKeys) {
+        urls[renderingOption] = [(IMMutableImojiSessionStoragePolicy *) self.storagePolicy filePathFromImoji:imojiObject
+                                                                                            renderingOptions:renderingOption];
+
+        [tasks addObject:[(IMMutableImojiSessionStoragePolicy *) self.storagePolicy writeImoji:imojiObject
+                                                                              renderingOptions:renderingOption
+                                                                                 imageContents:UIImagePNGRepresentation(renderingOptions[renderingOption])
+                                                                                   synchronous:NO]];
+    }
+
+    return [[BFTask taskForCompletionOfAllTasks:tasks] continueWithBlock:^id(BFTask *task) {
+        return [IMMutableImojiObject imojiWithIdentifier:imojiObject.identifier tags:imojiObject.tags urls:urls];
+    }];
+}
+
+- (void)removeLocalImoj:(IMImojiObject *)imoji {
+    NSArray *renderingOptions = @[
+            [IMImojiObjectRenderingOptions optionsWithRenderSize:IMImojiObjectRenderSizeThumbnail
+                                                     borderStyle:IMImojiObjectBorderStyleNone
+                                                     imageFormat:IMImojiObjectImageFormatWebP],
+
+            [IMImojiObjectRenderingOptions optionsWithRenderSize:IMImojiObjectRenderSizeFullResolution
+                                                     borderStyle:IMImojiObjectBorderStyleNone
+                                                     imageFormat:IMImojiObjectImageFormatWebP],
+
+            [IMImojiObjectRenderingOptions optionsWithRenderSize:IMImojiObjectRenderSizeThumbnail
+                                                     borderStyle:IMImojiObjectBorderStyleSticker
+                                                     imageFormat:IMImojiObjectImageFormatWebP],
+
+            [IMImojiObjectRenderingOptions optionsWithRenderSize:IMImojiObjectRenderSizeFullResolution
+                                                     borderStyle:IMImojiObjectBorderStyleSticker
+                                                     imageFormat:IMImojiObjectImageFormatWebP]
+    ];
+
+    for (IMImojiObjectRenderingOptions *renderingOption in renderingOptions) {
+        [(IMMutableImojiSessionStoragePolicy *) self.storagePolicy removeImoji:imoji
+                                                              renderingOptions:renderingOption];
     }
 }
 

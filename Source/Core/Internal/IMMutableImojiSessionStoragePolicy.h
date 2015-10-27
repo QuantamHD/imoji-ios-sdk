@@ -45,7 +45,12 @@
 - (NSData *)readImojiImage:(IMImojiObject *)imoji
           renderingOptions:(IMImojiObjectRenderingOptions *)renderingOptions;
 
+- (void)removeImoji:(IMImojiObject *)imoji
+   renderingOptions:(IMImojiObjectRenderingOptions *)renderingOptions;
+
 - (BOOL)imojiExists:(IMImojiObject *)imoji
    renderingOptions:(IMImojiObjectRenderingOptions *)renderingOptions;
+
+- (NSString *)filePathFromImoji:(IMImojiObject *)imoji renderingOptions:(IMImojiObjectRenderingOptions *)renderingOptions;
 
 @end

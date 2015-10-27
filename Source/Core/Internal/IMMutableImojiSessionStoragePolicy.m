@@ -116,6 +116,12 @@ NSUInteger const IMMutableImojiSessionStoragePolicyDefaultExpirationTimeInSecond
     return nil;
 }
 
+- (void)removeImoji:(IMImojiObject *)imoji
+   renderingOptions:(IMImojiObjectRenderingOptions *)renderingOptions {
+    NSString *fullImojiPath = [self filePathFromImoji:imoji renderingOptions:renderingOptions];
+    [IMMutableImojiSessionStoragePolicy removeFile:fullImojiPath];
+}
+
 - (BOOL)imojiExists:(IMImojiObject *)imoji
    renderingOptions:(IMImojiObjectRenderingOptions *)renderingOptions {
     NSString *fullImojiPath = [self filePathFromImoji:imoji renderingOptions:renderingOptions];

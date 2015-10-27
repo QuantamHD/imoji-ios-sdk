@@ -326,12 +326,16 @@ typedef void (^IMImojiSessionCreationResponseCallback)(IMImojiObject *__nullable
  * @abstract Adds an Imoji sticker to the database
  * @param image The Imoji sticker image
  * @param tags An array of NSString tags or nil if there are none
- * @param callback Called once the save operation is complete
+ * @param beginUploadCallback Called once the uploading of the image has started. A temporary Imoji is passed back
+ * to the caller which can be used as a filler while the upload is taking place.
+ * @param finishUploadCallback Called once the save operation is complete
  * @return An operation reference that can be used to cancel the request.
  */
-- (nonnull NSOperation *)createImojiWithImage:(nonnull UIImage *)image
-                                         tags:(nullable NSArray *)tags
-                                     callback:(nonnull IMImojiSessionCreationResponseCallback)callback;
+- (nonnull NSOperation *)createImojiWithRawImage:(nonnull UIImage *)image
+                                   borderedImage:(nonnull UIImage *)borderedImage
+                                            tags:(nullable NSArray *)tags
+                             beginUploadCallback:(nonnull IMImojiSessionCreationResponseCallback)beginUploadCallback
+                            finishUploadCallback:(nonnull IMImojiSessionCreationResponseCallback)finishUploadCallback;
 
 
 /**

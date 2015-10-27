@@ -415,68 +415,88 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
 
 #pragma mark Imoji Modification
 
-- (NSOperation *)createImojiWithImage:(UIImage *)image
-                                 tags:(NSArray *)tags
-                             callback:(IMImojiSessionCreationResponseCallback)callback {
+- (NSOperation *)createImojiWithRawImage:(UIImage *)image
+                           borderedImage:(UIImage *)borderedImage
+                                    tags:(NSArray *)tags
+                     beginUploadCallback:(nonnull IMImojiSessionCreationResponseCallback)beginUploadCallback
+                    finishUploadCallback:(nonnull IMImojiSessionCreationResponseCallback)finishUploadCallback {
     NSOperation *cancellationToken = self.cancellationTokenOperation;
 
     __block NSString *imojiId;
-    [[[[self runValidatedPostTaskWithPath:@"/imoji/create" andParameters:@{
-            @"tags" : tags != nil ? tags : [NSNull null]
-    }] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *getTask) {
-        if (cancellationToken.cancelled) {
-            return [BFTask cancelledTask];
-        }
+    __block IMImojiObject* localImoji;
+    [[[[[self createLocalImojiWithRawImage:image
+                             borderedImage:borderedImage
+                                      tags:tags]
+            continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+                localImoji = task.result;
 
-        NSDictionary *results = getTask.result;
-        NSError *error;
-        [self validateServerResponse:results error:&error];
+                // trigger completion of the temporary imoji
+                beginUploadCallback(localImoji, nil);
 
-        if (error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                callback(nil, error);
-            });
+                // call the server to create a new imoji
+                return [self runValidatedPostTaskWithPath:@"/imoji/create" andParameters:@{
+                        @"tags" : tags != nil ? tags : [NSNull null]
+                }];
+            }]
+            continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *getTask) {
+                if (cancellationToken.cancelled) {
+                    return [BFTask cancelledTask];
+                }
 
-            return error;
-        }
+                NSDictionary *results = getTask.result;
+                NSError *error;
+                [self validateServerResponse:results error:&error];
 
-        return results;
-    }] continueWithSuccessBlock:^id(BFTask *task) {
-        NSDictionary *response = (NSDictionary *) task.result;
-        NSString *fullImageUrl = response[@"fullImageUrl"];
+                if (error) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        finishUploadCallback(nil, error);
+                    });
 
-        imojiId = response[@"imojiId"];
+                    return error;
+                }
 
-        CGSize maxDimensions = CGSizeMake(
-                [(NSNumber *) response[@"fullImageResizeWidth"] floatValue],
-                [(NSNumber *) response[@"fullImageResizeHeight"] floatValue]
-        );
+                return results;
+            }]
+            continueWithSuccessBlock:^id(BFTask *task) {
+                NSDictionary *response = (NSDictionary *) task.result;
+                NSString *fullImageUrl = response[@"fullImageUrl"];
 
-        return [self uploadImageInBackgroundWithRetries:[image im_resizedImageToFitInSize:maxDimensions scaleIfSmaller:NO]
-                                              uploadUrl:[NSURL URLWithString:fullImageUrl]
-                                             retryCount:3];
-    }] continueWithBlock:^id(BFTask *task) {
-        if (task.error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                callback(nil, [NSError errorWithDomain:IMImojiSessionErrorDomain
-                                                  code:IMImojiSessionErrorCodeServerError
-                                              userInfo:@{
-                                                      NSLocalizedDescriptionKey : [NSString stringWithFormat:@"Unable to upload imoji image"]
-                                              }]);
-            });
+                imojiId = response[@"imojiId"];
 
-            return task.error;
-        }
+                CGSize maxDimensions = CGSizeMake(
+                        [(NSNumber *) response[@"fullImageResizeWidth"] floatValue],
+                        [(NSNumber *) response[@"fullImageResizeHeight"] floatValue]
+                );
 
-        [self fetchImojisByIdentifiers:@[imojiId]
-               fetchedResponseCallback:^(IMImojiObject *imoji, NSUInteger index, NSError *error) {
-                   dispatch_async(dispatch_get_main_queue(), ^{
-                       callback(imoji, error);
-                   });
-               }];
+                // start the upload
+                return [self uploadImageInBackgroundWithRetries:[image im_resizedImageToFitInSize:maxDimensions scaleIfSmaller:NO]
+                                                      uploadUrl:[NSURL URLWithString:fullImageUrl]
+                                                     retryCount:3];
+            }]
+            continueWithBlock:
+                    ^id(BFTask *task) {
+                        if (task.error) {
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                finishUploadCallback(nil, [NSError errorWithDomain:IMImojiSessionErrorDomain
+                                                                              code:IMImojiSessionErrorCodeServerError
+                                                                          userInfo:@{
+                                                                                  NSLocalizedDescriptionKey : [NSString stringWithFormat:@"Unable to upload imoji image"]
+                                                                          }]);
+                            });
 
-        return nil;
-    }];
+                            return task.error;
+                        }
+
+                        // call the server once more to get the generated URL's for the new Imoji ID
+                        [self fetchImojisByIdentifiers:@[imojiId]
+                               fetchedResponseCallback:^(IMImojiObject *imoji, NSUInteger index, NSError *error) {
+                                   dispatch_async(dispatch_get_main_queue(), ^{
+                                       finishUploadCallback(imoji, error);
+                                   });
+                               }];
+
+                        return nil;
+                    }];
 
     return cancellationToken;
 }

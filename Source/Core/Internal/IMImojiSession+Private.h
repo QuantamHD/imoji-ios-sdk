@@ -10,6 +10,7 @@
 @class IMImojiSessionCredentials;
 @class IMMutableImojiObject;
 @class BFTask;
+@class IMImojiSessionStoragePolicy;
 
 @interface IMImojiSession (Private)
 
@@ -74,5 +75,13 @@
 #pragma mark Session State Management
 
 - (void)updateImojiState:(IMImojiSessionState)newState;
+
+#pragma mark Imoji Creation
+
+- (BFTask *)createLocalImojiWithRawImage:(UIImage *)rawImage
+                           borderedImage:(UIImage *)borderedImage
+                                    tags:(NSArray *)tags;
+
+- (void)removeLocalImoj:(IMImojiObject *)imoji;
 
 @end
