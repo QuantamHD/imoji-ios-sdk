@@ -725,6 +725,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
         categoryClassifications = @{
                 @(IMImojiSessionCategoryClassificationTrending) : @"trending",
                 @(IMImojiSessionCategoryClassificationGeneric) : @"generic",
+                @(IMImojiSessionCategoryClassificationArtist) : @"artist",
                 @(IMImojiSessionCategoryClassificationNone) : @"none"
         };
     });
