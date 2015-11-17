@@ -26,6 +26,7 @@
 #import <Foundation/Foundation.h>
 
 @class IMImojiObject;
+@class IMArtistObject;
 
 extern NSUInteger const IMImojiObjectPriorityFeatured;
 extern NSUInteger const IMImojiObjectPriorityDefault;
@@ -50,6 +51,8 @@ extern NSUInteger const IMImojiObjectPriorityDefault;
 */
 @property(nonatomic, strong, readonly, nonnull) IMImojiObject *previewImoji;
 
+@property(nonatomic, strong, readonly, nullable) NSArray *previewImojis;
+
 /**
 * @abstract The order of importance to display the category starting from 0
 */
@@ -62,5 +65,7 @@ extern NSUInteger const IMImojiObjectPriorityDefault;
 * priority (ex: current events)
 */
 @property(nonatomic, readonly) NSUInteger priority;
+
+@property(nonatomic, strong, readonly, nullable) IMArtistObject *artist;
 
 @end

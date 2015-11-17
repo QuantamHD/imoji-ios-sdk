@@ -25,6 +25,7 @@
 
 #import "IMImojiCategoryObject.h"
 #import "IMImojiObject.h"
+#import "IMArtistObject.h"
 
 NSUInteger const IMImojiObjectPriorityFeatured = 1;
 NSUInteger const IMImojiObjectPriorityNormal = 2;

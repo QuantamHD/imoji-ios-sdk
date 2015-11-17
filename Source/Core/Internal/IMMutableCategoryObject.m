@@ -25,6 +25,7 @@
 
 #import "IMMutableCategoryObject.h"
 #import "IMImojiObject.h"
+#import "IMArtistObject.h"
 
 
 @implementation IMMutableCategoryObject {
@@ -33,15 +34,19 @@
 - (instancetype)initWithIdentifier:(NSString *)identifier
                              order:(NSUInteger)order
                       previewImoji:(IMImojiObject *)previewImoji
+                     previewImojis:(NSArray *)previewImojis
                           priority:(NSUInteger)priority
-                             title:(NSString *)title {
+                             title:(NSString *)title
+                            artist:(IMArtistObject *)artist {
     self = [super init];
     if (self) {
         _identifier = identifier;
         _order = order;
         _previewImoji = previewImoji;
+        _previewImojis = previewImojis;
         _priority = priority;
         _title = title;
+        _artist = artist;
     }
 
     return self;
@@ -59,6 +64,10 @@
     return _previewImoji;
 }
 
+- (NSArray *)previewImojis {
+    return _previewImojis;
+}
+
 - (NSUInteger)priority {
     return _priority;
 }
@@ -67,13 +76,18 @@
     return _title;
 }
 
+- (IMArtistObject *)artist {
+    return _artist;
+}
 
 + (instancetype)objectWithIdentifier:(NSString *)identifier
                                order:(NSUInteger)order
                         previewImoji:(IMImojiObject *)previewImoji
+                       previewImojis:(NSArray *)previewImojis
                             priority:(NSUInteger)priority
-                               title:(NSString *)title {
-    return [[self alloc] initWithIdentifier:identifier order:order previewImoji:previewImoji priority:priority title:title];
+                               title:(NSString *)title
+                              artist:(IMArtistObject *)artist {
+    return [[self alloc] initWithIdentifier:identifier order:order previewImoji:previewImoji previewImojis:previewImojis priority:priority title:title artist:artist];
 }
 
 @end

@@ -1,7 +1,7 @@
 //
-//  ImojiSDK
+//  ImojiSDKUI
 //
-//  Created by Nima Khoshini
+//  Created by Alex Hoang
 //  Copyright (C) 2015 Imoji
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,29 +24,24 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "IMImojiCategoryObject.h"
-
-@class IMImojiObject;
-@class IMArtistObject;
+#import "IMArtistObject.h"
 
 
-@interface IMMutableCategoryObject : IMImojiCategoryObject {
+@interface IMMutableArtistObject : IMArtistObject {
 @private
-    NSString *_identifier;
-    NSString *_title;
-    IMImojiObject *_previewImoji;
-    NSArray *_previewImojis;
-    NSUInteger _order;
-    NSUInteger _priority;
-    IMArtistObject *_artist;
+    NSString * _identifier;
+    NSString * _name;
+    NSString * _description;
+    IMImojiObject * _previewImoji;
+    NSString * _packId;
+    NSString * _packURL;
 }
 
-+ (instancetype)objectWithIdentifier:(NSString *)identifier
-                               order:(NSUInteger)order
++ (instancetype)artistWithIdentifier:(NSString *)identifier
+                                name:(NSString *)name
+                         description:(NSString *)description
                         previewImoji:(IMImojiObject *)previewImoji
-                        previewImojis:(NSArray *)previewImojis
-                            priority:(NSUInteger)priority
-                               title:(NSString *)title
-                              artist:(IMArtistObject *)artist;
+                              packId:(NSString *)packId
+                             packURL:(NSString *)packURL;
 
 @end

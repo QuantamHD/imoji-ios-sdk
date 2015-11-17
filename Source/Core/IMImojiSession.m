@@ -34,6 +34,8 @@
 #import "BFTask+Utils.h"
 #import "IMMutableImojiSessionStoragePolicy.h"
 #import "IMImojiSession+Private.h"
+#import "IMArtistObject.h"
+#import "IMMutableArtistObject.h"
 
 NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
 
@@ -130,17 +132,43 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
             if (callback) {
                 __block NSUInteger order = 0;
 
-                NSMutableArray *imojiCategories = [NSMutableArray arrayWithCapacity:categories.count];
+                if([categories isEqual:[NSNull null]]) {
+                    callback(nil, nil);
+                } else {
+                    NSMutableArray *imojiCategories = [NSMutableArray arrayWithCapacity:categories.count];
 
-                for (NSDictionary *dictionary in categories) {
-                    [imojiCategories addObject:[IMMutableCategoryObject objectWithIdentifier:[dictionary im_checkedStringForKey:@"searchText"]
-                                                                                       order:order++
-                                                                                previewImoji:[self readImojiObject:dictionary]
-                                                                                    priority:[dictionary im_checkedNumberForKey:@"priority" defaultValue:@0].unsignedIntegerValue
-                                                                                       title:[dictionary im_checkedStringForKey:@"title"]]];
+                    for (NSDictionary *dictionary in categories) {
+                        NSDictionary *artistDictionary = dictionary[@"artist"];
+                        IMMutableArtistObject *artist = nil;
+                        if(![artistDictionary isEqual:[NSNull null]]) {
+                            artist = [IMMutableArtistObject artistWithIdentifier:[artistDictionary im_checkedStringForKey:@"id"]
+                                                                            name:[artistDictionary im_checkedStringForKey:@"name"]
+                                                                     description:[artistDictionary im_checkedStringForKey:@"description"]
+                                                                    previewImoji:[self readImojiObject:artistDictionary]
+                                                                          packId:[artistDictionary im_checkedStringForKey:@"packId"]
+                                                                         packURL:[artistDictionary im_checkedStringForKey:@"packURL"]];
+                        }
+
+                        NSArray *imojisDictionary = [dictionary im_checkedArrayForKey:@"imojis"];
+                        NSMutableArray *previewImojis = nil;
+                        if(imojisDictionary) {
+                            previewImojis = [[NSMutableArray alloc] init];
+                            for(NSDictionary *imojiDictionary in imojisDictionary) {
+                                [previewImojis addObject:[self readImojiObject:imojiDictionary]];
+                            }
+                        }
+
+                        [imojiCategories addObject:[IMMutableCategoryObject objectWithIdentifier:[dictionary im_checkedStringForKey:@"searchText"]
+                                                                                           order:order++
+                                                                                    previewImoji:[self readImojiObject:dictionary]
+                                                                                    previewImojis:previewImojis
+                                                                                        priority:[dictionary im_checkedNumberForKey:@"priority" defaultValue:@0].unsignedIntegerValue
+                                                                                           title:[dictionary im_checkedStringForKey:@"title"]
+                                                                                          artist:artist]];
+                    }
+
+                    callback(imojiCategories, nil);
                 }
-
-                callback(imojiCategories, nil);
             }
         }
 
