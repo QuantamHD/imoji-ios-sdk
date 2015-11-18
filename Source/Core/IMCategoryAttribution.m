@@ -1,7 +1,7 @@
 //
 //  ImojiSDK
 //
-//  Created by Nima Khoshini
+//  Created by Alex Hoang
 //  Copyright (C) 2015 Imoji
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,27 +23,21 @@
 //  IN THE SOFTWARE.
 //
 
-#import "IMImojiCategoryObject.h"
-#import "IMImojiObject.h"
+#import "IMCategoryAttribution.h"
 #import "IMArtist.h"
 
-NSUInteger const IMImojiObjectPriorityFeatured = 1;
-NSUInteger const IMImojiObjectPriorityNormal = 2;
-
-@implementation IMImojiCategoryObject {
-
-}
+@implementation IMCategoryAttribution
 
 - (BOOL)isEqual:(id)other {
     if (other == self)
         return YES;
     if (!other || ![[other class] isEqual:[self class]])
         return NO;
-
+    
     return [self isEqualToObject:other];
 }
 
-- (BOOL)isEqualToObject:(IMImojiCategoryObject *)object {
+- (BOOL)isEqualToObject:(IMCategoryAttribution *)object {
     if (self == object)
         return YES;
     if (object == nil)
@@ -55,14 +49,6 @@ NSUInteger const IMImojiObjectPriorityNormal = 2;
 
 - (NSUInteger)hash {
     return [self.identifier hash];
-}
-
-
-- (NSString *)description {
-    NSMutableString *description = [NSMutableString stringWithFormat:@"<%@: ", NSStringFromClass([self class])];
-    [description appendFormat:@"self.identifier=%@", self.identifier];
-    [description appendString:@">"];
-    return description;
 }
 
 @end

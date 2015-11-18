@@ -1,7 +1,7 @@
 //
 //  ImojiSDK
 //
-//  Created by Nima Khoshini
+//  Created by Alex Hoang
 //  Copyright (C) 2015 Imoji
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,46 +23,14 @@
 //  IN THE SOFTWARE.
 //
 
-#import "IMImojiCategoryObject.h"
-#import "IMImojiObject.h"
-#import "IMArtist.h"
+#import <Foundation/Foundation.h>
 
-NSUInteger const IMImojiObjectPriorityFeatured = 1;
-NSUInteger const IMImojiObjectPriorityNormal = 2;
+@class IMArtist;
 
-@implementation IMImojiCategoryObject {
+@interface IMCategoryAttribution : NSObject
 
-}
-
-- (BOOL)isEqual:(id)other {
-    if (other == self)
-        return YES;
-    if (!other || ![[other class] isEqual:[self class]])
-        return NO;
-
-    return [self isEqualToObject:other];
-}
-
-- (BOOL)isEqualToObject:(IMImojiCategoryObject *)object {
-    if (self == object)
-        return YES;
-    if (object == nil)
-        return NO;
-    if (self.identifier != object.identifier && ![self.identifier isEqualToString:object.identifier])
-        return NO;
-    return YES;
-}
-
-- (NSUInteger)hash {
-    return [self.identifier hash];
-}
-
-
-- (NSString *)description {
-    NSMutableString *description = [NSMutableString stringWithFormat:@"<%@: ", NSStringFromClass([self class])];
-    [description appendFormat:@"self.identifier=%@", self.identifier];
-    [description appendString:@">"];
-    return description;
-}
+@property(nonatomic, strong, readonly, nonnull) NSString *identifier;
+@property(nonatomic, strong, readonly, nonnull) IMArtist *artist;
+@property(nonatomic, strong, readonly, nonnull) NSURL *URL;
 
 @end

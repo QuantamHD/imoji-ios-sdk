@@ -26,6 +26,8 @@
 #import <Foundation/Foundation.h>
 
 @class IMImojiObject;
+@class IMArtist;
+@class IMCategoryAttribution;
 
 extern NSUInteger const IMImojiObjectPriorityFeatured;
 extern NSUInteger const IMImojiObjectPriorityDefault;
@@ -50,6 +52,8 @@ extern NSUInteger const IMImojiObjectPriorityDefault;
 */
 @property(nonatomic, strong, readonly, nonnull) IMImojiObject *previewImoji;
 
+@property(nonatomic, strong, readonly, nullable) NSArray *previewImojis;
+
 /**
 * @abstract The order of importance to display the category starting from 0
 */
@@ -62,5 +66,11 @@ extern NSUInteger const IMImojiObjectPriorityDefault;
 * priority (ex: current events)
 */
 @property(nonatomic, readonly) NSUInteger priority;
+
+/**
+* @abstract The attribution details associated with the category. This field can be nullable when the category
+* does not contain artist content
+*/
+@property(nonatomic, strong, readonly, nullable) IMCategoryAttribution *attribution;
 
 @end

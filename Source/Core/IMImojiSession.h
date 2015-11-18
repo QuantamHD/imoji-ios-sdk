@@ -115,6 +115,12 @@ typedef NS_ENUM(NSUInteger, IMImojiSessionCategoryClassification) {
             IMImojiSessionCategoryClassificationGeneric,
 
     /**
+    * @abstract Allows for the caller to obtain all categories containing artist content
+    */
+
+            IMImojiSessionCategoryClassificationArtist,
+
+    /**
      * @abstract Allows for the caller to obtain all categories.
      */
             IMImojiSessionCategoryClassificationNone
