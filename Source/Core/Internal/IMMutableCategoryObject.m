@@ -38,7 +38,6 @@
                      previewImojis:(NSArray *)previewImojis
                           priority:(NSUInteger)priority
                              title:(NSString *)title
-                            artist:(IMArtist *)artist
                        attribution:(IMCategoryAttribution *)attribution {
     self = [super init];
     if (self) {
@@ -48,7 +47,6 @@
         _previewImojis = previewImojis;
         _priority = priority;
         _title = title;
-        _artist = artist;
         _attribution = attribution;
     }
 
@@ -79,10 +77,6 @@
     return _title;
 }
 
-- (IMArtist *)artist {
-    return _artist;
-}
-
 - (IMCategoryAttribution *)attribution {
     return _attribution;
 }
@@ -93,7 +87,6 @@
                        previewImojis:(NSArray *)previewImojis
                             priority:(NSUInteger)priority
                                title:(NSString *)title
-                              artist:(IMArtist *)artist
                          attribution:(IMCategoryAttribution *)attribution {
     return [[self alloc] initWithIdentifier:identifier
                                       order:order
@@ -101,7 +94,6 @@
                               previewImojis:previewImojis
                                    priority:priority
                                       title:title
-                                     artist:artist
                                 attribution:attribution];
 }
 

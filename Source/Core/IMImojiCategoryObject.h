@@ -67,7 +67,10 @@ extern NSUInteger const IMImojiObjectPriorityDefault;
 */
 @property(nonatomic, readonly) NSUInteger priority;
 
-@property(nonatomic, strong, readonly, nullable) IMArtist *artist;
+/**
+* @abstract The attribution details associated with the category. This field can be nullable when the category
+* does not contain artist content
+*/
 @property(nonatomic, strong, readonly, nullable) IMCategoryAttribution *attribution;
 
 @end

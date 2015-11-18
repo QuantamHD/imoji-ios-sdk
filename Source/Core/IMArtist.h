@@ -30,7 +30,8 @@
 @interface IMArtist : NSObject
 
 @property(nonatomic, strong, readonly, nonnull) NSString *identifier;
-@property(nonatomic, strong, readonly, nullable) NSString *name;
+@property(nonatomic, strong, readonly, nonnull) NSString *name;
+@property(nonatomic, strong, readonly, nonnull) NSString *summary;
 @property(nonatomic, strong, readonly, nullable) IMImojiObject *previewImoji;
 
 @end

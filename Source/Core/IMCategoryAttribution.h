@@ -25,9 +25,12 @@
 
 #import <Foundation/Foundation.h>
 
+@class IMArtist;
+
 @interface IMCategoryAttribution : NSObject
 
 @property(nonatomic, strong, readonly, nonnull) NSString *identifier;
-@property(nonatomic, strong, readonly, nullable) NSString *URL;
+@property(nonatomic, strong, readonly, nonnull) IMArtist *artist;
+@property(nonatomic, strong, readonly, nonnull) NSURL *URL;
 
 @end

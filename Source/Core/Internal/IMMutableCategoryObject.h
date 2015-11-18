@@ -39,7 +39,6 @@
     NSArray *_previewImojis;
     NSUInteger _order;
     NSUInteger _priority;
-    IMArtist *_artist;
     IMCategoryAttribution *_attribution;
 }
 
@@ -49,7 +48,6 @@
                        previewImojis:(NSArray *)previewImojis
                             priority:(NSUInteger)priority
                                title:(NSString *)title
-                              artist:(IMArtist *)artist
                          attribution:(IMCategoryAttribution *)attribution;
 
 @end

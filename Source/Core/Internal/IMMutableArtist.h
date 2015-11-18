@@ -29,15 +29,15 @@
 
 @interface IMMutableArtist : IMArtist {
 @private
-    NSString * _identifier;
-    NSString * _name;
-    NSString * _description;
-    IMImojiObject * _previewImoji;
+    NSString *_identifier;
+    NSString *_name;
+    NSString *_summary;
+    IMImojiObject *_previewImoji;
 }
 
 + (instancetype)artistWithIdentifier:(NSString *)identifier
                                 name:(NSString *)name
-                         description:(NSString *)description
+                             summary:(NSString *)summary
                         previewImoji:(IMImojiObject *)previewImoji;
 
 @end

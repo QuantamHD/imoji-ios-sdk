@@ -30,10 +30,12 @@
 @interface IMMutableCategoryAttribution : IMCategoryAttribution {
 @private
     NSString *_identifier;
-    NSString *_URL;
+    IMArtist *_artist;
+    NSURL *_URL;
 }
 
 + (instancetype)attributionWithIdentifier:(NSString *)identifier
-                                      URL:(NSString *)URL;
+                                   artist:(IMArtist *)artist
+                                      URL:(NSURL *)URL;
 
 @end

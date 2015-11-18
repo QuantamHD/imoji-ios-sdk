@@ -27,10 +27,11 @@
 
 @implementation IMMutableCategoryAttribution
 
-- (instancetype)initWWithIdentifier:(NSString *)identifier URL:(NSString *)URL {
+- (instancetype)initWWithIdentifier:(NSString *)identifier artist:(IMArtist *)artist URL:(NSURL *)URL {
     self = [super init];
     if (self) {
         _identifier = identifier;
+        _artist = artist;
         _URL = URL;
     }
 
@@ -41,13 +42,18 @@
     return _identifier;
 }
 
-- (NSString *)URL {
+- (IMArtist *)artist {
+    return _artist;
+}
+
+- (NSURL *)URL {
     return _URL;
 }
 
 + (instancetype)attributionWithIdentifier:(NSString *)identifier
-                                      URL:(NSString *)URL {
-    return [[IMMutableCategoryAttribution alloc] initWWithIdentifier:identifier URL:URL];
+                                   artist:(IMArtist *)artist
+                                      URL:(NSURL *)URL {
+    return [[IMMutableCategoryAttribution alloc] initWWithIdentifier:identifier artist:artist URL:URL];
 }
 
 @end

@@ -24,6 +24,7 @@
 //
 
 #import "IMCategoryAttribution.h"
+#import "IMArtist.h"
 
 @implementation IMCategoryAttribution
 

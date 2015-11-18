@@ -140,16 +140,14 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
 
                     for (NSDictionary *dictionary in categories) {
                         NSDictionary *artistDictionary = dictionary[@"artist"];
-                        IMMutableArtist *artist = nil;
                         IMMutableCategoryAttribution *attribution = nil;
-                        if(![artistDictionary isEqual:[NSNull null]]) {
-                            artist = [IMMutableArtist artistWithIdentifier:[artistDictionary im_checkedStringForKey:@"id"]
-                                                                      name:[artistDictionary im_checkedStringForKey:@"name"]
-                                                               description:[artistDictionary im_checkedStringForKey:@"description"]
-                                                              previewImoji:[self readImojiObject:artistDictionary]];
-
+                        if (![artistDictionary isEqual:[NSNull null]]) {
                             attribution = [IMMutableCategoryAttribution attributionWithIdentifier:[artistDictionary im_checkedStringForKey:@"packId"]
-                                                                                                      URL:[artistDictionary im_checkedStringForKey:@"packURL"]];
+                                                                                           artist:[IMMutableArtist artistWithIdentifier:[artistDictionary im_checkedStringForKey:@"id"]
+                                                                                                                                   name:[artistDictionary im_checkedStringForKey:@"name"]
+                                                                                                                                summary:[artistDictionary im_checkedStringForKey:@"description"]
+                                                                                                                           previewImoji:[self readImojiObject:artistDictionary]]
+                                                                                              URL:[[NSURL alloc] initWithString:[artistDictionary im_checkedStringForKey:@"packURL"]]];
                         }
 
                         NSArray *imojisDictionary = [dictionary im_checkedArrayForKey:@"imojis"];
@@ -167,7 +165,6 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
                                                                                    previewImojis:previewImojis
                                                                                         priority:[dictionary im_checkedNumberForKey:@"priority" defaultValue:@0].unsignedIntegerValue
                                                                                            title:[dictionary im_checkedStringForKey:@"title"]
-                                                                                          artist:artist
                                                                                      attribution:attribution]];
                     }
 

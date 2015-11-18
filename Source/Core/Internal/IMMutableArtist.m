@@ -32,13 +32,13 @@
 
 - (instancetype)initWWithIdentifier:(NSString *)identifier
                                name:(NSString *)name
-                        description:(NSString *)description
+                            summary:(NSString *)summary
                        previewImoji:(IMImojiObject *)previewImoji {
     self = [super init];
     if (self) {
         _identifier = identifier;
         _name = name;
-        _description = description;
+        _summary = summary;
         _previewImoji = previewImoji;
     }
 
@@ -53,8 +53,8 @@
     return _name;
 }
 
-- (NSString *)description {
-    return _description;
+- (NSString *)summary {
+    return _summary;
 }
 
 - (IMImojiObject *)previewImoji {
@@ -63,11 +63,11 @@
 
 + (instancetype)artistWithIdentifier:(NSString *)identifier
                                 name:(NSString *)name
-                         description:(NSString *)description
+                             summary:(NSString *)summary
                         previewImoji:(IMImojiObject *)previewImoji {
     return [[IMMutableArtist alloc] initWWithIdentifier:identifier
                                                    name:name
-                                            description:description
+                                                summary:summary
                                            previewImoji:previewImoji];
 }
 
