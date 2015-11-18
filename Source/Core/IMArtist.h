@@ -27,12 +27,10 @@
 
 @class IMImojiObject;
 
-@interface IMArtistObject : NSObject
+@interface IMArtist : NSObject
 
-@property(nonatomic, strong, readonly) NSString *identifier;
-@property(nonatomic, strong, readonly) NSString *name;
-@property(nonatomic, strong, readonly) IMImojiObject *previewImoji;
-@property(nonatomic, strong, readonly) NSString *packId;
-@property(nonatomic, strong, readonly) NSString *packURL;
+@property(nonatomic, strong, readonly, nonnull) NSString *identifier;
+@property(nonatomic, strong, readonly, nullable) NSString *name;
+@property(nonatomic, strong, readonly, nullable) IMImojiObject *previewImoji;
 
 @end

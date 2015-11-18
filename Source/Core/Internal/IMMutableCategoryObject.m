@@ -25,7 +25,8 @@
 
 #import "IMMutableCategoryObject.h"
 #import "IMImojiObject.h"
-#import "IMArtistObject.h"
+#import "IMArtist.h"
+#import "IMCategoryAttribution.h"
 
 
 @implementation IMMutableCategoryObject {
@@ -37,7 +38,8 @@
                      previewImojis:(NSArray *)previewImojis
                           priority:(NSUInteger)priority
                              title:(NSString *)title
-                            artist:(IMArtistObject *)artist {
+                            artist:(IMArtist *)artist
+                       attribution:(IMCategoryAttribution *)attribution {
     self = [super init];
     if (self) {
         _identifier = identifier;
@@ -47,6 +49,7 @@
         _priority = priority;
         _title = title;
         _artist = artist;
+        _attribution = attribution;
     }
 
     return self;
@@ -76,8 +79,12 @@
     return _title;
 }
 
-- (IMArtistObject *)artist {
+- (IMArtist *)artist {
     return _artist;
+}
+
+- (IMCategoryAttribution *)attribution {
+    return _attribution;
 }
 
 + (instancetype)objectWithIdentifier:(NSString *)identifier
@@ -86,8 +93,16 @@
                        previewImojis:(NSArray *)previewImojis
                             priority:(NSUInteger)priority
                                title:(NSString *)title
-                              artist:(IMArtistObject *)artist {
-    return [[self alloc] initWithIdentifier:identifier order:order previewImoji:previewImoji previewImojis:previewImojis priority:priority title:title artist:artist];
+                              artist:(IMArtist *)artist
+                         attribution:(IMCategoryAttribution *)attribution {
+    return [[self alloc] initWithIdentifier:identifier
+                                      order:order
+                               previewImoji:previewImoji
+                              previewImojis:previewImojis
+                                   priority:priority
+                                      title:title
+                                     artist:artist
+                                attribution:attribution];
 }
 
 @end

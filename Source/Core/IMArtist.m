@@ -1,5 +1,5 @@
 //
-//  ImojiSDKUI
+//  ImojiSDK
 //
 //  Created by Alex Hoang
 //  Copyright (C) 2015 Imoji
@@ -23,25 +23,35 @@
 //  IN THE SOFTWARE.
 //
 
-#import <Foundation/Foundation.h>
-#import "IMArtistObject.h"
+#import "IMArtist.h"
+#import "IMImojiObject.h"
 
 
-@interface IMMutableArtistObject : IMArtistObject {
-@private
-    NSString * _identifier;
-    NSString * _name;
-    NSString * _description;
-    IMImojiObject * _previewImoji;
-    NSString * _packId;
-    NSString * _packURL;
+@implementation IMArtist {
+
 }
 
-+ (instancetype)artistWithIdentifier:(NSString *)identifier
-                                name:(NSString *)name
-                         description:(NSString *)description
-                        previewImoji:(IMImojiObject *)previewImoji
-                              packId:(NSString *)packId
-                             packURL:(NSString *)packURL;
+- (BOOL)isEqual:(id)other {
+    if (other == self)
+        return YES;
+    if (!other || ![[other class] isEqual:[self class]])
+        return NO;
+
+    return [self isEqualToObject:other];
+}
+
+- (BOOL)isEqualToObject:(IMArtist *)object {
+    if (self == object)
+        return YES;
+    if (object == nil)
+        return NO;
+    if (self.identifier != object.identifier && ![self.identifier isEqualToString:object.identifier])
+        return NO;
+    return YES;
+}
+
+- (NSUInteger)hash {
+    return [self.identifier hash];
+}
 
 @end

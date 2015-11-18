@@ -34,8 +34,9 @@
 #import "BFTask+Utils.h"
 #import "IMMutableImojiSessionStoragePolicy.h"
 #import "IMImojiSession+Private.h"
-#import "IMArtistObject.h"
-#import "IMMutableArtistObject.h"
+#import "IMArtist.h"
+#import "IMMutableArtist.h"
+#import "IMMutableCategoryAttribution.h"
 
 NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
 
@@ -139,14 +140,16 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
 
                     for (NSDictionary *dictionary in categories) {
                         NSDictionary *artistDictionary = dictionary[@"artist"];
-                        IMMutableArtistObject *artist = nil;
+                        IMMutableArtist *artist = nil;
+                        IMMutableCategoryAttribution *attribution = nil;
                         if(![artistDictionary isEqual:[NSNull null]]) {
-                            artist = [IMMutableArtistObject artistWithIdentifier:[artistDictionary im_checkedStringForKey:@"id"]
-                                                                            name:[artistDictionary im_checkedStringForKey:@"name"]
-                                                                     description:[artistDictionary im_checkedStringForKey:@"description"]
-                                                                    previewImoji:[self readImojiObject:artistDictionary]
-                                                                          packId:[artistDictionary im_checkedStringForKey:@"packId"]
-                                                                         packURL:[artistDictionary im_checkedStringForKey:@"packURL"]];
+                            artist = [IMMutableArtist artistWithIdentifier:[artistDictionary im_checkedStringForKey:@"id"]
+                                                                      name:[artistDictionary im_checkedStringForKey:@"name"]
+                                                               description:[artistDictionary im_checkedStringForKey:@"description"]
+                                                              previewImoji:[self readImojiObject:artistDictionary]];
+
+                            attribution = [IMMutableCategoryAttribution attributionWithIdentifier:[artistDictionary im_checkedStringForKey:@"packId"]
+                                                                                                      URL:[artistDictionary im_checkedStringForKey:@"packURL"]];
                         }
 
                         NSArray *imojisDictionary = [dictionary im_checkedArrayForKey:@"imojis"];
@@ -161,10 +164,11 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
                         [imojiCategories addObject:[IMMutableCategoryObject objectWithIdentifier:[dictionary im_checkedStringForKey:@"searchText"]
                                                                                            order:order++
                                                                                     previewImoji:[self readImojiObject:dictionary]
-                                                                                    previewImojis:previewImojis
+                                                                                   previewImojis:previewImojis
                                                                                         priority:[dictionary im_checkedNumberForKey:@"priority" defaultValue:@0].unsignedIntegerValue
                                                                                            title:[dictionary im_checkedStringForKey:@"title"]
-                                                                                          artist:artist]];
+                                                                                          artist:artist
+                                                                                     attribution:attribution]];
                     }
 
                     callback(imojiCategories, nil);

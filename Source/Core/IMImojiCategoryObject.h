@@ -26,7 +26,8 @@
 #import <Foundation/Foundation.h>
 
 @class IMImojiObject;
-@class IMArtistObject;
+@class IMArtist;
+@class IMCategoryAttribution;
 
 extern NSUInteger const IMImojiObjectPriorityFeatured;
 extern NSUInteger const IMImojiObjectPriorityDefault;
@@ -66,6 +67,7 @@ extern NSUInteger const IMImojiObjectPriorityDefault;
 */
 @property(nonatomic, readonly) NSUInteger priority;
 
-@property(nonatomic, strong, readonly, nullable) IMArtistObject *artist;
+@property(nonatomic, strong, readonly, nullable) IMArtist *artist;
+@property(nonatomic, strong, readonly, nullable) IMCategoryAttribution *attribution;
 
 @end

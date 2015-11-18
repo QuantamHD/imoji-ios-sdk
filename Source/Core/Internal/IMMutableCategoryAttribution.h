@@ -1,7 +1,7 @@
 //
 //  ImojiSDK
 //
-//  Created by Nima Khoshini
+//  Created by Alex Hoang
 //  Copyright (C) 2015 Imoji
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,31 +25,15 @@
 
 #import <Foundation/Foundation.h>
 #import "IMImojiCategoryObject.h"
+#import "IMCategoryAttribution.h"
 
-@class IMImojiObject;
-@class IMArtist;
-@class IMCategoryAttribution;
-
-
-@interface IMMutableCategoryObject : IMImojiCategoryObject {
+@interface IMMutableCategoryAttribution : IMCategoryAttribution {
 @private
     NSString *_identifier;
-    NSString *_title;
-    IMImojiObject *_previewImoji;
-    NSArray *_previewImojis;
-    NSUInteger _order;
-    NSUInteger _priority;
-    IMArtist *_artist;
-    IMCategoryAttribution *_attribution;
+    NSString *_URL;
 }
 
-+ (instancetype)objectWithIdentifier:(NSString *)identifier
-                               order:(NSUInteger)order
-                        previewImoji:(IMImojiObject *)previewImoji
-                       previewImojis:(NSArray *)previewImojis
-                            priority:(NSUInteger)priority
-                               title:(NSString *)title
-                              artist:(IMArtist *)artist
-                         attribution:(IMCategoryAttribution *)attribution;
++ (instancetype)attributionWithIdentifier:(NSString *)identifier
+                                      URL:(NSString *)URL;
 
 @end

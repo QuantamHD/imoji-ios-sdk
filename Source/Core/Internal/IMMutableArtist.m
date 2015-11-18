@@ -23,27 +23,23 @@
 //  IN THE SOFTWARE.
 //
 
-#import "IMMutableArtistObject.h"
+#import "IMMutableArtist.h"
 
 
-@implementation IMMutableArtistObject {
+@implementation IMMutableArtist {
 
 }
 
 - (instancetype)initWWithIdentifier:(NSString *)identifier
                                name:(NSString *)name
                         description:(NSString *)description
-                       previewImoji:(IMImojiObject *)previewImoji
-                             packId:(NSString *)packId
-                            packURL:(NSString *)packURL {
+                       previewImoji:(IMImojiObject *)previewImoji {
     self = [super init];
     if (self) {
         _identifier = identifier;
         _name = name;
         _description = description;
         _previewImoji = previewImoji;
-        _packId = packId;
-        _packURL = packURL;
     }
 
     return self;
@@ -65,26 +61,14 @@
     return _previewImoji;
 }
 
-- (NSString *)packId {
-    return _packId;
-}
-
-- (NSString *)packURL {
-    return _packURL;
-}
-
 + (instancetype)artistWithIdentifier:(NSString *)identifier
-                                        name:(NSString *)name
-                                 description:(NSString *)description
-                                previewImoji:(IMImojiObject *)previewImoji
-                                      packId:(NSString *)packId
-                                     packURL:(NSString *)packURL {
-    return [[IMMutableArtistObject alloc] initWWithIdentifier:identifier
-                                                         name:name
-                                                  description:description
-                                                 previewImoji:previewImoji
-                                                       packId:packId
-                                                      packURL:packURL];
+                                name:(NSString *)name
+                         description:(NSString *)description
+                        previewImoji:(IMImojiObject *)previewImoji {
+    return [[IMMutableArtist alloc] initWWithIdentifier:identifier
+                                                   name:name
+                                            description:description
+                                           previewImoji:previewImoji];
 }
 
 @end

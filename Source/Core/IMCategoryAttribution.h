@@ -23,35 +23,11 @@
 //  IN THE SOFTWARE.
 //
 
-#import "IMArtistObject.h"
-#import "IMImojiObject.h"
+#import <Foundation/Foundation.h>
 
+@interface IMCategoryAttribution : NSObject
 
-@implementation IMArtistObject {
-
-}
-
-- (BOOL)isEqual:(id)other {
-    if (other == self)
-        return YES;
-    if (!other || ![[other class] isEqual:[self class]])
-        return NO;
-
-    return [self isEqualToObject:other];
-}
-
-- (BOOL)isEqualToObject:(IMArtistObject *)object {
-    if (self == object)
-        return YES;
-    if (object == nil)
-        return NO;
-    if (self.identifier != object.identifier && ![self.identifier isEqualToString:object.identifier])
-        return NO;
-    return YES;
-}
-
-- (NSUInteger)hash {
-    return [self.identifier hash];
-}
+@property(nonatomic, strong, readonly, nonnull) NSString *identifier;
+@property(nonatomic, strong, readonly, nullable) NSString *URL;
 
 @end
