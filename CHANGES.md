@@ -1,5 +1,9 @@
 # Imoji SDK Changes
 
+### Version 0.2.19
+
+* Adds artist categories to the Imoji SDK!
+
 ### Version 0.2.18
 
 * Updates Imoji creation to trigger a callback when the image has begun uploading and once it has completed uploading. A local only version is created when first triggering the upload and is replaced by the persistent one when uppload completes.
