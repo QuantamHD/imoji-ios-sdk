@@ -1,8 +1,9 @@
 # Imoji SDK Changes
 
-### Version 0.2.19
+### Version 2.0.0
 
-* Adds artist categories to the Imoji SDK!
+* Adds artist categories to the Imoji SDK! Artist categories can be fetched by sending over IMImojiSessionCategoryClassificationArtist to category fetches. Proper attribution for artist content should be displayed when displaying (see examples in the ImojiSDKUI pod).
+* Use proper semantic versioning for ImojiSDK and ImojiSDKUI
 
 ### Version 0.2.18
 
