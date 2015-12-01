@@ -23,6 +23,7 @@ NSString *const IMImojiSessionFileAccessTokenKey = @"at";
 NSString *const IMImojiSessionFileRefreshTokenKey = @"rt";
 NSString *const IMImojiSessionFileExpirationKey = @"ex";
 NSString *const IMImojiSessionFileUserSynchronizedKey = @"sy";
+NSString *const IMImojiSessionFileClientIdKey = @"ci";
 NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
 
 @implementation IMImojiSession (Private)
@@ -34,6 +35,7 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
     [IMImojiSession credentials].refreshToken = authenticationInfo[IMImojiSessionFileRefreshTokenKey];
     [IMImojiSession credentials].expirationDate = [NSDate dateWithTimeIntervalSince1970:((NSNumber *) authenticationInfo[IMImojiSessionFileExpirationKey]).doubleValue];
     [IMImojiSession credentials].accountSynchronized = authenticationInfo[IMImojiSessionFileUserSynchronizedKey] && ((NSNumber *) authenticationInfo[IMImojiSessionFileUserSynchronizedKey]).boolValue;
+    [IMImojiSession credentials].clientId = authenticationInfo[IMImojiSessionFileClientIdKey];
 
     [self updateImojiState:[IMImojiSession credentials].accountSynchronized ? IMImojiSessionStateConnectedSynchronized : IMImojiSessionStateConnected];
 }
@@ -64,6 +66,7 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
     authenticationInfo[IMImojiSessionFileRefreshTokenKey] = [IMImojiSession credentials].refreshToken;
     authenticationInfo[IMImojiSessionFileExpirationKey] = @([IMImojiSession credentials].expirationDate.timeIntervalSince1970);
     authenticationInfo[IMImojiSessionFileUserSynchronizedKey] = @([IMImojiSession credentials].accountSynchronized);
+    authenticationInfo[IMImojiSessionFileClientIdKey] = [IMImojiSession credentials].clientId;
 
     return [BFTask im_serialBackgroundTaskWithBlock:^id(BFTask *task) {
         NSError *error;
@@ -77,15 +80,6 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
 
         NSString *sessionFile = self.sessionFilePath;
         [jsonData writeToFile:sessionFile options:NSDataWritingAtomic error:&error];
-
-        if (error) {
-            return nil;
-        }
-
-        NSURL *pathUrl = [NSURL fileURLWithPath:sessionFile];
-        [pathUrl setResourceValue:@YES
-                           forKey:NSURLIsExcludedFromBackupKey
-                            error:&error];
 
         if (error) {
             return nil;
@@ -328,65 +322,72 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
                             if ([postTask.result isKindOfClass:[NSDictionary class]]) {
                                 NSDictionary *results = postTask.result;
 
+                                [IMImojiSession credentials].clientId = [ImojiSDK sharedInstance].clientId.UUIDString;
                                 [IMImojiSession credentials].accessToken = results[@"access_token"];
                                 [IMImojiSession credentials].refreshToken = results[@"refresh_token"];
                                 [IMImojiSession credentials].expirationDate = [NSDate dateWithTimeIntervalSinceNow:((NSNumber *) results[@"expires_in"]).integerValue];
 
+                                [self writeAuthenticationCredentials];
                                 [self updateImojiState:[IMImojiSession credentials].accountSynchronized ? IMImojiSessionStateConnectedSynchronized : IMImojiSessionStateConnected];
                                 taskCompletionSource.result = [IMImojiSession credentials].accessToken;
 
                             } else {
-                                taskCompletionSource.error = [NSError errorWithDomain:IMImojiSessionErrorDomain
-                                                                                 code:IMImojiSessionErrorCodeServerError
-                                                                             userInfo:@{
-                                                                                     NSLocalizedDescriptionKey : [NSString stringWithFormat:@"Server error: %@", task.result]
-                                                                             }];
-
-                                [self updateImojiState:IMImojiSessionStateNotConnected];
+                                // get a new access token if the refresh token is invalid
+                                [self getNewAccessTokenWithCompletionSource:taskCompletionSource];
                             }
 
                             return nil;
                         }];
             } else {
-                taskCompletionSource.result = [IMImojiSession credentials].accessToken;
-                [self updateImojiState:[IMImojiSession credentials].accountSynchronized ? IMImojiSessionStateConnectedSynchronized : IMImojiSessionStateConnected];
+                // if the client id's changed, generate a new access token
+                if ([IMImojiSession credentials].clientId && ![[IMImojiSession credentials].clientId isEqualToString:[ImojiSDK sharedInstance].clientId.UUIDString]) {
+                    [self getNewAccessTokenWithCompletionSource:taskCompletionSource];
+                } else {
+                    taskCompletionSource.result = [IMImojiSession credentials].accessToken;
+                    [self updateImojiState:[IMImojiSession credentials].accountSynchronized ? IMImojiSessionStateConnectedSynchronized : IMImojiSessionStateConnected];
+                }
             }
         } else {
-            [[self runPostTaskWithPath:@"/oauth/token"
-                               headers:self.getOAuthBearerHeaders
-                         andParameters:@{@"grant_type" : @"client_credentials"}]
-                    continueWithBlock:^id(BFTask *postTask) {
-
-                        if ([postTask.result isKindOfClass:[NSDictionary class]]) {
-                            NSDictionary *results = postTask.result;
-
-                            [IMImojiSession credentials].accessToken = results[@"access_token"];
-                            [IMImojiSession credentials].refreshToken = results[@"refresh_token"];
-                            [IMImojiSession credentials].expirationDate = [NSDate dateWithTimeIntervalSinceNow:((NSNumber *) results[@"expires_in"]).integerValue];
-                            [IMImojiSession credentials].accountSynchronized = NO;
-
-                            [self writeAuthenticationCredentials];
-                            [self updateImojiState:IMImojiSessionStateConnected];
-
-                            taskCompletionSource.result = [IMImojiSession credentials].accessToken;
-                        } else {
-                            taskCompletionSource.error = [NSError errorWithDomain:IMImojiSessionErrorDomain
-                                                                             code:IMImojiSessionErrorCodeServerError
-                                                                         userInfo:@{
-                                                                                 NSLocalizedDescriptionKey : [NSString stringWithFormat:@"Server error: %@", postTask.error]
-                                                                         }];
-
-                            [self updateImojiState:IMImojiSessionStateNotConnected];
-                        }
-
-                        return nil;
-                    }];
+            [self getNewAccessTokenWithCompletionSource:taskCompletionSource];
         }
 
         return nil;
     }];
 
     return taskCompletionSource.task;
+}
+
+- (void)getNewAccessTokenWithCompletionSource:(BFTaskCompletionSource *)taskCompletionSource {
+    [[self runPostTaskWithPath:@"/oauth/token"
+                       headers:self.getOAuthBearerHeaders
+                 andParameters:@{@"grant_type" : @"client_credentials"}]
+            continueWithBlock:^id(BFTask *postTask) {
+
+                if ([postTask.result isKindOfClass:[NSDictionary class]]) {
+                    NSDictionary *results = postTask.result;
+
+                    [IMImojiSession credentials].accessToken = results[@"access_token"];
+                    [IMImojiSession credentials].refreshToken = results[@"refresh_token"];
+                    [IMImojiSession credentials].clientId = [ImojiSDK sharedInstance].clientId.UUIDString;
+                    [IMImojiSession credentials].expirationDate = [NSDate dateWithTimeIntervalSinceNow:((NSNumber *) results[@"expires_in"]).integerValue];
+                    [IMImojiSession credentials].accountSynchronized = NO;
+
+                    [self writeAuthenticationCredentials];
+                    [self updateImojiState:IMImojiSessionStateConnected];
+
+                    taskCompletionSource.result = [IMImojiSession credentials].accessToken;
+                } else {
+                    taskCompletionSource.error = [NSError errorWithDomain:IMImojiSessionErrorDomain
+                                                                     code:IMImojiSessionErrorCodeServerError
+                                                                 userInfo:@{
+                                                                         NSLocalizedDescriptionKey : [NSString stringWithFormat:@"Server error: %@", postTask.error]
+                                                                 }];
+
+                    [self updateImojiState:IMImojiSessionStateNotConnected];
+                }
+
+                return nil;
+            }];
 }
 
 

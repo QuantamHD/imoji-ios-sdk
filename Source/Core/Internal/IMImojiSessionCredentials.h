@@ -10,6 +10,7 @@
 @property(nonatomic, copy) NSString *accessToken;
 @property(nonatomic, copy) NSString *refreshToken;
 @property(nonatomic, copy) NSDate *expirationDate;
+@property(nonatomic, copy) NSString *clientId;
 @property(nonatomic) BOOL accountSynchronized;
 
 @end
