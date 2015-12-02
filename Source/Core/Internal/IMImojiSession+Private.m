@@ -560,6 +560,7 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
 }
 
 - (void)handleImojiFetchResponse:(NSArray *)imojiObjects
+              followUpSearchTerm:(NSString *)followUpSearchTerm
                 renderingOptions:(IMImojiObjectRenderingOptions *)renderingOptions
                cancellationToken:(NSOperation *)cancellationToken
           searchResponseCallback:(IMImojiSessionResultSetResponseCallback)searchResponseCallback
@@ -569,7 +570,7 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
     }
 
     if (searchResponseCallback) {
-        searchResponseCallback(@(imojiObjects.count), nil);
+        searchResponseCallback(@(imojiObjects.count), followUpSearchTerm, nil);
     }
 
     for (IMMutableImojiObject *imoji in imojiObjects) {

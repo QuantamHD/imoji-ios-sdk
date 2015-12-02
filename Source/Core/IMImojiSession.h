@@ -131,7 +131,7 @@ typedef NS_ENUM(NSUInteger, IMImojiSessionCategoryClassification) {
 * @param resultCount Number of results returned by the server. This can never be nil.
 * @param error An error with code equal to an IMImojiSessionErrorCode value or nil if the request succeeded
 */
-typedef void (^IMImojiSessionResultSetResponseCallback)(NSNumber *__nullable resultCount, NSError *__nullable error);
+typedef void (^IMImojiSessionResultSetResponseCallback)(NSNumber *__nullable resultCount, NSString *__nullable followUpSearchTerm, NSError *__nullable error);
 
 /**
 * @abstract Callback used for generic asynchronous requests

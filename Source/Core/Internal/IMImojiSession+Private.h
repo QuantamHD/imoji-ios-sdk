@@ -55,6 +55,7 @@
 - (NSArray *)convertServerDataSetToImojiArray:(NSDictionary *)serverResponse;
 
 - (void)handleImojiFetchResponse:(NSArray *)imojiObjects
+              followUpSearchTerm:(NSString *)followUpSearchTerm
                 renderingOptions:(IMImojiObjectRenderingOptions *)renderingOptions
                cancellationToken:(NSOperation *)cancellationToken
           searchResponseCallback:(IMImojiSessionResultSetResponseCallback)searchResponseCallback

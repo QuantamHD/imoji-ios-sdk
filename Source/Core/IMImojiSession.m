@@ -206,9 +206,10 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
         NSError *error;
         [self validateServerResponse:results error:&error];
         if (error) {
-            resultSetResponseCallback(nil, error);
+            resultSetResponseCallback(nil, nil, error);
         } else {
             [self handleImojiFetchResponse:[self convertServerDataSetToImojiArray:results]
+                        followUpSearchTerm:[results im_checkedStringForKey:@"followupSearchTerm"]
                           renderingOptions:self.fetchRenderingOptions
                          cancellationToken:cancellationToken
                     searchResponseCallback:resultSetResponseCallback
@@ -243,7 +244,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
         }
 
         if (getTask.error) {
-            resultSetResponseCallback(nil, getTask.error);
+            resultSetResponseCallback(nil, nil, getTask.error);
             return nil;
         }
 
@@ -252,9 +253,10 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
         [self validateServerResponse:results error:&error];
 
         if (error) {
-            resultSetResponseCallback(nil, error);
+            resultSetResponseCallback(nil, nil, error);
         } else {
             [self handleImojiFetchResponse:[self convertServerDataSetToImojiArray:results]
+                        followUpSearchTerm:[results im_checkedStringForKey:@"followupSearchTerm"]
                           renderingOptions:self.fetchRenderingOptions
                          cancellationToken:cancellationToken
                     searchResponseCallback:resultSetResponseCallback
@@ -314,6 +316,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
             NSMutableArray *imojiObjects = [NSMutableArray arrayWithArray:[self convertServerDataSetToImojiArray:results]];
 
             [self handleImojiFetchResponse:imojiObjects
+                        followUpSearchTerm:[results im_checkedStringForKey:@"followupSearchTerm"]
                           renderingOptions:self.fetchRenderingOptions
                          cancellationToken:cancellationToken
                     searchResponseCallback:nil
@@ -347,9 +350,10 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
         NSError *error;
         [self validateServerResponse:results error:&error];
         if (error) {
-            resultSetResponseCallback(nil, error);
+            resultSetResponseCallback(nil, nil, error);
         } else {
             [self handleImojiFetchResponse:[self convertServerDataSetToImojiArray:results]
+                        followUpSearchTerm:[results im_checkedStringForKey:@"followupSearchTerm"]
                           renderingOptions:self.fetchRenderingOptions
                          cancellationToken:cancellationToken
                     searchResponseCallback:resultSetResponseCallback
@@ -404,7 +408,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
     NSOperation *cancellationToken = self.cancellationTokenOperation;
 
     if (self.sessionState != IMImojiSessionStateConnectedSynchronized) {
-        resultSetResponseCallback(nil, [NSError errorWithDomain:IMImojiSessionErrorDomain
+        resultSetResponseCallback(nil, nil, [NSError errorWithDomain:IMImojiSessionErrorDomain
                                                            code:IMImojiSessionErrorCodeSessionNotSynchronized
                                                        userInfo:@{
                                                                NSLocalizedDescriptionKey : @"IMImojiSession has not been synchronized."
@@ -423,9 +427,10 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
         [self validateServerResponse:results error:&error];
 
         if (error) {
-            resultSetResponseCallback(nil, error);
+            resultSetResponseCallback(nil, nil, error);
         } else {
             [self handleImojiFetchResponse:[self convertServerDataSetToImojiArray:results]
+                        followUpSearchTerm:[results im_checkedStringForKey:@"followupSearchTerm"]
                           renderingOptions:self.fetchRenderingOptions
                          cancellationToken:cancellationToken
                     searchResponseCallback:resultSetResponseCallback
