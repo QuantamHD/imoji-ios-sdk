@@ -3,6 +3,7 @@
 ### Version 2.0.1
 
 * Ensure that access tokens get regenerated when fetching a refresh token fails or when the developer changes their client ID
+* Avoid using a local disk cache managed by the storage policy and use an NSURLCache instead
 
 ### Version 2.0.0
 
