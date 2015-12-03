@@ -108,18 +108,18 @@
 
 
 + (instancetype)optionsWithRenderSize:(IMImojiObjectRenderSize)renderSize {
-    return [[self alloc] initWithRenderSize:renderSize borderStyle:IMImojiObjectBorderStyleSticker imageFormat:IMImojiObjectImageFormatWebP];
+    return [[IMImojiObjectRenderingOptions alloc] initWithRenderSize:renderSize borderStyle:IMImojiObjectBorderStyleSticker imageFormat:IMImojiObjectImageFormatWebP];
 }
 
 + (instancetype)optionsWithRenderSize:(IMImojiObjectRenderSize)renderSize
                           borderStyle:(IMImojiObjectBorderStyle)borderStyle {
-    return [[self alloc] initWithRenderSize:renderSize borderStyle:borderStyle imageFormat:IMImojiObjectImageFormatWebP];
+    return [[IMImojiObjectRenderingOptions alloc] initWithRenderSize:renderSize borderStyle:borderStyle imageFormat:IMImojiObjectImageFormatWebP];
 }
 
 + (instancetype)optionsWithRenderSize:(IMImojiObjectRenderSize)renderSize
                           borderStyle:(IMImojiObjectBorderStyle)borderStyle
                           imageFormat:(IMImojiObjectImageFormat)imageFormat {
-    return [[self alloc] initWithRenderSize:renderSize borderStyle:borderStyle imageFormat:imageFormat];
+    return [[IMImojiObjectRenderingOptions alloc] initWithRenderSize:renderSize borderStyle:borderStyle imageFormat:imageFormat];
 }
 
 @end

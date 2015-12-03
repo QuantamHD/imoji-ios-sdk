@@ -25,7 +25,6 @@
 
 #import <Foundation/Foundation.h>
 
-@class BFTask;
 @class IMImojiObject;
 @class IMImojiObjectRenderingOptions;
 
