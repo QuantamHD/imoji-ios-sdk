@@ -24,7 +24,8 @@
 //
 
 #import "IMImojiSessionStoragePolicy.h"
-#import "IMMutableImojiSessionStoragePolicy.h"
+
+const NSUInteger IMImojiSessionStoragePolicyCacheSize = 5 * 1024 * 1024;
 
 @interface IMImojiSessionStoragePolicy ()
 @end
@@ -33,14 +34,58 @@
 
 }
 
-+ (instancetype)storagePolicyWithCachePath:(NSURL *__nonnull)cachePath persistentPath:(NSURL *__nonnull)persistentPath {
-    return [[IMMutableImojiSessionStoragePolicy alloc] initWithCachePath:cachePath
-                                                          persistentPath:persistentPath];
+- (instancetype)initWithCachePath:(NSURL *)cachePath persistentPath:(NSURL *)persistentPath {
+    self = [super init];
+    if (self) {
+        _cachePath = cachePath;
+        _persistentPath = persistentPath;
+
+        [self createDirectoriesIfNeeded];
+    }
+
+    return self;
+}
+
+- (void)createDirectoriesIfNeeded {
+    if (![[NSFileManager defaultManager] fileExistsAtPath:self.cachePath.path]) {
+        NSError *error;
+        [[NSFileManager defaultManager] createDirectoryAtPath:self.cachePath.path
+                                  withIntermediateDirectories:YES
+                                                   attributes:nil
+                                                        error:&error];
+    }
+
+    if (![[NSFileManager defaultManager] fileExistsAtPath:self.persistentPath.path]) {
+        NSError *error;
+        [[NSFileManager defaultManager] createDirectoryAtPath:self.persistentPath.path
+                                  withIntermediateDirectories:YES
+                                                   attributes:nil
+                                                        error:&error];
+    }
+
+}
+
+- (nonnull NSURLSessionConfiguration *)generateURLSessionConfiguration {
+    NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration ephemeralSessionConfiguration];
+    sessionConfiguration.HTTPMaximumConnectionsPerHost = 10;
+    sessionConfiguration.networkServiceType = NSURLNetworkServiceTypeDefault;
+    sessionConfiguration.URLCache = [[NSURLCache alloc] initWithMemoryCapacity:0
+                                                                  diskCapacity:IMImojiSessionStoragePolicyCacheSize
+                                                                      diskPath:self.cachePath.path];
+    sessionConfiguration.HTTPShouldUsePipelining = YES;
+    sessionConfiguration.requestCachePolicy = NSURLRequestUseProtocolCachePolicy;
+
+    return sessionConfiguration;
+}
+
++ (instancetype)storagePolicyWithCachePath:(nonnull NSURL *)cachePath persistentPath:(nonnull NSURL *)persistentPath {
+    return [[IMImojiSessionStoragePolicy alloc] initWithCachePath:cachePath
+                                                   persistentPath:persistentPath];
 }
 
 + (instancetype)temporaryDiskStoragePolicy {
-    return [[IMMutableImojiSessionStoragePolicy alloc] initWithCachePath:[NSURL URLWithString:NSTemporaryDirectory()]
-                                                          persistentPath:[NSURL URLWithString:NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject]];
+    return [[IMImojiSessionStoragePolicy alloc] initWithCachePath:[NSURL URLWithString:NSTemporaryDirectory()]
+                                                   persistentPath:[NSURL URLWithString:NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject]];
 }
 
 @end

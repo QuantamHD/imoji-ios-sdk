@@ -25,10 +25,24 @@
 
 #import <Foundation/Foundation.h>
 
+@class BFTask;
+@class IMImojiObject;
+@class IMImojiObjectRenderingOptions;
+
 /**
 *  @abstract Configuration object used to determine how to store assets.
 */
 @interface IMImojiSessionStoragePolicy : NSObject
+
+/**
+ * @abstract Path in which to store temporary files such as downloaded Imoji images
+ */
+@property(nonatomic, strong, readonly, nonnull) NSURL *cachePath;
+
+/**
+ * @abstract Path in which to store long lived content such as OAuth authentication information for a users session
+ */
+@property(nonatomic, strong, readonly, nonnull) NSURL *persistentPath;
 
 /**
 *  @abstract Generates a storage policy that writes assets to a temporary directory. Contents stored within the
@@ -44,5 +58,14 @@
 *  @param persistentPath URL path to store persistent information such as authentication information
 */
 + (nonnull instancetype)storagePolicyWithCachePath:(nonnull NSURL *)cachePath persistentPath:(nonnull NSURL *)persistentPath;
+
+@end
+
+@interface IMImojiSessionStoragePolicy(Networking)
+
+/**
+ * Creates a session configuration object using cachePath as the NSURLCache location.
+ */
+- (nonnull NSURLSessionConfiguration *)generateURLSessionConfiguration;
 
 @end

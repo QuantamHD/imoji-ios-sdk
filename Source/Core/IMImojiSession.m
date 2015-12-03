@@ -32,7 +32,6 @@
 #import "UIImage+Extensions.h"
 #import "IMMutableCategoryObject.h"
 #import "BFTask+Utils.h"
-#import "IMMutableImojiSessionStoragePolicy.h"
 #import "IMImojiSession+Private.h"
 #import "IMArtist.h"
 #import "IMMutableArtist.h"
@@ -65,22 +64,12 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
 - (void)setupWithStoragePolicy:(IMImojiSessionStoragePolicy *)storagePolicy {
     _sessionState = IMImojiSessionStateNotConnected;
 
-    NSAssert([storagePolicy isKindOfClass:[IMMutableImojiSessionStoragePolicy class]], @"storage policy must be created with one of the factory methods (ex: temporaryDiskStoragePolicy)");
-
     _storagePolicy = storagePolicy;
     _fetchRenderingOptions = [IMImojiObjectRenderingOptions optionsWithRenderSize:IMImojiObjectRenderSizeThumbnail
                                                                       borderStyle:IMImojiObjectBorderStyleSticker
                                                                       imageFormat:IMImojiObjectImageFormatWebP];
 
-
-    NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration ephemeralSessionConfiguration];
-    sessionConfiguration.HTTPMaximumConnectionsPerHost = 10;
-    sessionConfiguration.networkServiceType = NSURLNetworkServiceTypeDefault;
-    sessionConfiguration.URLCache = [((IMMutableImojiSessionStoragePolicy *)_storagePolicy) createURLCache];
-    sessionConfiguration.HTTPShouldUsePipelining = YES;
-    sessionConfiguration.requestCachePolicy = NSURLRequestUseProtocolCachePolicy;
-
-    self->_urlSession = [NSURLSession sessionWithConfiguration:sessionConfiguration];
+    self->_urlSession = [NSURLSession sessionWithConfiguration:[_storagePolicy generateURLSessionConfiguration]];
 
     [self readAuthenticationCredentials];
 }

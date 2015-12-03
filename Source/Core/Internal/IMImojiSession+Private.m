@@ -3,16 +3,13 @@
 // Copyright (c) 2015 Imoji. All rights reserved.
 //
 
-#import <Bolts/BFTaskCompletionSource.h>
-#import <Bolts/BFTask.h>
-#import <Bolts/BFExecutor.h>
+#import <Bolts/Bolts.h>
 #import "IMImojiSession+Private.h"
 #import "IMImojiSessionCredentials.h"
 #import "ImojiSDK.h"
 #import "BFTask+Utils.h"
 #import "RequestUtils.h"
 #import "ImojiSDKConstants.h"
-#import "IMMutableImojiSessionStoragePolicy.h"
 #import "IMMutableImojiObject.h"
 #import "NSDictionary+Utils.h"
 #import "UIImage+WebP.h"
@@ -442,13 +439,13 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
     NSMutableDictionary *urls = [NSMutableDictionary new];
     NSMutableArray *tasks = [NSMutableArray new];
     for (IMImojiObjectRenderingOptions *renderingOption in renderingOptions.allKeys) {
-        urls[renderingOption] = [NSURL URLWithString:[NSString stringWithFormat:@"file://%@", [(IMMutableImojiSessionStoragePolicy *) self.storagePolicy filePathFromImoji:imojiObject
-                                                                                                                                                          renderingOptions:renderingOption]]];
+        urls[renderingOption] = [NSURL URLWithString:[NSString stringWithFormat:@"file://%@", [self filePathFromImoji:imojiObject
+                                                                                                     renderingOptions:renderingOption]]];
 
-        [tasks addObject:[(IMMutableImojiSessionStoragePolicy *) self.storagePolicy writeImoji:imojiObject
-                                                                              renderingOptions:renderingOption
-                                                                                 imageContents:UIImagePNGRepresentation(renderingOptions[renderingOption])
-                                                                                   synchronous:NO]];
+        [tasks addObject:[self writeImoji:imojiObject
+                         renderingOptions:renderingOption
+                            imageContents:UIImagePNGRepresentation(renderingOptions[renderingOption])
+                              synchronous:NO]];
     }
 
     return [[BFTask taskForCompletionOfAllTasks:tasks] continueWithBlock:^id(BFTask *task) {
@@ -476,13 +473,12 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
     ];
 
     for (IMImojiObjectRenderingOptions *renderingOption in renderingOptions) {
-        [(IMMutableImojiSessionStoragePolicy *) self.storagePolicy removeImoji:imoji
-                                                              renderingOptions:renderingOption];
+        [self removeImoji:imoji renderingOptions:renderingOption];
     }
 }
 
 - (NSString *)sessionFilePath {
-    return [NSString stringWithFormat:@"%@/imoji.session", ((IMMutableImojiSessionStoragePolicy *) self.storagePolicy).persistentPath.path];
+    return [NSString stringWithFormat:@"%@/imoji.session", self.storagePolicy.persistentPath.path];
 }
 
 
@@ -567,12 +563,12 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
                   cancellationToken:(NSOperation *)cancellationToken {
     BFTaskCompletionSource *taskCompletionSource = [BFTaskCompletionSource taskCompletionSource];
     NSURL *url = [imoji getUrlForRenderingOptions:renderingOptions];
-    
+
     [BFTask im_concurrentBackgroundTaskWithBlock:^id(BFTask *task) {
         if (cancellationToken.isCancelled) {
             return [BFTask cancelledTask];
         }
-        
+
         // local files are stored as PNGs. Used in creation process for temporary Imojis
         if (url.isFileURL) {
             taskCompletionSource.result = [UIImage imageWithData:[NSData dataWithContentsOfURL:url]];
@@ -748,6 +744,52 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
                                                     urls:imageUrls];
     } else {
         return nil;
+    }
+}
+
+#pragma mark Imoji Reading/Writing
+
+- (BFTask *)writeImoji:(IMImojiObject *)imoji
+      renderingOptions:(IMImojiObjectRenderingOptions *)renderingOptions
+         imageContents:(NSData *)imageContents
+           synchronous:(BOOL)synchronous {
+
+    return [[BFTask taskWithDelay:0] continueWithExecutor:synchronous ? [BFExecutor mainThreadExecutor] : [BFTask im_concurrentBackgroundExecutor]
+                                                withBlock:^id(BFTask *task) {
+                                                    NSString *fullImojiPath = [self filePathFromImoji:imoji renderingOptions:renderingOptions];
+                                                    NSError *error;
+
+                                                    [imageContents writeToFile:fullImojiPath options:NSDataWritingAtomic error:&error];
+
+                                                    NSURL *pathUrl = [NSURL fileURLWithPath:fullImojiPath];
+                                                    [pathUrl setResourceValue:@YES
+                                                                       forKey:NSURLIsExcludedFromBackupKey
+                                                                        error:&error];
+
+                                                    return nil;
+                                                }];
+}
+
+- (void)removeImoji:(IMImojiObject *)imoji
+   renderingOptions:(IMImojiObjectRenderingOptions *)renderingOptions {
+    NSString *fullImojiPath = [self filePathFromImoji:imoji renderingOptions:renderingOptions];
+    [self removeFile:fullImojiPath];
+}
+
+- (NSString *)filePathFromImoji:(IMImojiObject *)imoji renderingOptions:(IMImojiObjectRenderingOptions *)renderingOptions {
+    return [NSString stringWithFormat:@"%@/%@-%@-%@.%@",
+                                      self.storagePolicy.cachePath.path,
+                                      @(renderingOptions.renderSize),
+                                      @(renderingOptions.borderStyle),
+                                      imoji.identifier,
+                                      @(renderingOptions.imageFormat)
+    ];
+}
+
+- (void)removeFile:(NSString *)path {
+    if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
+        NSError *error;
+        [[NSFileManager defaultManager] removeItemAtPath:path error:&error];
     }
 }
 

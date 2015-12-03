@@ -80,4 +80,16 @@
 
 - (void)removeLocalImoj:(nonnull IMImojiObject *)imoji;
 
+- (nonnull BFTask *)writeImoji:(nonnull IMImojiObject *)imoji
+              renderingOptions:(nonnull IMImojiObjectRenderingOptions *)renderingOptions
+                 imageContents:(nonnull NSData *)imageContents
+                   synchronous:(BOOL)synchronous;
+
+- (void)removeImoji:(nonnull IMImojiObject *)imoji
+   renderingOptions:(nonnull IMImojiObjectRenderingOptions *)renderingOptions;
+
+- (nonnull NSString *)filePathFromImoji:(nonnull IMImojiObject *)imoji
+                       renderingOptions:(nonnull IMImojiObjectRenderingOptions *)renderingOptions;
+
+
 @end
