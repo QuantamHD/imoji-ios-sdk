@@ -78,7 +78,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
     sessionConfiguration.networkServiceType = NSURLNetworkServiceTypeDefault;
     sessionConfiguration.URLCache = [((IMMutableImojiSessionStoragePolicy *)_storagePolicy) createURLCache];
     sessionConfiguration.HTTPShouldUsePipelining = YES;
-    sessionConfiguration.requestCachePolicy = NSURLRequestReturnCacheDataElseLoad;
+    sessionConfiguration.requestCachePolicy = NSURLRequestUseProtocolCachePolicy;
 
     self->_urlSession = [NSURLSession sessionWithConfiguration:sessionConfiguration];
 

@@ -28,7 +28,7 @@
 #import "IMMutableImojiSessionStoragePolicy.h"
 #import "BFTask+Utils.h"
 
-const NSUInteger IMMutableImojiSessionStoragePolicyCacheSize = 10 * 1024 * 1024;
+const NSUInteger IMMutableImojiSessionStoragePolicyCacheSize = 5 * 1024 * 1024;
 
 @interface IMMutableImojiSessionStoragePolicy () <NSCacheDelegate>
 @end
@@ -89,42 +89,10 @@ const NSUInteger IMMutableImojiSessionStoragePolicyCacheSize = 10 * 1024 * 1024;
                                                 }];
 }
 
-- (NSData *)readImojiImage:(IMImojiObject *)imoji
-          renderingOptions:(IMImojiObjectRenderingOptions *)renderingOptions {
-    NSString *fullImojiPath = [self filePathFromImoji:imoji renderingOptions:renderingOptions];
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    if ([fileManager fileExistsAtPath:fullImojiPath]) {
-        __block NSError *error;
-        NSData *data = [NSData dataWithContentsOfFile:fullImojiPath options:0 error:&error];
-
-        [BFTask im_serialBackgroundTaskWithBlock:^id(BFTask *task) {
-            [fileManager setAttributes:@{NSFileModificationDate : [NSDate date]}
-                          ofItemAtPath:fullImojiPath
-                                 error:&error];
-
-            return nil;
-        }];
-
-        if (error) {
-            return nil;
-        } else {
-            return data;
-        }
-    }
-
-    return nil;
-}
-
 - (void)removeImoji:(IMImojiObject *)imoji
    renderingOptions:(IMImojiObjectRenderingOptions *)renderingOptions {
     NSString *fullImojiPath = [self filePathFromImoji:imoji renderingOptions:renderingOptions];
     [IMMutableImojiSessionStoragePolicy removeFile:fullImojiPath];
-}
-
-- (BOOL)imojiExists:(IMImojiObject *)imoji
-   renderingOptions:(IMImojiObjectRenderingOptions *)renderingOptions {
-    NSString *fullImojiPath = [self filePathFromImoji:imoji renderingOptions:renderingOptions];
-    return [[NSFileManager defaultManager] fileExistsAtPath:fullImojiPath];
 }
 
 - (NSString *)filePathFromImoji:(IMImojiObject *)imoji renderingOptions:(IMImojiObjectRenderingOptions *)renderingOptions {

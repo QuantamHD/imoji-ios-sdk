@@ -424,26 +424,26 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
     NSDictionary *renderingOptions = @{
             [IMImojiObjectRenderingOptions optionsWithRenderSize:IMImojiObjectRenderSizeThumbnail
                                                      borderStyle:IMImojiObjectBorderStyleNone
-                                                     imageFormat:IMImojiObjectImageFormatWebP] : [rawImage im_resizedImageToFitInSize:CGSizeMake(150.f, 150.f) scaleIfSmaller:NO],
+                                                     imageFormat:IMImojiObjectImageFormatPNG] : [rawImage im_resizedImageToFitInSize:CGSizeMake(150.f, 150.f) scaleIfSmaller:NO],
 
             [IMImojiObjectRenderingOptions optionsWithRenderSize:IMImojiObjectRenderSizeFullResolution
                                                      borderStyle:IMImojiObjectBorderStyleNone
-                                                     imageFormat:IMImojiObjectImageFormatWebP] : rawImage,
+                                                     imageFormat:IMImojiObjectImageFormatPNG] : rawImage,
 
             [IMImojiObjectRenderingOptions optionsWithRenderSize:IMImojiObjectRenderSizeThumbnail
                                                      borderStyle:IMImojiObjectBorderStyleSticker
-                                                     imageFormat:IMImojiObjectImageFormatWebP] : [borderedImage im_resizedImageToFitInSize:CGSizeMake(150.f, 150.f) scaleIfSmaller:NO],
+                                                     imageFormat:IMImojiObjectImageFormatPNG] : [borderedImage im_resizedImageToFitInSize:CGSizeMake(150.f, 150.f) scaleIfSmaller:NO],
 
             [IMImojiObjectRenderingOptions optionsWithRenderSize:IMImojiObjectRenderSizeFullResolution
                                                      borderStyle:IMImojiObjectBorderStyleSticker
-                                                     imageFormat:IMImojiObjectImageFormatWebP] : borderedImage
+                                                     imageFormat:IMImojiObjectImageFormatPNG] : borderedImage
     };
 
     NSMutableDictionary *urls = [NSMutableDictionary new];
     NSMutableArray *tasks = [NSMutableArray new];
     for (IMImojiObjectRenderingOptions *renderingOption in renderingOptions.allKeys) {
-        urls[renderingOption] = [(IMMutableImojiSessionStoragePolicy *) self.storagePolicy filePathFromImoji:imojiObject
-                                                                                            renderingOptions:renderingOption];
+        urls[renderingOption] = [NSURL URLWithString:[NSString stringWithFormat:@"file://%@", [(IMMutableImojiSessionStoragePolicy *) self.storagePolicy filePathFromImoji:imojiObject
+                                                                                                                                                          renderingOptions:renderingOption]]];
 
         [tasks addObject:[(IMMutableImojiSessionStoragePolicy *) self.storagePolicy writeImoji:imojiObject
                                                                               renderingOptions:renderingOption
@@ -460,19 +460,19 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
     NSArray *renderingOptions = @[
             [IMImojiObjectRenderingOptions optionsWithRenderSize:IMImojiObjectRenderSizeThumbnail
                                                      borderStyle:IMImojiObjectBorderStyleNone
-                                                     imageFormat:IMImojiObjectImageFormatWebP],
+                                                     imageFormat:IMImojiObjectImageFormatPNG],
 
             [IMImojiObjectRenderingOptions optionsWithRenderSize:IMImojiObjectRenderSizeFullResolution
                                                      borderStyle:IMImojiObjectBorderStyleNone
-                                                     imageFormat:IMImojiObjectImageFormatWebP],
+                                                     imageFormat:IMImojiObjectImageFormatPNG],
 
             [IMImojiObjectRenderingOptions optionsWithRenderSize:IMImojiObjectRenderSizeThumbnail
                                                      borderStyle:IMImojiObjectBorderStyleSticker
-                                                     imageFormat:IMImojiObjectImageFormatWebP],
+                                                     imageFormat:IMImojiObjectImageFormatPNG],
 
             [IMImojiObjectRenderingOptions optionsWithRenderSize:IMImojiObjectRenderSizeFullResolution
                                                      borderStyle:IMImojiObjectBorderStyleSticker
-                                                     imageFormat:IMImojiObjectImageFormatWebP]
+                                                     imageFormat:IMImojiObjectImageFormatPNG]
     ];
 
     for (IMImojiObjectRenderingOptions *renderingOption in renderingOptions) {
@@ -567,9 +567,16 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
                   cancellationToken:(NSOperation *)cancellationToken {
     BFTaskCompletionSource *taskCompletionSource = [BFTaskCompletionSource taskCompletionSource];
     NSURL *url = [imoji getUrlForRenderingOptions:renderingOptions];
+    
     [BFTask im_concurrentBackgroundTaskWithBlock:^id(BFTask *task) {
         if (cancellationToken.isCancelled) {
             return [BFTask cancelledTask];
+        }
+        
+        // local files are stored as PNGs. Used in creation process for temporary Imojis
+        if (url.isFileURL) {
+            taskCompletionSource.result = [UIImage imageWithData:[NSData dataWithContentsOfURL:url]];
+            return nil;
         }
 
         [[self runExternalURLRequest:[NSMutableURLRequest GETRequestWithURL:url
@@ -598,6 +605,7 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
             } else {
                 NSData *data = [NSData dataWithContentsOfFile:((NSURL *) urlTask.result).path];
                 UIImage *image;
+
                 switch (renderingOptions.imageFormat) {
                     case IMImojiObjectImageFormatWebP:
                         image = [UIImage im_imageWithWebPData:data];
