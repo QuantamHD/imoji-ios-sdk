@@ -241,13 +241,14 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
     [request setAllHTTPHeaderFields:[self getRequestHeaders:headers]];
 
     BFTaskCompletionSource *taskCompletionSource = [BFTaskCompletionSource taskCompletionSource];
-    [[self->_urlSession dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+    [[self->_urlSession downloadTaskWithRequest:request completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {
         if (error) {
             taskCompletionSource.error = error;
         } else {
             NSError *jsonError;
             NSDictionary *jsonInfo;
 
+            NSData *data = [NSData dataWithContentsOfFile:location.path];
             if (data.length > 0) {
                 jsonInfo = [NSJSONSerialization JSONObjectWithData:data
                                                            options:NSJSONReadingAllowFragments
@@ -279,11 +280,11 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
 
     BFTaskCompletionSource *taskCompletionSource = [BFTaskCompletionSource taskCompletionSource];
 
-    [[self->_urlSession dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+    [[self->_urlSession downloadTaskWithRequest:request completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {
         if (error) {
             taskCompletionSource.error = error;
         } else {
-            taskCompletionSource.result = data;
+            taskCompletionSource.result = location;
         }
     }] resume];
 
@@ -595,15 +596,16 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
                     });
                 }
             } else {
+                NSData *data = [NSData dataWithContentsOfFile:((NSURL *) urlTask.result).path];
                 UIImage *image;
                 switch (renderingOptions.imageFormat) {
                     case IMImojiObjectImageFormatWebP:
-                        image = [UIImage im_imageWithWebPData:urlTask.result];
+                        image = [UIImage im_imageWithWebPData:data];
                         break;
 
                     case IMImojiObjectImageFormatPNG:
                     default:
-                        image = [UIImage imageWithData:urlTask.result];
+                        image = [UIImage imageWithData:data];
                         break;
 
                 }
