@@ -16,62 +16,57 @@
 
 #pragma mark Static
 
-+ (IMImojiSessionCredentials *)credentials;
-
-+ (NSURLSession *)downloadURLSession;
-
-+ (NSURLSession *)uploadInBackgroundURLSession;
++ (nonnull IMImojiSessionCredentials *)credentials;
 
 #pragma mark Auth
 
-- (void)renewCredentials:(IMImojiSessionAsyncResponseCallback)callback;
+- (void)renewCredentials:(nonnull IMImojiSessionAsyncResponseCallback)callback;
 
-- (void)readAuthenticationFromDictionary:(NSDictionary *)authenticationInfo;
+- (void)readAuthenticationFromDictionary:(nonnull NSDictionary *)authenticationInfo;
 
 - (void)readAuthenticationCredentials;
 
-- (BFTask *)writeAuthenticationCredentials;
+- (nonnull BFTask *)writeAuthenticationCredentials;
 
-- (NSOperation *)cancellationTokenOperation;
+- (nonnull NSOperation *)cancellationTokenOperation;
 
 #pragma mark Network Requests
 
-- (BFTask *)runPostTaskWithPath:(NSString *)path headers:(NSDictionary *)headers andParameters:(NSDictionary *)parameters;
+- (nonnull BFTask *)runPostTaskWithPath:(nonnull NSString *)path headers:(nonnull NSDictionary *)headers andParameters:(nonnull NSDictionary *)parameters;
 
-- (BFTask *)runValidatedGetTaskWithPath:(NSString *)path andParameters:(NSDictionary *)parameters;
+- (nonnull BFTask *)runValidatedGetTaskWithPath:(nonnull NSString *)path andParameters:(nonnull NSDictionary *)parameters;
 
-- (BFTask *)runValidatedPutTaskWithPath:(NSString *)path andParameters:(NSDictionary *)parameters;
+- (nonnull BFTask *)runValidatedPutTaskWithPath:(nonnull NSString *)path andParameters:(nonnull NSDictionary *)parameters;
 
-- (BFTask *)runValidatedPostTaskWithPath:(NSString *)path andParameters:(NSDictionary *)parameters;
+- (nonnull BFTask *)runValidatedPostTaskWithPath:(nonnull NSString *)path andParameters:(nonnull NSDictionary *)parameters;
 
-- (BFTask *)runValidatedDeleteTaskWithPath:(NSString *)path andParameters:(NSDictionary *)parameters;
+- (nonnull BFTask *)runValidatedDeleteTaskWithPath:(nonnull NSString *)path andParameters:(nonnull NSDictionary *)parameters;
 
-- (BFTask *)validateSession;
+- (nonnull BFTask *)validateSession;
 
 #pragma mark Network Responses
 
-- (BOOL)validateServerResponse:(NSDictionary *)results error:(NSError **)error;
+- (BOOL)validateServerResponse:(nonnull NSDictionary *)results error:(NSError *__nullable*__nullable)error;
 
-- (NSArray *)convertServerDataSetToImojiArray:(NSDictionary *)serverResponse;
+- (nonnull NSArray *)convertServerDataSetToImojiArray:(nonnull NSDictionary *)serverResponse;
 
-- (void)handleImojiFetchResponse:(NSArray *)imojiObjects
-              followUpSearchTerm:(NSString *)followUpSearchTerm
-                renderingOptions:(IMImojiObjectRenderingOptions *)renderingOptions
-               cancellationToken:(NSOperation *)cancellationToken
-          searchResponseCallback:(IMImojiSessionResultSetResponseCallback)searchResponseCallback
-           imojiResponseCallback:(IMImojiSessionImojiFetchedResponseCallback)imojiResponseCallback;
+- (void)handleImojiFetchResponse:(nonnull NSArray *)imojiObjects
+              followUpSearchTerm:(nonnull NSString *)followUpSearchTerm
+                renderingOptions:(nonnull IMImojiObjectRenderingOptions *)renderingOptions
+               cancellationToken:(nonnull NSOperation *)cancellationToken
+          searchResponseCallback:(nullable IMImojiSessionResultSetResponseCallback)searchResponseCallback
+           imojiResponseCallback:(nullable IMImojiSessionImojiFetchedResponseCallback)imojiResponseCallback;
 
-- (void)downloadImojiImageAsync:(IMMutableImojiObject *)imoji
-               renderingOptions:(IMImojiObjectRenderingOptions *)renderingOptions
-                     imojiIndex:(NSUInteger)imojiIndex
-              cancellationToken:(NSOperation *)cancellationToken
-          imojiResponseCallback:(IMImojiSessionImojiFetchedResponseCallback)imojiResponseCallback;
+- (nonnull BFTask *)downloadImojiImageAsync:(nonnull IMMutableImojiObject *)imoji
+                           renderingOptions:(nonnull IMImojiObjectRenderingOptions *)renderingOptions
+                                 imojiIndex:(NSUInteger)imojiIndex
+                          cancellationToken:(nonnull NSOperation *)cancellationToken;
 
-- (IMMutableImojiObject *)readImojiObject:(NSDictionary *)result;
+- (nonnull IMMutableImojiObject *)readImojiObject:(nonnull NSDictionary *)result;
 
-- (BFTask *)uploadImageInBackgroundWithRetries:(UIImage *)image
-                                     uploadUrl:(NSURL *)uploadUrl
-                                    retryCount:(int)retryCount;
+- (nonnull BFTask *)uploadImageInBackgroundWithRetries:(nonnull UIImage *)image
+                                             uploadUrl:(nonnull NSURL *)uploadUrl
+                                            retryCount:(int)retryCount;
 
 #pragma mark Session State Management
 
@@ -79,10 +74,10 @@
 
 #pragma mark Imoji Creation
 
-- (BFTask *)createLocalImojiWithRawImage:(UIImage *)rawImage
-                           borderedImage:(UIImage *)borderedImage
-                                    tags:(NSArray *)tags;
+- (nonnull BFTask *)createLocalImojiWithRawImage:(nonnull UIImage *)rawImage
+                                   borderedImage:(nonnull UIImage *)borderedImage
+                                            tags:(nonnull NSArray *)tags;
 
-- (void)removeLocalImoj:(IMImojiObject *)imoji;
+- (void)removeLocalImoj:(nonnull IMImojiObject *)imoji;
 
 @end

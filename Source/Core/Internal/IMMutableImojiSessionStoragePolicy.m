@@ -28,7 +28,7 @@
 #import "IMMutableImojiSessionStoragePolicy.h"
 #import "BFTask+Utils.h"
 
-NSUInteger const IMMutableImojiSessionStoragePolicyDefaultExpirationTimeInSeconds = 60 * 60 * 24;
+const NSUInteger IMMutableImojiSessionStoragePolicyCacheSize = 10 * 1024 * 1024;
 
 @interface IMMutableImojiSessionStoragePolicy () <NSCacheDelegate>
 @end
@@ -44,7 +44,6 @@ NSUInteger const IMMutableImojiSessionStoragePolicyDefaultExpirationTimeInSecond
         _persistentPath = persistentPath;
 
         [self createDirectoriesIfNeeded];
-        [self performCleanupOnOldImages];
     }
 
     return self;
@@ -138,33 +137,17 @@ NSUInteger const IMMutableImojiSessionStoragePolicyDefaultExpirationTimeInSecond
     ];
 }
 
+- (NSURLCache *)createURLCache {
+    return [[NSURLCache alloc] initWithMemoryCapacity:0
+                                         diskCapacity:IMMutableImojiSessionStoragePolicyCacheSize
+                                             diskPath:self.cachePath.path];
+}
+
 + (void)removeFile:(NSString *)path {
     if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
         NSError *error;
         [[NSFileManager defaultManager] removeItemAtPath:path error:&error];
     }
-}
-
-
-- (void)performCleanupOnOldImages {
-    [BFTask im_concurrentBackgroundTaskWithBlock:^id(BFTask *task) {
-
-        NSDate *now = [NSDate date];
-        NSFileManager *manager = [NSFileManager defaultManager];
-        NSDirectoryEnumerator *enumerator = [manager enumeratorAtPath:self.cachePath.path];
-        NSError *error;
-        for (NSString *imojiImage in enumerator) {
-            NSString *path = [NSString stringWithFormat:@"%@/%@", self.cachePath.path, imojiImage];
-            NSDictionary *attributes = [manager attributesOfItemAtPath:path error:&error];
-            NSDate *modificationDate = attributes[NSFileModificationDate];
-
-            if (modificationDate && [now timeIntervalSinceDate:modificationDate] > IMMutableImojiSessionStoragePolicyDefaultExpirationTimeInSeconds) {
-                [IMMutableImojiSessionStoragePolicy removeFile:path];
-            }
-        }
-
-        return nil;
-    }];
 }
 
 @end

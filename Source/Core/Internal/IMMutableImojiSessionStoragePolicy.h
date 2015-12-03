@@ -53,4 +53,6 @@
 
 - (NSString *)filePathFromImoji:(IMImojiObject *)imoji renderingOptions:(IMImojiObjectRenderingOptions *)renderingOptions;
 
+- (NSURLCache *)createURLCache;
+
 @end

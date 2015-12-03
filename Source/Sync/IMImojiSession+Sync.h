@@ -37,7 +37,7 @@
 * an error is returned in the callback.
 * @param error If an error occurred while trying to load the Imoji iOS application
 */
-- (void)requestUserSynchronizationWithError:(NSError __nullable **)error;
+- (void)requestUserSynchronizationWithError:(NSError *__nullable*__nullable)error;
 
 /**
 * @abstract Used to determine if the launched URL from application:openURL:sourceApplication:annotation in

@@ -171,7 +171,9 @@ typedef void (^IMImojiSessionAsyncResponseCallback)(BOOL successful, NSError *__
 typedef void (^IMImojiSessionCreationResponseCallback)(IMImojiObject *__nullable imoji, NSError *__nullable error);
 
 @interface IMImojiSession : NSObject {
+@private
     IMImojiSessionState _sessionState;
+    NSURLSession *_urlSession;
 }
 
 /**

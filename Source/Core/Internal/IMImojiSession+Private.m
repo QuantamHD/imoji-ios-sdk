@@ -241,7 +241,7 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
     [request setAllHTTPHeaderFields:[self getRequestHeaders:headers]];
 
     BFTaskCompletionSource *taskCompletionSource = [BFTaskCompletionSource taskCompletionSource];
-    [[[IMImojiSession downloadURLSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+    [[self->_urlSession dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         if (error) {
             taskCompletionSource.error = error;
         } else {
@@ -279,7 +279,7 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
 
     BFTaskCompletionSource *taskCompletionSource = [BFTaskCompletionSource taskCompletionSource];
 
-    [[[IMImojiSession downloadURLSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+    [[self->_urlSession dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         if (error) {
             taskCompletionSource.error = error;
         } else {
@@ -496,38 +496,6 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
     return authInfo;
 }
 
-+ (NSURLSession *)downloadURLSession {
-    static NSURLSession *session = nil;
-    static dispatch_once_t predicate;
-
-    dispatch_once(&predicate, ^{
-        NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration ephemeralSessionConfiguration];
-        sessionConfiguration.HTTPMaximumConnectionsPerHost = 10;
-        sessionConfiguration.networkServiceType = NSURLNetworkServiceTypeDefault;
-        sessionConfiguration.URLCache = nil;
-
-        session = [NSURLSession sessionWithConfiguration:sessionConfiguration];
-    });
-
-    return session;
-}
-
-+ (NSURLSession *)uploadInBackgroundURLSession {
-    static NSURLSession *session = nil;
-    static dispatch_once_t predicate;
-
-    dispatch_once(&predicate, ^{
-        NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration ephemeralSessionConfiguration];
-        sessionConfiguration.HTTPMaximumConnectionsPerHost = 3;
-        sessionConfiguration.networkServiceType = NSURLNetworkServiceTypeBackground;
-        sessionConfiguration.URLCache = nil;
-
-        session = [NSURLSession sessionWithConfiguration:sessionConfiguration];
-    });
-
-    return session;
-}
-
 - (BOOL)validateServerResponse:(NSDictionary *)results error:(NSError **)error {
     NSString *status = [results im_checkedStringForKey:@"status"];
     if (![@"SUCCESS" isEqualToString:status]) {
@@ -574,39 +542,29 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
     }
 
     for (IMMutableImojiObject *imoji in imojiObjects) {
-        if (![(IMMutableImojiSessionStoragePolicy *) self.storagePolicy imojiExists:imoji renderingOptions:renderingOptions]) {
-            [self downloadImojiImageAsync:imoji
-                         renderingOptions:renderingOptions
-                               imojiIndex:[imojiObjects indexOfObject:imoji]
-                        cancellationToken:cancellationToken
-                    imojiResponseCallback:imojiResponseCallback];
-        } else {
-            if (imojiResponseCallback && !cancellationToken.isCancelled) {
-                imojiResponseCallback(imoji, [imojiObjects indexOfObject:imoji], nil);
-            }
+        if (imojiResponseCallback && !cancellationToken.isCancelled) {
+            imojiResponseCallback(imoji, [imojiObjects indexOfObject:imoji], nil);
         }
     }
 }
 
-- (void)downloadImojiImageAsync:(IMMutableImojiObject *)imoji
-               renderingOptions:(IMImojiObjectRenderingOptions *)renderingOptions
-                     imojiIndex:(NSUInteger)imojiIndex
-              cancellationToken:(NSOperation *)cancellationToken
-          imojiResponseCallback:(IMImojiSessionImojiFetchedResponseCallback)imojiResponseCallback {
-    [self downloadImojiImageAsync:imoji
-                 renderingOptions:renderingOptions
-                      retriesLeft:IMImojiSessionNumberOfRetriesForImojiDownload
-                       imojiIndex:imojiIndex
-                cancellationToken:cancellationToken
-            imojiResponseCallback:imojiResponseCallback];
+- (BFTask *)downloadImojiImageAsync:(IMMutableImojiObject *)imoji
+                   renderingOptions:(IMImojiObjectRenderingOptions *)renderingOptions
+                         imojiIndex:(NSUInteger)imojiIndex
+                  cancellationToken:(NSOperation *)cancellationToken {
+    return [self downloadImojiImageAsync:imoji
+                        renderingOptions:renderingOptions
+                             retriesLeft:IMImojiSessionNumberOfRetriesForImojiDownload
+                              imojiIndex:imojiIndex
+                       cancellationToken:cancellationToken];
 }
 
-- (void)downloadImojiImageAsync:(IMMutableImojiObject *)imoji
-               renderingOptions:(IMImojiObjectRenderingOptions *)renderingOptions
-                    retriesLeft:(NSUInteger)retriesLeft
-                     imojiIndex:(NSUInteger)imojiIndex
-              cancellationToken:(NSOperation *)cancellationToken
-          imojiResponseCallback:(IMImojiSessionImojiFetchedResponseCallback)imojiResponseCallback {
+- (BFTask *)downloadImojiImageAsync:(IMMutableImojiObject *)imoji
+                   renderingOptions:(IMImojiObjectRenderingOptions *)renderingOptions
+                        retriesLeft:(NSUInteger)retriesLeft
+                         imojiIndex:(NSUInteger)imojiIndex
+                  cancellationToken:(NSOperation *)cancellationToken {
+    BFTaskCompletionSource *taskCompletionSource = [BFTaskCompletionSource taskCompletionSource];
     NSURL *url = [imoji getUrlForRenderingOptions:renderingOptions];
     [BFTask im_concurrentBackgroundTaskWithBlock:^id(BFTask *task) {
         if (cancellationToken.isCancelled) {
@@ -626,14 +584,13 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
                                               retriesLeft:retriesLeft - 1
                                                imojiIndex:imojiIndex
                                         cancellationToken:cancellationToken
-                                    imojiResponseCallback:imojiResponseCallback
                             ];
                         } else {
-                            imojiResponseCallback(imoji, imojiIndex, [NSError errorWithDomain:IMImojiSessionErrorDomain
-                                                                                         code:IMImojiSessionErrorCodeServerError
-                                                                                     userInfo:@{
-                                                                                             NSLocalizedDescriptionKey : [NSString stringWithFormat:@"Unable to download %@ error code: %@", url, @(urlTask.error.code)]
-                                                                                     }]);
+                            taskCompletionSource.error = [NSError errorWithDomain:IMImojiSessionErrorDomain
+                                                                             code:IMImojiSessionErrorCodeServerError
+                                                                         userInfo:@{
+                                                                                 NSLocalizedDescriptionKey : [NSString stringWithFormat:@"Unable to download %@ error code: %@", url, @(urlTask.error.code)]
+                                                                         }];
                         }
                     });
                 }
@@ -651,26 +608,16 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
 
                 }
 
-                [[(IMMutableImojiSessionStoragePolicy *) self.storagePolicy writeImoji:imoji
-                                                                      renderingOptions:renderingOptions
-                                                                         imageContents:UIImagePNGRepresentation(image)
-                                                                           synchronous:YES]
-                        continueWithExecutor:[BFExecutor mainThreadExecutor]
-                                   withBlock:^id(BFTask *writeTask) {
-                                       if (!cancellationToken.isCancelled) {
-                                           imojiResponseCallback(imoji, imojiIndex, nil);
-                                       }
-
-                                       return nil;
-                                   }];
+                taskCompletionSource.result = image;
             }
-
 
             return nil;
         }];
 
         return nil;
     }];
+
+    return taskCompletionSource.task;
 }
 
 - (BFTask *)uploadImageInBackgroundWithRetries:(UIImage *)image
@@ -696,19 +643,19 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
 
         [request addValue:@"image/png" forHTTPHeaderField:@"Content-Type"];
 
-        [[[IMImojiSession uploadInBackgroundURLSession] uploadTaskWithRequest:request
-                                                                     fromData:UIImagePNGRepresentation(image)
-                                                            completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                                                                if (error) {
-                                                                    if (retryCount == 0) {
-                                                                        taskCompletionSource.error = error;
-                                                                    } else {
-                                                                        [self uploadImageInBackgroundWithRetries:image uploadUrl:uploadUrl retryCount:retryCount - 1 taskCompletionSource:taskCompletionSource];
-                                                                    }
-                                                                } else {
-                                                                    taskCompletionSource.result = @YES;
-                                                                }
-                                                            }] resume];
+        [[self->_urlSession uploadTaskWithRequest:request
+                                         fromData:UIImagePNGRepresentation(image)
+                                completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+                                    if (error) {
+                                        if (retryCount == 0) {
+                                            taskCompletionSource.error = error;
+                                        } else {
+                                            [self uploadImageInBackgroundWithRetries:image uploadUrl:uploadUrl retryCount:retryCount - 1 taskCompletionSource:taskCompletionSource];
+                                        }
+                                    } else {
+                                        taskCompletionSource.result = @YES;
+                                    }
+                                }] resume];
 
         return nil;
     }];
