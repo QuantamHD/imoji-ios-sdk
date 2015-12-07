@@ -209,8 +209,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
             resultSetResponseCallback(nil, nil, error);
         } else {
             [self handleImojiFetchResponse:[self convertServerDataSetToImojiArray:results]
-                        followUpSearchTerm:[results im_checkedStringForKey:@"followupSearchTerm"]
-                          renderingOptions:self.fetchRenderingOptions
+                         relatedSearchTerm:[results im_checkedStringForKey:@"followupSearchTerm"]
                          cancellationToken:cancellationToken
                     searchResponseCallback:resultSetResponseCallback
                      imojiResponseCallback:imojiResponseCallback];
@@ -256,8 +255,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
             resultSetResponseCallback(nil, nil, error);
         } else {
             [self handleImojiFetchResponse:[self convertServerDataSetToImojiArray:results]
-                        followUpSearchTerm:[results im_checkedStringForKey:@"followupSearchTerm"]
-                          renderingOptions:self.fetchRenderingOptions
+                         relatedSearchTerm:[results im_checkedStringForKey:@"followupSearchTerm"]
                          cancellationToken:cancellationToken
                     searchResponseCallback:resultSetResponseCallback
                      imojiResponseCallback:imojiResponseCallback];
@@ -316,8 +314,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
             NSMutableArray *imojiObjects = [NSMutableArray arrayWithArray:[self convertServerDataSetToImojiArray:results]];
 
             [self handleImojiFetchResponse:imojiObjects
-                        followUpSearchTerm:[results im_checkedStringForKey:@"followupSearchTerm"]
-                          renderingOptions:self.fetchRenderingOptions
+                         relatedSearchTerm:[results im_checkedStringForKey:@"followupSearchTerm"]
                          cancellationToken:cancellationToken
                     searchResponseCallback:nil
                      imojiResponseCallback:fetchedResponseCallback];
@@ -353,8 +350,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
             resultSetResponseCallback(nil, nil, error);
         } else {
             [self handleImojiFetchResponse:[self convertServerDataSetToImojiArray:results]
-                        followUpSearchTerm:[results im_checkedStringForKey:@"followupSearchTerm"]
-                          renderingOptions:self.fetchRenderingOptions
+                         relatedSearchTerm:[results im_checkedStringForKey:@"followupSearchTerm"]
                          cancellationToken:cancellationToken
                     searchResponseCallback:resultSetResponseCallback
                      imojiResponseCallback:imojiResponseCallback];
@@ -430,8 +426,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
             resultSetResponseCallback(nil, nil, error);
         } else {
             [self handleImojiFetchResponse:[self convertServerDataSetToImojiArray:results]
-                        followUpSearchTerm:[results im_checkedStringForKey:@"followupSearchTerm"]
-                          renderingOptions:self.fetchRenderingOptions
+                         relatedSearchTerm:[results im_checkedStringForKey:@"followupSearchTerm"]
                          cancellationToken:cancellationToken
                     searchResponseCallback:resultSetResponseCallback
                      imojiResponseCallback:imojiResponseCallback];

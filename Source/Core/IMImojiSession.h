@@ -27,6 +27,7 @@
 #import <UIKit/UIKit.h>
 #import <CoreGraphics/CoreGraphics.h>
 #import "IMImojiObjectRenderingOptions.h"
+#import "IMImojiResultSetMetadata.h"
 
 @class IMImojiObject, IMImojiSessionStoragePolicy;
 @protocol IMImojiSessionDelegate;
@@ -128,11 +129,11 @@ typedef NS_ENUM(NSUInteger, IMImojiSessionCategoryClassification) {
 
 /**
 * @abstract Callback used for triggering when the server has loaded a result set
-* @param resultCount Number of results returned by the server. This can never be nil.
-* @param followUpSearchTerm A string representing a relevant search term for lookup. Value is nil when resultCount is 0.
+* @param resultCount Number of results returned by the server.
+* @param metadata Result set metadata for the request.
 * @param error An error with code equal to an IMImojiSessionErrorCode value or nil if the request succeeded
 */
-typedef void (^IMImojiSessionResultSetResponseCallback)(NSNumber *__nullable resultCount, NSString *__nullable followUpSearchTerm, NSError *__nullable error);
+typedef void (^IMImojiSessionResultSetResponseCallback)(NSNumber *__nullable resultCount, IMImojiResultSetMetadata *__nullable metadata, NSError *__nullable error);
 
 /**
 * @abstract Callback used for generic asynchronous requests

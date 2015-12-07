@@ -46,13 +46,12 @@
 
 #pragma mark Network Responses
 
-- (BOOL)validateServerResponse:(nonnull NSDictionary *)results error:(NSError *__nullable*__nullable)error;
+- (BOOL)validateServerResponse:(nonnull NSDictionary *)results error:(NSError *__nullable *__nullable)error;
 
 - (nonnull NSArray *)convertServerDataSetToImojiArray:(nonnull NSDictionary *)serverResponse;
 
 - (void)handleImojiFetchResponse:(nonnull NSArray *)imojiObjects
-              followUpSearchTerm:(nonnull NSString *)followUpSearchTerm
-                renderingOptions:(nonnull IMImojiObjectRenderingOptions *)renderingOptions
+               relatedSearchTerm:(nonnull NSString *)relatedSearchTerm
                cancellationToken:(nonnull NSOperation *)cancellationToken
           searchResponseCallback:(nullable IMImojiSessionResultSetResponseCallback)searchResponseCallback
            imojiResponseCallback:(nullable IMImojiSessionImojiFetchedResponseCallback)imojiResponseCallback;
