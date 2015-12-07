@@ -78,13 +78,19 @@ typedef NS_ENUM(NSUInteger, IMImojiObjectImageFormat) {
     /**
      * @abstract WebP photo format. Using this results in smaller file sizes with minimal quality degradation.
      */
-            IMImojiObjectImageFormatWebP
+            IMImojiObjectImageFormatWebP,
+
+    /**
+     * @abstract Animated GIF format. Animated GIF's will never not have borders. Therefore the only supported border
+     * style is IMImojiObjectBorderStyleNone.
+     */
+            IMImojiObjectImageFormatAnimatedGif
 };
 
 /**
 * @abstract Defines multiple options for rendering IMImojiObjects to images
 */
-@interface IMImojiObjectRenderingOptions : NSObject<NSCopying>
+@interface IMImojiObjectRenderingOptions : NSObject <NSCopying>
 
 /**
 * @abstract The desired size of the image to load. For best performance, use IMImojiObjectRenderSizeThumbnail. For
@@ -125,6 +131,18 @@ typedef NS_ENUM(NSUInteger, IMImojiObjectImageFormat) {
 */
 @property(nonatomic) IMImojiObjectImageFormat imageFormat;
 
+/**
+* @abstract If an Imoji has support for animation, instructs the rendering to return an animated UIImage if there is one.
+* Defaults to YES
+*/
+@property(nonatomic) BOOL renderAnimatedIfSupported;
+
+/**
+ * @abstract Creates rendering options for animated content.
+ * @return A rendering option instance suitable for displaying animated content.
+ */
+- (nonnull IMImojiObjectRenderingOptions *)toAnimatedRenderingOptions;
+
 + (nonnull instancetype)optionsWithRenderSize:(IMImojiObjectRenderSize)renderSize;
 
 + (nonnull instancetype)optionsWithRenderSize:(IMImojiObjectRenderSize)renderSize
@@ -133,5 +151,7 @@ typedef NS_ENUM(NSUInteger, IMImojiObjectImageFormat) {
 + (nonnull instancetype)optionsWithRenderSize:(IMImojiObjectRenderSize)renderSize
                                   borderStyle:(IMImojiObjectBorderStyle)borderStyle
                                   imageFormat:(IMImojiObjectImageFormat)imageFormat;
+
++ (nonnull instancetype)optionsWithAnimationAndRenderSize:(IMImojiObjectRenderSize)renderSize;
 
 @end

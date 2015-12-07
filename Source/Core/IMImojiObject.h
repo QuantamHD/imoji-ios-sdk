@@ -51,6 +51,11 @@
 @property(nonatomic, strong, readonly, nonnull) NSDictionary *urls;
 
 /**
+ * @abstract Whether or not the Imoji has support for animation or not.
+ */
+@property(nonatomic, readonly) BOOL supportsAnimation;
+
+/**
  * @abstract Gets a download URL for an Imoji given the requested rendering options
  */
 - (nullable NSURL *)getUrlForRenderingOptions:(nonnull IMImojiObjectRenderingOptions *)renderingOptions;

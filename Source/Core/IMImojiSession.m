@@ -636,8 +636,13 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
            callback:(IMImojiSessionImojiRenderResponseCallback)callback
   cancellationToken:(NSOperation *)cancellationToken {
 
+    IMImojiObjectRenderingOptions *requestedRenderingOptions = options;
+    if (imoji.supportsAnimation && options.renderAnimatedIfSupported) {
+        requestedRenderingOptions = [options toAnimatedRenderingOptions];
+    }
+
     [[self downloadImojiContents:imoji
-                 renderingOtions:options
+                 renderingOtions:requestedRenderingOptions
                cancellationToken:cancellationToken]
             continueWithBlock:^id(BFTask *task) {
                 if (cancellationToken.cancelled) {
@@ -650,7 +655,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
                     [BFTask im_serialBackgroundTaskWithBlock:^id(BFTask *bgTask) {
                         NSError *error;
                         UIImage *image = [self renderImoji:imoji
-                                                   options:options
+                                                   options:requestedRenderingOptions
                                                      image:task.result
                                                      error:&error];
 
@@ -714,15 +719,37 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
             }
         }
 
-        UIImage *resizedImage = CGSizeEqualToSize(targetSize, CGSizeZero) ? image : [image im_resizedImageToFitInSize:targetSize scaleIfSmaller:YES];
-
-        if (!CGSizeEqualToSize(CGSizeZero, aspectRatio)) {
-            resizedImage = [resizedImage im_imageWithAspect:aspectRatio];
+        // same size and ratio, no need to perform operations
+        if (CGSizeEqualToSize(image.size, targetSize) && CGSizeEqualToSize(CGSizeZero, aspectRatio)) {
+            return image;
         }
 
-        resizedImage = [resizedImage im_imageWithScreenScale];
+        if (image.images) {
+            NSMutableArray *resizedFrames = [NSMutableArray new];
+            for (UIImage *frame in image.images) {
+                UIImage *resizedImage = CGSizeEqualToSize(targetSize, CGSizeZero) ? frame :
+                        [frame im_resizedImageToFitInSize:targetSize scaleIfSmaller:YES];
 
-        return resizedImage;
+                if (!CGSizeEqualToSize(CGSizeZero, aspectRatio)) {
+                    resizedImage = [resizedImage im_imageWithAspect:aspectRatio];
+                }
+
+                [resizedFrames addObject:[resizedImage im_imageWithScreenScale]];
+            }
+
+            return [UIImage animatedImageWithImages:resizedFrames duration:image.duration];
+        } else {
+            UIImage *resizedImage = CGSizeEqualToSize(targetSize, CGSizeZero) ? image :
+                    [image im_resizedImageToFitInSize:targetSize scaleIfSmaller:YES];
+
+            if (!CGSizeEqualToSize(CGSizeZero, aspectRatio)) {
+                resizedImage = [resizedImage im_imageWithAspect:aspectRatio];
+            }
+
+            resizedImage = [resizedImage im_imageWithScreenScale];
+
+            return resizedImage;
+        }
     } else {
         if (error) {
             *error = [NSError errorWithDomain:IMImojiSessionErrorDomain

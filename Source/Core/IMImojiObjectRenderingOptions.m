@@ -34,6 +34,7 @@
         self.renderSize = IMImojiObjectRenderSizeThumbnail;
         self.borderStyle = IMImojiObjectBorderStyleSticker;
         self.imageFormat = IMImojiObjectImageFormatWebP;
+        self.renderAnimatedIfSupported = YES;
     }
 
     return self;
@@ -47,6 +48,7 @@
         self.renderSize = renderSize;
         self.borderStyle = borderStyle;
         self.imageFormat = imageFormat;
+        self.renderAnimatedIfSupported = YES;
     }
 
     return self;
@@ -78,6 +80,8 @@
         return NO;
     if (self.imageFormat != options.imageFormat)
         return NO;
+    if (self.renderAnimatedIfSupported != options.renderAnimatedIfSupported)
+        return NO;
     return YES;
 }
 
@@ -88,6 +92,7 @@
     hash = hash * 31u + [self.maximumRenderSize hash];
     hash = hash * 31u + (NSUInteger) self.borderStyle;
     hash = hash * 31u + (NSUInteger) self.imageFormat;
+    hash = hash * 31u + (NSUInteger) self.renderAnimatedIfSupported;
     return hash;
 }
 
@@ -101,11 +106,19 @@
         copy.maximumRenderSize = self.maximumRenderSize;
         copy.borderStyle = self.borderStyle;
         copy.imageFormat = self.imageFormat;
+        copy.renderAnimatedIfSupported = self.renderAnimatedIfSupported;
     }
 
     return copy;
 }
 
+- (IMImojiObjectRenderingOptions *)toAnimatedRenderingOptions {
+    IMImojiObjectRenderingOptions * animatedOptions = [self copy];
+    animatedOptions.imageFormat = IMImojiObjectImageFormatAnimatedGif;
+    animatedOptions.borderStyle = IMImojiObjectBorderStyleNone;
+
+    return animatedOptions;
+}
 
 + (instancetype)optionsWithRenderSize:(IMImojiObjectRenderSize)renderSize {
     return [[IMImojiObjectRenderingOptions alloc] initWithRenderSize:renderSize borderStyle:IMImojiObjectBorderStyleSticker imageFormat:IMImojiObjectImageFormatWebP];
@@ -120,6 +133,10 @@
                           borderStyle:(IMImojiObjectBorderStyle)borderStyle
                           imageFormat:(IMImojiObjectImageFormat)imageFormat {
     return [[IMImojiObjectRenderingOptions alloc] initWithRenderSize:renderSize borderStyle:borderStyle imageFormat:imageFormat];
+}
+
++ (instancetype)optionsWithAnimationAndRenderSize:(IMImojiObjectRenderSize)renderSize {
+    return [[IMImojiObjectRenderingOptions alloc] initWithRenderSize:renderSize borderStyle:IMImojiObjectBorderStyleNone imageFormat:IMImojiObjectImageFormatAnimatedGif];
 }
 
 @end

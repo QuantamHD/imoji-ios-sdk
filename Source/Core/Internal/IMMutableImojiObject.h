@@ -31,6 +31,7 @@
     NSString *__nonnull _identifier;
     NSArray *__nonnull _tags;
     NSDictionary *__nonnull _urls;
+    BOOL _supportsAnimation;
 }
 
 + (nonnull instancetype)imojiWithIdentifier:(nonnull NSString *)identifier

@@ -39,6 +39,9 @@
         _identifier = identifier;
         _urls = urls;
         _tags = tags;
+        _supportsAnimation = urls && [urls[[IMImojiObjectRenderingOptions optionsWithRenderSize:IMImojiObjectRenderSizeThumbnail
+                                                                                    borderStyle:IMImojiObjectBorderStyleNone
+                                                                                    imageFormat:IMImojiObjectImageFormatAnimatedGif]] isKindOfClass:[NSURL class]];
     }
 
     return self;
@@ -54,6 +57,10 @@
 
 - (NSDictionary *)urls {
     return _urls;
+}
+
+- (BOOL)supportsAnimation {
+    return _supportsAnimation;
 }
 
 + (nonnull instancetype)imojiWithIdentifier:(nonnull NSString *)identifier
