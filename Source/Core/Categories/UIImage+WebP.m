@@ -109,9 +109,11 @@ static void FreeImageData(void *info, const void *data, size_t size) {
 {
     WebPDecoderConfig config;
     if (!WebPInitDecoderConfig(&config)) {
-        *error = [NSError errorWithDomain:[NSString stringWithFormat:@"%@.errorDomain", [[NSBundle mainBundle] bundleIdentifier]] code:-101 userInfo:@{
-                NSLocalizedDescriptionKey : @"Unable to initialize webp configuration"
-        }];
+        if (error) {
+            *error = [NSError errorWithDomain:[NSString stringWithFormat:@"%@.errorDomain", [[NSBundle mainBundle] bundleIdentifier]] code:-101 userInfo:@{
+                                                                                                                                                           NSLocalizedDescriptionKey : @"Unable to initialize webp configuration"
+                                                                                                                                                           }];
+        }
         return nil;
     }
 
@@ -122,9 +124,11 @@ static void FreeImageData(void *info, const void *data, size_t size) {
 
     // Decode the WebP image data into a RGBA value array.
     if (WebPDecode([imgData bytes], [imgData length], &config) != VP8_STATUS_OK) {
-        *error = [NSError errorWithDomain:[NSString stringWithFormat:@"%@.errorDomain", [[NSBundle mainBundle] bundleIdentifier]] code:-101 userInfo:@{
-                NSLocalizedDescriptionKey : @"Unable to decode webp data"
-        }];
+        if (error) {
+            *error = [NSError errorWithDomain:[NSString stringWithFormat:@"%@.errorDomain", [[NSBundle mainBundle] bundleIdentifier]] code:-101 userInfo:@{
+                                                                                                                                                           NSLocalizedDescriptionKey : @"Unable to decode webp data"
+                                                                                                                                                           }];
+        }
 
         return nil;
     }
