@@ -5,7 +5,7 @@
 * Animated GIF support :D 
   * Loads in animated content into UIImage's automatically if the Imoji is animated. 
   * Animated UIImages are automatically displayed in UIImageViews.
-* API Change: IMImojiSessionResultSetResponseCallback now have a metadata parameter which will contain specifics related to the search made.
+* API Change: IMImojiSessionResultSetResponseCallback now have a metadata parameter which will contain specifics related to the search made. Result count has been incorporated into that object now instead of being passed by itself.
 * Ensure that access tokens get regenerated when fetching a refresh token fails or when the developer changes their client ID
 * Avoid using a local disk cache managed by the storage policy and use an NSURLCache instead
 

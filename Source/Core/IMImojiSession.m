@@ -206,7 +206,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
         NSError *error;
         [self validateServerResponse:results error:&error];
         if (error) {
-            resultSetResponseCallback(nil, nil, error);
+            resultSetResponseCallback(nil, error);
         } else {
             [self handleImojiFetchResponse:[self convertServerDataSetToImojiArray:results]
                          relatedSearchTerm:[results im_checkedStringForKey:@"followupSearchTerm"]
@@ -243,7 +243,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
         }
 
         if (getTask.error) {
-            resultSetResponseCallback(nil, nil, getTask.error);
+            resultSetResponseCallback(nil, getTask.error);
             return nil;
         }
 
@@ -252,7 +252,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
         [self validateServerResponse:results error:&error];
 
         if (error) {
-            resultSetResponseCallback(nil, nil, error);
+            resultSetResponseCallback(nil, error);
         } else {
             [self handleImojiFetchResponse:[self convertServerDataSetToImojiArray:results]
                          relatedSearchTerm:[results im_checkedStringForKey:@"followupSearchTerm"]
@@ -347,7 +347,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
         NSError *error;
         [self validateServerResponse:results error:&error];
         if (error) {
-            resultSetResponseCallback(nil, nil, error);
+            resultSetResponseCallback(nil, error);
         } else {
             [self handleImojiFetchResponse:[self convertServerDataSetToImojiArray:results]
                          relatedSearchTerm:[results im_checkedStringForKey:@"followupSearchTerm"]
@@ -404,11 +404,11 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
     NSOperation *cancellationToken = self.cancellationTokenOperation;
 
     if (self.sessionState != IMImojiSessionStateConnectedSynchronized) {
-        resultSetResponseCallback(nil, nil, [NSError errorWithDomain:IMImojiSessionErrorDomain
-                                                                code:IMImojiSessionErrorCodeSessionNotSynchronized
-                                                            userInfo:@{
-                                                                    NSLocalizedDescriptionKey : @"IMImojiSession has not been synchronized."
-                                                            }]);
+        resultSetResponseCallback(nil, [NSError errorWithDomain:IMImojiSessionErrorDomain
+                                                           code:IMImojiSessionErrorCodeSessionNotSynchronized
+                                                       userInfo:@{
+                                                               NSLocalizedDescriptionKey : @"IMImojiSession has not been synchronized."
+                                                       }]);
 
         return cancellationToken;
     }
@@ -423,7 +423,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
         [self validateServerResponse:results error:&error];
 
         if (error) {
-            resultSetResponseCallback(nil, nil, error);
+            resultSetResponseCallback(nil, error);
         } else {
             [self handleImojiFetchResponse:[self convertServerDataSetToImojiArray:results]
                          relatedSearchTerm:[results im_checkedStringForKey:@"followupSearchTerm"]

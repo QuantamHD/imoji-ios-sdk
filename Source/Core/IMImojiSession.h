@@ -129,11 +129,10 @@ typedef NS_ENUM(NSUInteger, IMImojiSessionCategoryClassification) {
 
 /**
 * @abstract Callback used for triggering when the server has loaded a result set
-* @param resultCount Number of results returned by the server.
 * @param metadata Result set metadata for the request.
 * @param error An error with code equal to an IMImojiSessionErrorCode value or nil if the request succeeded
 */
-typedef void (^IMImojiSessionResultSetResponseCallback)(NSNumber *__nullable resultCount, IMImojiResultSetMetadata *__nullable metadata, NSError *__nullable error);
+typedef void (^IMImojiSessionResultSetResponseCallback)(IMImojiResultSetMetadata *__nullable metadata, NSError *__nullable error);
 
 /**
 * @abstract Callback used for generic asynchronous requests

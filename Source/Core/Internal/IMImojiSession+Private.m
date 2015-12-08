@@ -537,7 +537,8 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
     if (searchResponseCallback) {
         IMImojiResultSetMetadata *resultSetMetadata = [IMImojiResultSetMetadata new];
         resultSetMetadata.relatedSearchTerm = relatedSearchTerm;
-        searchResponseCallback(@(imojiObjects.count), resultSetMetadata, nil);
+        resultSetMetadata.resultCount = @(imojiObjects.count);
+        searchResponseCallback(resultSetMetadata, nil);
     }
 
     for (IMMutableImojiObject *imoji in imojiObjects) {

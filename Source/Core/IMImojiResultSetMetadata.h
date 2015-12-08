@@ -38,4 +38,9 @@
 */
 @property(nonatomic, strong, nullable) NSString *relatedSearchTerm;
 
+/**
+* @abstract Number of items returned in the result set.
+*/
+@property(nonatomic, strong, nullable) NSNumber *resultCount;
+
 @end
