@@ -34,7 +34,7 @@
         self.renderSize = IMImojiObjectRenderSizeThumbnail;
         self.borderStyle = IMImojiObjectBorderStyleSticker;
         self.imageFormat = IMImojiObjectImageFormatWebP;
-        self.renderAnimatedIfSupported = YES;
+        self.renderAnimatedIfSupported = NO;
     }
 
     return self;
@@ -48,7 +48,7 @@
         self.renderSize = renderSize;
         self.borderStyle = borderStyle;
         self.imageFormat = imageFormat;
-        self.renderAnimatedIfSupported = YES;
+        self.renderAnimatedIfSupported = NO;
     }
 
     return self;
