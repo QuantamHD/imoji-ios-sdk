@@ -39,8 +39,8 @@ __attribute__((overloadable)) UIImage * UIImageWithAnimatedGIFData(NSData *data,
     NSDictionary *userInfo = nil;
     {
         NSMutableDictionary *mutableOptions = [NSMutableDictionary dictionary];
-        [mutableOptions setObject:@(YES) forKey:(NSString *)kCGImageSourceShouldCache];
-        [mutableOptions setObject:(NSString *)kUTTypeGIF forKey:(NSString *)kCGImageSourceTypeIdentifierHint];
+        mutableOptions[(NSString *) kCGImageSourceShouldCache] = @(YES);
+        mutableOptions[(NSString *) kCGImageSourceTypeIdentifierHint] = (NSString *) kUTTypeGIF;
 
         CGImageSourceRef imageSource = CGImageSourceCreateWithData((__bridge CFDataRef)data, (__bridge CFDictionaryRef)mutableOptions);
 
@@ -52,7 +52,7 @@ __attribute__((overloadable)) UIImage * UIImageWithAnimatedGIFData(NSData *data,
             CGImageRef imageRef = CGImageSourceCreateImageAtIndex(imageSource, idx, (__bridge CFDictionaryRef)mutableOptions);
 
             NSDictionary *properties = (__bridge_transfer NSDictionary *)CGImageSourceCopyPropertiesAtIndex(imageSource, idx, NULL);
-            calculatedDuration += [[[properties objectForKey:(__bridge NSString *)kCGImagePropertyGIFDictionary] objectForKey:(__bridge  NSString *)kCGImagePropertyGIFDelayTime] doubleValue];
+            calculatedDuration += [[properties[(__bridge NSString *) kCGImagePropertyGIFDictionary] objectForKey:(__bridge NSString *) kCGImagePropertyGIFDelayTime] doubleValue];
 
             [mutableImages addObject:[UIImage imageWithCGImage:imageRef scale:scale orientation:UIImageOrientationUp]];
 
@@ -173,125 +173,3 @@ __attribute__((overloadable)) NSData * UIImageAnimatedGIFRepresentation(UIImage 
 }
 
 @end
-
-#pragma mark -
-
-#ifndef ANIMATED_GIF_NO_UIIMAGE_INITIALIZER_SWIZZLING
-#import <objc/runtime.h>
-
-static inline void animated_gif_swizzleSelector(Class class, SEL originalSelector, SEL swizzledSelector) {
-    Method originalMethod = class_getInstanceMethod(class, originalSelector);
-    Method swizzledMethod = class_getInstanceMethod(class, swizzledSelector);
-    if (class_addMethod(class, originalSelector, method_getImplementation(swizzledMethod), method_getTypeEncoding(swizzledMethod))) {
-        class_replaceMethod(class, swizzledSelector, method_getImplementation(originalMethod), method_getTypeEncoding(originalMethod));
-    } else {
-        method_exchangeImplementations(originalMethod, swizzledMethod);
-    }
-}
-
-@interface UIImage (_AnimatedGIFImageSerialization)
-@end
-
-@implementation UIImage (_AnimatedGIFImageSerialization)
-
-+ (void)load {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        @autoreleasepool {
-            animated_gif_swizzleSelector(object_getClass((id)self), @selector(imageNamed:), @selector(animated_gif_imageNamed:));
-            animated_gif_swizzleSelector(object_getClass((id)self), @selector(imageWithData:), @selector(animated_gif_imageWithData:));
-            animated_gif_swizzleSelector(object_getClass((id)self), @selector(imageWithData:scale:), @selector(animated_gif_imageWithData:scale:));
-            animated_gif_swizzleSelector(object_getClass((id)self), @selector(imageWithContentsOfFile:), @selector(animated_gif_imageWithContentsOfFile:));
-            animated_gif_swizzleSelector(self, @selector(initWithContentsOfFile:), @selector(animated_gif_initWithContentsOfFile:));
-            animated_gif_swizzleSelector(self, @selector(initWithData:), @selector(animated_gif_initWithData:));
-            animated_gif_swizzleSelector(self, @selector(initWithData:scale:), @selector(animated_gif_initWithData:scale:));
-        }
-    });
-}
-
-#pragma mark -
-
-+ (UIImage *)animated_gif_imageNamed:(NSString *)name __attribute__((objc_method_family(new))) {
-    NSString *path = [[NSBundle mainBundle] pathForResource:[name stringByDeletingPathExtension] ofType:[name pathExtension]];
-    if (!path) {
-        path = [[NSBundle mainBundle] pathForResource:[[name stringByDeletingPathExtension] stringByAppendingString:@"@2x"] ofType:[name pathExtension]];
-    }
-
-    if (path) {
-        NSData *data = [NSData dataWithContentsOfFile:path];
-        if (AnimatedGifDataIsValid(data)) {
-            return UIImageWithAnimatedGIFData(data);
-        }
-    }
-
-    return [self animated_gif_imageNamed:name];
-}
-
-+ (UIImage *)animated_gif_imageWithContentsOfFile:(NSString *)path __attribute__((objc_method_family(new))) {
-    if (path) {
-        NSData *data = [NSData dataWithContentsOfFile:path];
-        if (AnimatedGifDataIsValid(data)) {
-            if ([[path stringByDeletingPathExtension] hasSuffix:@"@2x"]) {
-                return UIImageWithAnimatedGIFData(data, 2.0f, 0.0f, nil);
-            } else {
-                return UIImageWithAnimatedGIFData(data);
-            }
-        }
-    }
-
-    return [self animated_gif_imageWithContentsOfFile:path];
-}
-
-+ (UIImage *)animated_gif_imageWithData:(NSData *)data __attribute__((objc_method_family(init))) {
-    if (AnimatedGifDataIsValid(data)) {
-        return UIImageWithAnimatedGIFData(data);
-    }
-
-    return [self animated_gif_imageWithData:data];
-}
-
-+ (UIImage *)animated_gif_imageWithData:(NSData *)data
-                                  scale:(CGFloat)scale __attribute__((objc_method_family(init)))
-{
-    if (AnimatedGifDataIsValid(data)) {
-        return UIImageWithAnimatedGIFData(data, scale, 0.0f, nil);
-    }
-
-    return [self animated_gif_imageWithData:data scale:scale];
-}
-
-#pragma mark -
-
-- (id)animated_gif_initWithContentsOfFile:(NSString *)path __attribute__((objc_method_family(init))) {
-    NSData *data = [NSData dataWithContentsOfFile:path];
-    if (AnimatedGifDataIsValid(data)) {
-        if ([[path stringByDeletingPathExtension] hasSuffix:@"@2x"]) {
-            return UIImageWithAnimatedGIFData(data, 2.0, 0.0f, nil);
-        } else {
-            return UIImageWithAnimatedGIFData(data);
-        }
-    }
-
-    return [self animated_gif_initWithContentsOfFile:path];
-}
-
-- (id)animated_gif_initWithData:(NSData *)data __attribute__((objc_method_family(init))) {
-    if (AnimatedGifDataIsValid(data)) {
-        return UIImageWithAnimatedGIFData(data);
-    }
-
-    return [self animated_gif_initWithData:data];
-}
-
-- (id)animated_gif_initWithData:(NSData *)data
-                          scale:(CGFloat)scale __attribute__((objc_method_family(init)))
-{
-    if (AnimatedGifDataIsValid(data)) {
-        return UIImageWithAnimatedGIFData(data, scale, 0.0f, nil);
-    }
-
-    return [self animated_gif_initWithData:data scale:scale];
-}
-
-@end
-#endif
