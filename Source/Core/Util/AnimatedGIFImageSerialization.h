@@ -29,65 +29,25 @@
 /**
  
  */
-extern __attribute__((overloadable)) UIImage * UIImageWithAnimatedGIFData(NSData *data);
+extern __attribute__((overloadable)) UIImage *UIImageWithAnimatedGIFData(NSData *data);
 
 /**
  
  */
-extern __attribute__((overloadable)) UIImage * UIImageWithAnimatedGIFData(NSData *data, CGFloat scale, NSTimeInterval duration, NSError * __autoreleasing *error);
+extern __attribute__((overloadable)) UIImage *UIImageWithAnimatedGIFData(NSData *data, CGFloat scale, NSTimeInterval duration, NSError *__autoreleasing *error);
 
 #pragma mark -
 
 /**
  
  */
-extern __attribute__((overloadable)) NSData * UIImageAnimatedGIFRepresentation(UIImage *image);
+extern __attribute__((overloadable)) NSData *UIImageAnimatedGIFRepresentation(UIImage *image);
 
 /**
  
  */
-extern __attribute__((overloadable)) NSData * UIImageAnimatedGIFRepresentation(UIImage *image, NSTimeInterval duration, NSUInteger loopCount, NSError * __autoreleasing *error);
+extern __attribute__((overloadable)) NSData *UIImageAnimatedGIFRepresentation(UIImage *image, NSTimeInterval duration, NSUInteger loopCount, NSError *__autoreleasing *error);
 
-#pragma mark -
+extern NSString *const AnimatedGIFImageErrorDomain;
 
-/**
- 
- */
-@interface AnimatedGIFImageSerialization : NSObject
-
-/// @name Creating an Animated GIF
-
-/**
- */
-+ (UIImage *)imageWithData:(NSData *)data
-                     error:(NSError * __autoreleasing *)error;
-
-/**
- */
-+ (UIImage *)imageWithData:(NSData *)data
-                     scale:(CGFloat)scale
-                  duration:(NSTimeInterval)duration
-                     error:(NSError * __autoreleasing *)error;
-
-/// @name Creating Animated Gif Data
-
-/**
- */
-+ (NSData *)animatedGIFDataWithImage:(UIImage *)image
-                               error:(NSError * __autoreleasing *)error;
-
-/**
- 
- */
-+ (NSData *)animatedGIFDataWithImage:(UIImage *)image
-                            duration:(NSTimeInterval)duration
-                           loopCount:(NSUInteger)loopCount
-                               error:(NSError * __autoreleasing *)error;
-
-@end
-
-/**
- 
- */
-extern NSString * const AnimatedGIFImageErrorDomain;
 #endif
