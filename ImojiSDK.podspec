@@ -6,7 +6,8 @@ Pod::Spec.new do |s|
   s.summary  = 'iOS SDK for Imoji. Integrate Stickers and custom emojis into your applications easily!'
   s.homepage = 'http://imoji.io/sdk'
   s.authors = {'Nima Khoshini'=>'nima@imojiapp.com', 'Alex Hoang'=>'alex@imojiapp.com'}
-
+  s.libraries = 'z'
+    
   s.source   = { :git => 'https://github.com/imojiengineering/imoji-ios-sdk.git', :tag => s.version.to_s }
   s.ios.deployment_target = '7.0'
 

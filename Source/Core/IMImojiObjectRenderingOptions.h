@@ -84,7 +84,13 @@ typedef NS_ENUM(NSUInteger, IMImojiObjectImageFormat) {
      * @abstract Animated GIF format. Animated GIF's will never not have borders. Therefore the only supported border
      * style is IMImojiObjectBorderStyleNone.
      */
-            IMImojiObjectImageFormatAnimatedGif
+            IMImojiObjectImageFormatAnimatedGif,
+
+    /**
+     * @abstract Animated GIF format. Animated GIF's will never not have borders. Therefore the only supported border
+     * style is IMImojiObjectBorderStyleNone.
+     */
+            IMImojiObjectImageFormatAnimatedWebp
 };
 
 /**

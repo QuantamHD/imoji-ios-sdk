@@ -73,4 +73,28 @@
     return nil;
 }
 
+- (nullable IMImojiObjectRenderingOptions *)supportedAnimatedRenderingOptionFromOption:(nonnull IMImojiObjectRenderingOptions *)renderingOptions {
+    if (!self.supportsAnimation) {
+        return nil;
+    }
+
+    // if the requested rendering options are for WebP, try to load an animated webp image, otherwise fallback to gif
+    IMImojiObjectRenderingOptions *animatedRenderingOptions = [renderingOptions toAnimatedRenderingOptions];
+    if (renderingOptions.imageFormat == IMImojiObjectImageFormatWebP) {
+        animatedRenderingOptions.imageFormat = IMImojiObjectImageFormatAnimatedWebp;
+
+        if ([self getUrlForRenderingOptions:animatedRenderingOptions]) {
+            return animatedRenderingOptions;
+        }
+
+        animatedRenderingOptions.imageFormat = IMImojiObjectImageFormatAnimatedGif;
+    }
+
+    if ([self getUrlForRenderingOptions:animatedRenderingOptions]) {
+        return animatedRenderingOptions;
+    }
+
+    return nil;
+}
+
 @end

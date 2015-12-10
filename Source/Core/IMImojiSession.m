@@ -633,7 +633,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
 
     IMImojiObjectRenderingOptions *requestedRenderingOptions = options;
     if (imoji.supportsAnimation && options.renderAnimatedIfSupported) {
-        requestedRenderingOptions = [options toAnimatedRenderingOptions];
+        requestedRenderingOptions = [imoji supportedAnimatedRenderingOptionFromOption:options];
     }
 
     [[self downloadImojiContents:imoji

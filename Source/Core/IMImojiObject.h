@@ -60,4 +60,10 @@
  */
 - (nullable NSURL *)getUrlForRenderingOptions:(nonnull IMImojiObjectRenderingOptions *)renderingOptions;
 
+/**
+ * @abstract Fetches rendering options suitable for an animated version of the Imoji. Returns nil if the Imoji
+ * does not have a animated version available.
+ */
+- (nullable IMImojiObjectRenderingOptions *)supportedAnimatedRenderingOptionFromOption:(nonnull IMImojiObjectRenderingOptions *)renderingOptions;
+
 @end

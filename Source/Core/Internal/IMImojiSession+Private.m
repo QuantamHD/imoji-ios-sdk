@@ -12,10 +12,9 @@
 #import "ImojiSDKConstants.h"
 #import "IMMutableImojiObject.h"
 #import "NSDictionary+Utils.h"
-#import "UIImage+WebP.h"
 #import "UIImage+Extensions.h"
 #import "NSString+Utils.h"
-#import "AnimatedGIFImageSerialization.h"
+#import "YYImage.h"
 
 NSString *const IMImojiSessionFileAccessTokenKey = @"at";
 NSString *const IMImojiSessionFileRefreshTokenKey = @"rt";
@@ -602,26 +601,7 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
                     });
                 }
             } else {
-                NSData *data = [NSData dataWithContentsOfFile:((NSURL *) urlTask.result).path];
-                UIImage *image;
-
-                switch (renderingOptions.imageFormat) {
-                    case IMImojiObjectImageFormatWebP:
-                        image = [UIImage im_imageWithWebPData:data];
-                        break;
-
-                    case IMImojiObjectImageFormatAnimatedGif:
-                        image = UIImageWithAnimatedGIFData(data);
-                        break;
-
-                    case IMImojiObjectImageFormatPNG:
-                    default:
-                        image = [UIImage imageWithData:data];
-                        break;
-
-                }
-
-                taskCompletionSource.result = image;
+                taskCompletionSource.result = [YYImage imageWithData:[NSData dataWithContentsOfFile:((NSURL *) urlTask.result).path]];
             }
 
             return nil;
@@ -747,29 +727,49 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
             }
         }
 
-        if (result[@"animated"] && result[@"animated"][@"gif"]) {
-            NSDictionary *animatedImages = result[@"animated"][@"gif"];
-            for (NSNumber *renderSize in @[@(IMImojiObjectRenderSizeThumbnail), @(IMImojiObjectRenderSizeFullResolution), @(IMImojiObjectRenderSize320), @(IMImojiObjectRenderSize512)]) {
-                IMImojiObjectRenderingOptions *renderingOptions = [IMImojiObjectRenderingOptions optionsWithAnimationAndRenderSize:(IMImojiObjectRenderSize) renderSize.unsignedIntegerValue];
+        if (result[@"animated"]) {
+            for (NSNumber *imageFormat in @[@(IMImojiObjectImageFormatAnimatedWebp), @(IMImojiObjectImageFormatAnimatedGif)]) {
+                for (NSNumber *renderSize in @[@(IMImojiObjectRenderSizeThumbnail), @(IMImojiObjectRenderSizeFullResolution), @(IMImojiObjectRenderSize320), @(IMImojiObjectRenderSize512)]) {
+                    IMImojiObjectRenderingOptions *renderingOptions = [IMImojiObjectRenderingOptions optionsWithRenderSize:(IMImojiObjectRenderSize)renderSize.unsignedIntegerValue
+                                                                                                               borderStyle:IMImojiObjectBorderStyleNone
+                                                                                                               imageFormat:(IMImojiObjectImageFormat) imageFormat.unsignedIntegerValue];
 
-                id url;
-                switch (renderingOptions.renderSize) {
-                    case IMImojiObjectRenderSizeThumbnail:
-                        url = animatedImages[@"150"] ? animatedImages[@"150"][@"url"] : nil;
-                        break;
-                    case IMImojiObjectRenderSizeFullResolution:
-                        url = animatedImages[@"1200"] ? animatedImages[@"1200"][@"url"] : nil;
-                        break;
-                    case IMImojiObjectRenderSize320:
-                        url = animatedImages[@"320"] ? animatedImages[@"320"][@"url"] : nil;
-                        break;
-                    case IMImojiObjectRenderSize512:
-                        url = animatedImages[@"512"] ? animatedImages[@"512"][@"url"] : nil;
-                        break;
-                }
+                    NSDictionary *animatedImages;
+                    switch (renderingOptions.imageFormat) {
+                        case IMImojiObjectImageFormatAnimatedGif:
+                            animatedImages = result[@"animated"][@"gif"];
+                            break;
+                        case IMImojiObjectImageFormatAnimatedWebp:
+                            animatedImages = result[@"animated"][@"webp"];
+                            break;
+                        default:
+                            animatedImages = nil;
+                            break;
+                    }
 
-                if (url && [url isKindOfClass:[NSString class]]) {
-                    imageUrls[renderingOptions] = [NSURL URLWithString:url];
+                    if (!animatedImages) {
+                        continue;
+                    }
+
+                    id url;
+                    switch (renderingOptions.renderSize) {
+                        case IMImojiObjectRenderSizeThumbnail:
+                            url = animatedImages[@"150"] ? animatedImages[@"150"][@"url"] : nil;
+                            break;
+                        case IMImojiObjectRenderSizeFullResolution:
+                            url = animatedImages[@"1200"] ? animatedImages[@"1200"][@"url"] : nil;
+                            break;
+                        case IMImojiObjectRenderSize320:
+                            url = animatedImages[@"320"] ? animatedImages[@"320"][@"url"] : nil;
+                            break;
+                        case IMImojiObjectRenderSize512:
+                            url = animatedImages[@"512"] ? animatedImages[@"512"][@"url"] : nil;
+                            break;
+                    }
+
+                    if (url && [url isKindOfClass:[NSString class]]) {
+                        imageUrls[renderingOptions] = [NSURL URLWithString:url];
+                    }
                 }
             }
         }
