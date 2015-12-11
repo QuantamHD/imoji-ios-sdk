@@ -36,6 +36,7 @@
 #import "IMArtist.h"
 #import "IMMutableArtist.h"
 #import "IMMutableCategoryAttribution.h"
+#import "YYImage.h"
 
 NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
 
@@ -719,20 +720,25 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
             return image;
         }
 
-        if (image.images) {
-            NSMutableArray *resizedFrames = [NSMutableArray new];
-            for (UIImage *frame in image.images) {
-                UIImage *resizedImage = CGSizeEqualToSize(targetSize, CGSizeZero) ? frame :
-                        [frame im_resizedImageToFitInSize:targetSize scaleIfSmaller:YES];
+        if ([image isKindOfClass:[YYImage class]] && options.renderAnimatedIfSupported) {
+            YYImage *yyImage = (YYImage *) image;
+            
+            YYImageEncoder *encoder = [[YYImageEncoder alloc] initWithType:YYImageTypeGIF];
+            encoder.loopCount = yyImage.animatedImageLoopCount;
+            for (NSUInteger i = 0; i < yyImage.animatedImageFrameCount; ++i) {
+                UIImage *imageAtFrame = [yyImage animatedImageFrameAtIndex:i];
+                UIImage *resizedImage = CGSizeEqualToSize(targetSize, CGSizeZero) ? imageAtFrame :
+                        [imageAtFrame im_resizedImageToFitInSize:targetSize scaleIfSmaller:YES];
 
                 if (!CGSizeEqualToSize(CGSizeZero, aspectRatio)) {
                     resizedImage = [resizedImage im_imageWithAspect:aspectRatio];
                 }
 
-                [resizedFrames addObject:[resizedImage im_imageWithScreenScale]];
+                [encoder addImage:[resizedImage im_imageWithScreenScale]
+                         duration:[yyImage animatedImageDurationAtIndex:i]];
             }
 
-            return [UIImage animatedImageWithImages:resizedFrames duration:image.duration];
+            return [YYImage imageWithData:[encoder encode]];
         } else {
             UIImage *resizedImage = CGSizeEqualToSize(targetSize, CGSizeZero) ? image :
                     [image im_resizedImageToFitInSize:targetSize scaleIfSmaller:YES];

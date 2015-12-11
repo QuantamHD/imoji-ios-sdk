@@ -7,7 +7,7 @@ Pod::Spec.new do |s|
   s.homepage = 'http://imoji.io/sdk'
   s.authors = {'Nima Khoshini'=>'nima@imojiapp.com', 'Alex Hoang'=>'alex@imojiapp.com'}
   s.libraries = 'z'
-    
+
   s.source   = { :git => 'https://github.com/imojiengineering/imoji-ios-sdk.git', :tag => s.version.to_s }
   s.ios.deployment_target = '7.0'
 
@@ -26,7 +26,7 @@ Pod::Spec.new do |s|
     ss.dependency "libwebp", "~> 0.4.3"
 
     ss.ios.source_files = 'Source/Core/**/*.{h,m}'
-    ss.ios.public_header_files = 'Source/Core/*.h'
+    ss.ios.public_header_files = 'Source/Core/*.h, Source/Core/Util/YYImage/*.h'
   end
   
 end
