@@ -26,7 +26,7 @@ Pod::Spec.new do |s|
     ss.dependency "libwebp", "~> 0.4.3"
 
     ss.ios.source_files = 'Source/Core/**/*.{h,m}'
-    ss.ios.public_header_files = 'Source/Core/*.h, Source/Core/Util/YYImage/*.h'
+    ss.ios.public_header_files = 'Source/Core/*.h', 'Source/Core/Util/YYImage/*.h'
   end
   
 end
