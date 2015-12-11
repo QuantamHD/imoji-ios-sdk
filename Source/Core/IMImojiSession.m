@@ -720,7 +720,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
             return image;
         }
 
-        if ([image isKindOfClass:[YYImage class]] && options.renderAnimatedIfSupported) {
+        if ([image isKindOfClass:[YYImage class]] && options.renderAnimatedIfSupported && imoji.supportsAnimation) {
             YYImage *yyImage = (YYImage *) image;
             
             YYImageEncoder *encoder = [[YYImageEncoder alloc] initWithType:YYImageTypeGIF];
