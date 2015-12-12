@@ -1,9 +1,13 @@
 # Imoji SDK Changes
 
+### Version 2.0.3
+
+* Fixes issue with webp images not loading in Swift
+
 ### Version 2.0.2
 
 * Using YYImages for rendering animated and non-animated stickers. Users can use YYAnimatedImageView to display the animated contents or any other framework they like. See [http://cocoadocs.org/docsets/YYImage/0.9.2/Classes/YYImage.html](http://cocoadocs.org/docsets/YYImage/0.9.2/Classes/YYImage.html) for more info.
-* Animated WebP support for new animated stickers
+* Animated WebP support for new animated stickers.
 
 ### Version 2.0.1
 

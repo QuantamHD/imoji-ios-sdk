@@ -25,13 +25,13 @@
 
 
 #ifndef YYIMAGE_WEBP_ENABLED
-#if __has_include(<webp/decode.h>) && __has_include(<webp/encode.h>) && \
-    __has_include(<webp/demux.h>)  && __has_include(<webp/mux.h>)
+#if __has_include(<libwebp/webp/decode.h>) && __has_include(<libwebp/webp/encode.h>) && \
+    __has_include(<libwebp/webp/demux.h>)  && __has_include(<libwebp/webp/mux.h>)
 #define YYIMAGE_WEBP_ENABLED 1
-#import <webp/decode.h>
-#import <webp/encode.h>
-#import <webp/demux.h>
-#import <webp/mux.h>
+#import <libwebp/webp/decode.h>
+#import <libwebp/webp/encode.h>
+#import <libwebp/webp/demux.h>
+#import <libwebp/webp/mux.h>
 #elif __has_include("webp/decode.h") && __has_include("webp/encode.h") && \
       __has_include("webp/demux.h")  && __has_include("webp/mux.h")
 #define YYIMAGE_WEBP_ENABLED 1
