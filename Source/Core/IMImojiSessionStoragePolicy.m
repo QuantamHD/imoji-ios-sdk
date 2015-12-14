@@ -25,7 +25,8 @@
 
 #import "IMImojiSessionStoragePolicy.h"
 
-const NSUInteger IMImojiSessionStoragePolicyCacheSize = 5 * 1024 * 1024;
+const NSUInteger IMImojiSessionStoragePolicyMemoryCacheSize = 0;
+const NSUInteger IMImojiSessionStoragePolicyDiskCacheSize = 15 * 1024 * 1024;
 
 @interface IMImojiSessionStoragePolicy ()
 @end
@@ -69,8 +70,8 @@ const NSUInteger IMImojiSessionStoragePolicyCacheSize = 5 * 1024 * 1024;
     NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration ephemeralSessionConfiguration];
     sessionConfiguration.HTTPMaximumConnectionsPerHost = 10;
     sessionConfiguration.networkServiceType = NSURLNetworkServiceTypeDefault;
-    sessionConfiguration.URLCache = [[NSURLCache alloc] initWithMemoryCapacity:0
-                                                                  diskCapacity:IMImojiSessionStoragePolicyCacheSize
+    sessionConfiguration.URLCache = [[NSURLCache alloc] initWithMemoryCapacity:IMImojiSessionStoragePolicyMemoryCacheSize
+                                                                  diskCapacity:IMImojiSessionStoragePolicyDiskCacheSize
                                                                       diskPath:self.cachePath.path];
     sessionConfiguration.HTTPShouldUsePipelining = YES;
     sessionConfiguration.requestCachePolicy = NSURLRequestUseProtocolCachePolicy;
