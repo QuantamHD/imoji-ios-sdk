@@ -236,38 +236,38 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
                        headers:(NSDictionary *)headers {
 
     [request setAllHTTPHeaderFields:[self getRequestHeaders:headers]];
-
     BFTaskCompletionSource *taskCompletionSource = [BFTaskCompletionSource taskCompletionSource];
-    [[self->_urlSession downloadTaskWithRequest:request completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {
-        if (error) {
-            taskCompletionSource.error = error;
-        } else {
-            NSError *jsonError;
-            NSDictionary *jsonInfo;
 
-            NSData *data = [NSData dataWithContentsOfFile:location.path];
-            if (data.length > 0) {
-                jsonInfo = [NSJSONSerialization JSONObjectWithData:data
-                                                           options:NSJSONReadingAllowFragments
-                                                             error:&jsonError];
-            } else {
-                jsonInfo = nil;
-            }
+    [[self->_urlSession dataTaskWithRequest:request
+                          completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+                              if (error) {
+                                  taskCompletionSource.error = error;
+                              } else {
+                                  NSError *jsonError;
+                                  NSDictionary *jsonInfo;
 
-            if (jsonError) {
-                taskCompletionSource.error = jsonError;
-            } else {
-                if ([response isKindOfClass:[NSHTTPURLResponse class]] &&
-                        ((NSHTTPURLResponse *) response).statusCode != 200) {
-                    taskCompletionSource.error = [NSError errorWithDomain:IMImojiSessionErrorDomain
-                                                                     code:IMImojiSessionErrorCodeServerError
-                                                                 userInfo:jsonInfo];
-                } else {
-                    taskCompletionSource.result = jsonInfo;
-                }
-            }
-        }
-    }] resume];
+                                  if (data.length > 0) {
+                                      jsonInfo = [NSJSONSerialization JSONObjectWithData:data
+                                                                                 options:NSJSONReadingAllowFragments
+                                                                                   error:&jsonError];
+                                  } else {
+                                      jsonInfo = nil;
+                                  }
+
+                                  if (jsonError) {
+                                      taskCompletionSource.error = jsonError;
+                                  } else {
+                                      if ([response isKindOfClass:[NSHTTPURLResponse class]] &&
+                                              ((NSHTTPURLResponse *) response).statusCode != 200) {
+                                          taskCompletionSource.error = [NSError errorWithDomain:IMImojiSessionErrorDomain
+                                                                                           code:IMImojiSessionErrorCodeServerError
+                                                                                       userInfo:jsonInfo];
+                                      } else {
+                                          taskCompletionSource.result = jsonInfo;
+                                      }
+                                  }
+                              }
+                          }] resume];
 
     return taskCompletionSource.task;
 }
@@ -277,11 +277,11 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
 
     BFTaskCompletionSource *taskCompletionSource = [BFTaskCompletionSource taskCompletionSource];
 
-    [[self->_urlSession downloadTaskWithRequest:request completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {
+    [[self->_urlSession dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         if (error) {
             taskCompletionSource.error = error;
         } else {
-            taskCompletionSource.result = location;
+            taskCompletionSource.result = data;
         }
     }] resume];
 
@@ -601,7 +601,7 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
                     });
                 }
             } else {
-                taskCompletionSource.result = [YYImage imageWithData:[NSData dataWithContentsOfFile:((NSURL *) urlTask.result).path]];
+                taskCompletionSource.result = [YYImage imageWithData:(NSData *) urlTask.result];
             }
 
             return nil;
@@ -730,7 +730,7 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
         if (result[@"animated"]) {
             for (NSNumber *imageFormat in @[@(IMImojiObjectImageFormatAnimatedWebp), @(IMImojiObjectImageFormatAnimatedGif)]) {
                 for (NSNumber *renderSize in @[@(IMImojiObjectRenderSizeThumbnail), @(IMImojiObjectRenderSizeFullResolution), @(IMImojiObjectRenderSize320), @(IMImojiObjectRenderSize512)]) {
-                    IMImojiObjectRenderingOptions *renderingOptions = [IMImojiObjectRenderingOptions optionsWithRenderSize:(IMImojiObjectRenderSize)renderSize.unsignedIntegerValue
+                    IMImojiObjectRenderingOptions *renderingOptions = [IMImojiObjectRenderingOptions optionsWithRenderSize:(IMImojiObjectRenderSize) renderSize.unsignedIntegerValue
                                                                                                                borderStyle:IMImojiObjectBorderStyleNone
                                                                                                                imageFormat:(IMImojiObjectImageFormat) imageFormat.unsignedIntegerValue];
 
