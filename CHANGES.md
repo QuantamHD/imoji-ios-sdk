@@ -2,7 +2,9 @@
 
 ### Version 2.0.3
 
-* Fixes issue with webp images not loading in Swift
+* Fixes issue with webp images not loading in Swift.
+* Image download and API NSURLSession tasks switched to data tasks to trigger NSURLCaching. 
+* Increased NSURLCache size to 15MB.
 
 ### Version 2.0.2
 
