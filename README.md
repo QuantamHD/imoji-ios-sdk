@@ -32,6 +32,33 @@ Initiate the client id and api token for ImojiSDK. You can add this to the appli
 }
 ```
 
+### Animated Stickers!!
+![alt tag](https://compass.imoji.io/10e/10ee60f8-6c68-43f8-9e2c-fca6e2b285ed-thumb.gif)
+
+Animated stickers are loaded by default in versions 2.0.2 and higher. The ImojiSDK uses [YYImage](https://github.com/ibireme/YYImage) to load and display animated content for efficient loading.
+
+Your application will need to either use YYAnimatedImageView (bundled in ImojiSDK) instead of UIImageView's or extract the contents of the animated gif into your own view (ex: FLAnimatedImage). 
+
+To extract animated content, you can perform the following:
+
+```objective-c
+IMImojiObject *imoji;
+IMImojiObjectRenderingOptions *options = [IMImojiObjectRenderingOptions optionsWithRenderSize:IMImojiObjectRenderSizeThumbnail];
+options.renderAnimatedIfSupported = YES;
+
+[imojiSession renderImoji:imoji
+                  options:options
+                 callback:^(UIImage *image, NSError *renderError) {
+                     if (imoji.supportsAnimation && [image isKindOfClass:[YYImage class]]) {
+                         YYImage *yyImage = (YYImage *) image;
+                         NSData *animatedImageData = yyImage.animatedImageData;
+                         // load animated data into view
+                     }
+                 }
+];
+
+```
+
 ### Synchronization of user accounts
 
 Apps using the ImojiSDK can synchronize with an Imoji account to pull personalized content created by that user (requires Imoji builds version 2.1.1 and greater). In order to do so you must first register a URL type for your application in the following format
