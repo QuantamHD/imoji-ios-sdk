@@ -45,13 +45,16 @@ extern NSUInteger const IMImojiObjectPriorityDefault;
 /**
 * @abstract Description of the category. This field is never nil.
 */
-@property(nonatomic, strong, readonly, nonnull) NSString * title;
+@property(nonatomic, strong, readonly, nonnull) NSString *title;
 
 /**
 * @abstract An imoji object representing the category. This field is never nil.
 */
 @property(nonatomic, strong, readonly, nonnull) IMImojiObject *previewImoji;
 
+/**
+* @abstract An array of IMImojiObjects that represent the category.
+*/
 @property(nonatomic, strong, readonly, nullable) NSArray *previewImojis;
 
 /**
