@@ -1,5 +1,5 @@
-[![Pod Version](http://img.shields.io/cocoapods/v/ImojiSDK.svg?style=flat)](http://cocoadocs.org/docsets/Bolts/)
-[![Pod Platform](http://img.shields.io/cocoapods/p/ImojiSDK.svg?style=flat)](http://cocoadocs.org/docsets/Bolts/)
+[![Pod Version](http://img.shields.io/cocoapods/v/ImojiSDK.svg?style=flat)](http://cocoadocs.org/docsets/ImojiSDK/)
+[![Pod Platform](http://img.shields.io/cocoapods/p/ImojiSDK.svg?style=flat)](http://cocoadocs.org/docsets/ImojiSDK/)
 [![Pod License](http://img.shields.io/cocoapods/l/ImojiSDK.svg?style=flat)](https://github.com/imojiengineering/imoji-ios-sdk/blob/master/LICENSE.md)
 
 # Imoji SDK
