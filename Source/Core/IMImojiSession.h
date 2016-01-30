@@ -170,6 +170,15 @@ typedef void (^IMImojiSessionAsyncResponseCallback)(BOOL successful, NSError *__
 */
 typedef void (^IMImojiSessionCreationResponseCallback)(IMImojiObject *__nullable imoji, NSError *__nullable error);
 
+/**
+* @abstract Callback used for exporting Imoji to an NSData reference for export (ex: sharing to iMessage, Instagram, etc).
+* @param image UIImage representation of the IMImojiObject.
+* @param data NSData reference safe for exporting.
+* @param typeIdentifier Either kUTTypeGIF or kUTTypePNG if the operation succeeded. nil otherwise.
+* @param error An error with code equal to an IMImojiSessionErrorCode value or nil if the request succeeded.
+*/
+typedef void (^IMImojiSessionExportedImageResponseCallback)(UIImage *__nullable image, NSData *__nullable data, NSString *typeIdentifier, NSError *__nullable error);
+
 @interface IMImojiSession : NSObject {
 @private
     IMImojiSessionState _sessionState;
@@ -292,18 +301,28 @@ typedef void (^IMImojiSessionCreationResponseCallback)(IMImojiObject *__nullable
 @interface IMImojiSession (ImojiDisplaying)
 
 /**
-* @abstract Renders an imoji object into a image with a specified border and shadow.
-* The imoji image is scaled to fit the specified target size. This may make a server call depending on the availability
+* @abstract Renders an imoji object into a image with the specified rendering options.
+* The imoji image is scaled to fit the specified target size. This may make a server call depending on the availability.
 * of the imoji with the session storage policy.
 * @param imoji The imoji to render.
-* @param options Set of options to render the imoji with
-* @param callback Called once the imoji UIImage has been rendered
+* @param options Set of options to render the imoji with.
+* @param callback Called once the imoji UIImage has been rendered.
 * @return An operation reference that can be used to cancel the request.
 */
 - (nonnull NSOperation *)renderImoji:(nonnull IMImojiObject *)imoji
                              options:(nonnull IMImojiObjectRenderingOptions *)options
                             callback:(nonnull IMImojiSessionImojiRenderResponseCallback)callback;
 
+/**
+* @abstract Renders an imoji object into an exportable NSData object with the specified rendering options.
+* @param imoji The imoji to render.
+* @param options Set of options to render the imoji with.
+* @param callback Called once the imoji image and data have been rendered.
+* @return An operation reference that can be used to cancel the request.
+ */
+- (nonnull NSOperation *)renderImojiForExport:(nonnull IMImojiObject *)imoji
+                                      options:(nonnull IMImojiObjectRenderingOptions *)options
+                                     callback:(nonnull IMImojiSessionExportedImageResponseCallback)callback;
 @end
 
 @interface IMImojiSession (SynchronizedUserActions)

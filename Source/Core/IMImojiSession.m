@@ -26,6 +26,8 @@
 #import <Bolts/BFTaskCompletionSource.h>
 #import <Bolts/BFTask.h>
 #import <Bolts/BFExecutor.h>
+#import <MobileCoreServices/MobileCoreServices.h>
+#import <ImageIO/ImageIO.h>
 #import "ImojiSDK.h"
 #import "NSDictionary+Utils.h"
 #import "IMMutableImojiObject.h"
@@ -625,6 +627,85 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
     }
 
     return cancellationToken;
+}
+
+- (nonnull NSOperation *)renderImojiForExport:(nonnull IMImojiObject *)imoji
+                                      options:(nonnull IMImojiObjectRenderingOptions *)options
+                                     callback:(nonnull IMImojiSessionExportedImageResponseCallback)callback {
+    return [self renderImoji:imoji options:options callback:^(UIImage *image, NSError *error) {
+
+        if (error) {
+            callback(nil, nil, nil, error);
+        } else {
+            NSData *attachmentData = nil;
+            NSError *exportError = nil;
+            NSString *typeIdentifier = nil;
+
+            if (imoji.supportsAnimation) {
+                if ([image isKindOfClass:[YYImage class]]) {
+                    YYImage *yyImage = (YYImage *) image;
+
+                    if (yyImage.animatedImageType == YYImageTypeGIF) {
+                        attachmentData = yyImage.animatedImageData;
+                        typeIdentifier = (NSString *) kUTTypeGIF;
+                    } else if (yyImage.animatedImageType == YYImageTypeWebP) {
+                        // YYImage animatedImageData gives back the full webp data which is unusable for exporting
+                        // manually convert it here using a simple method to convert animated frames to NSData adapted from:
+                        // https://github.com/mattt/AnimatedGIFImageSerialization/blob/master/AnimatedGIFImageSerialization/AnimatedGIFImageSerialization.m
+
+                        NSUInteger frameCount = yyImage.animatedImageFrameCount;
+                        NSMutableData *mutableData = [NSMutableData data];
+                        CGImageDestinationRef destination =
+                                CGImageDestinationCreateWithData((__bridge CFMutableDataRef) mutableData, kUTTypeGIF, frameCount, NULL);
+
+                        NSDictionary *imageProperties = @{(__bridge NSString *) kCGImagePropertyGIFDictionary : @{
+                                (__bridge NSString *) kCGImagePropertyGIFLoopCount : @(yyImage.animatedImageLoopCount)
+                        }};
+                        CGImageDestinationSetProperties(destination, (__bridge CFDictionaryRef) imageProperties);
+
+                        for (NSUInteger i = 0; i < frameCount; i++) {
+                            NSDictionary *frameProperties = @{(__bridge NSString *) kCGImagePropertyGIFDictionary : @{
+                                    (__bridge NSString *) kCGImagePropertyGIFUnclampedDelayTime : @([yyImage animatedImageDurationAtIndex:i])
+                            }};
+                            CGImageDestinationAddImage(destination, [[yyImage animatedImageFrameAtIndex:i] CGImage], (__bridge CFDictionaryRef) frameProperties);
+                        }
+
+                        BOOL success = CGImageDestinationFinalize(destination);
+                        CFRelease(destination);
+
+                        if (!success) {
+                            exportError = [NSError errorWithDomain:IMImojiSessionErrorDomain
+                                                              code:IMImojiSessionErrorCodeImojiRenderingUnavailable
+                                                          userInfo:@{
+                                                                  NSLocalizedDescriptionKey : @"Unable to export WEBP to GIF"
+                                                          }];
+                        } else {
+                            attachmentData = mutableData;
+                            typeIdentifier = (NSString *) kUTTypeGIF;
+                        }
+
+                    } else {
+                        exportError = [NSError errorWithDomain:IMImojiSessionErrorDomain
+                                                          code:IMImojiSessionErrorCodeImojiRenderingUnavailable
+                                                      userInfo:@{
+                                                              NSLocalizedDescriptionKey : [NSString stringWithFormat:@"Unsupported YYImageType %@", @(yyImage.animatedImageType)]
+                                                      }];
+                    }
+                } else {
+                    exportError = [NSError errorWithDomain:IMImojiSessionErrorDomain
+                                                      code:IMImojiSessionErrorCodeImojiRenderingUnavailable
+                                                  userInfo:@{
+                                                          NSLocalizedDescriptionKey : @"Unsupported animated image! Only YYImage references are currently supported."
+                                                  }];
+                }
+            } else {
+                attachmentData = UIImagePNGRepresentation(image);
+                typeIdentifier = (NSString *) kUTTypePNG;
+            }
+
+            callback(image, attachmentData, typeIdentifier, exportError);
+        }
+    }];
 }
 
 - (void)renderImoji:(IMMutableImojiObject *)imoji
