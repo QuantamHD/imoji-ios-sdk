@@ -177,7 +177,7 @@ typedef void (^IMImojiSessionCreationResponseCallback)(IMImojiObject *__nullable
 * @param typeIdentifier Either kUTTypeGIF or kUTTypePNG if the operation succeeded. nil otherwise.
 * @param error An error with code equal to an IMImojiSessionErrorCode value or nil if the request succeeded.
 */
-typedef void (^IMImojiSessionExportedImageResponseCallback)(UIImage *__nullable image, NSData *__nullable data, NSString *typeIdentifier, NSError *__nullable error);
+typedef void (^IMImojiSessionExportedImageResponseCallback)(UIImage *__nullable image, NSData *__nullable data, NSString *__nullable typeIdentifier, NSError *__nullable error);
 
 @interface IMImojiSession : NSObject {
 @private
