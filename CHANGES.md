@@ -1,5 +1,9 @@
 # Imoji SDK Changes
 
+### Version 2.0.5
+
+* Guarded imoji upload task to handle nil values returned from image resizing.
+
 ### Version 2.0.4
 
 * Add a new render method for getting exportable NSData contents of an Imoji image. Ensures that only safe formats like PNG and GIF data are sent back to the user.
