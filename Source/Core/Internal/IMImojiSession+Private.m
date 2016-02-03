@@ -414,14 +414,49 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
 - (BFTask *)createLocalImojiWithRawImage:(UIImage *)rawImage
                            borderedImage:(UIImage *)borderedImage
                                     tags:(NSArray *)tags {
+    if (!rawImage) {
+        return [BFTask taskWithError:[NSError errorWithDomain:IMImojiSessionErrorDomain
+                                                         code:IMImojiSessionErrorCodeInvalidImage
+                                                     userInfo:@{
+                                                             NSLocalizedDescriptionKey : @"parameter rawImage is nil"
+                                                     }]];
+    }
+
+    if (!borderedImage) {
+        return [BFTask taskWithError:[NSError errorWithDomain:IMImojiSessionErrorDomain
+                                                         code:IMImojiSessionErrorCodeInvalidImage
+                                                     userInfo:@{
+                                                             NSLocalizedDescriptionKey : @"parameter borderedImage is nil"
+                                                     }]];
+    }
+
     IMMutableImojiObject *imojiObject = [IMMutableImojiObject imojiWithIdentifier:[NSString im_stringWithRandomUUID]
                                                                              tags:tags
                                                                              urls:@{}];
 
+    UIImage *resizedRawImage = [rawImage im_resizedImageToFitInSize:CGSizeMake(150.f, 150.f) scaleIfSmaller:NO];
+    if (!resizedRawImage) {
+        return [BFTask taskWithError:[NSError errorWithDomain:IMImojiSessionErrorDomain
+                                                         code:IMImojiSessionErrorCodeInvalidImage
+                                                     userInfo:@{
+                                                             NSLocalizedDescriptionKey : @"Unable to resize rawImage"
+                                                     }]];
+    }
+
+
+    UIImage *resizedBorderImage = [borderedImage im_resizedImageToFitInSize:CGSizeMake(150.f, 150.f) scaleIfSmaller:NO];
+    if (!resizedBorderImage) {
+        return [BFTask taskWithError:[NSError errorWithDomain:IMImojiSessionErrorDomain
+                                                         code:IMImojiSessionErrorCodeInvalidImage
+                                                     userInfo:@{
+                                                             NSLocalizedDescriptionKey : @"Unable to resize bordered image"
+                                                     }]];
+    }
+
     NSDictionary *renderingOptions = @{
             [IMImojiObjectRenderingOptions optionsWithRenderSize:IMImojiObjectRenderSizeThumbnail
                                                      borderStyle:IMImojiObjectBorderStyleNone
-                                                     imageFormat:IMImojiObjectImageFormatPNG] : [rawImage im_resizedImageToFitInSize:CGSizeMake(150.f, 150.f) scaleIfSmaller:NO],
+                                                     imageFormat:IMImojiObjectImageFormatPNG] : resizedRawImage,
 
             [IMImojiObjectRenderingOptions optionsWithRenderSize:IMImojiObjectRenderSizeFullResolution
                                                      borderStyle:IMImojiObjectBorderStyleNone
@@ -429,7 +464,7 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
 
             [IMImojiObjectRenderingOptions optionsWithRenderSize:IMImojiObjectRenderSizeThumbnail
                                                      borderStyle:IMImojiObjectBorderStyleSticker
-                                                     imageFormat:IMImojiObjectImageFormatPNG] : [borderedImage im_resizedImageToFitInSize:CGSizeMake(150.f, 150.f) scaleIfSmaller:NO],
+                                                     imageFormat:IMImojiObjectImageFormatPNG] : resizedBorderImage,
 
             [IMImojiObjectRenderingOptions optionsWithRenderSize:IMImojiObjectRenderSizeFullResolution
                                                      borderStyle:IMImojiObjectBorderStyleSticker

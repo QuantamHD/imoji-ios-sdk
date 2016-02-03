@@ -460,6 +460,14 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
                              borderedImage:borderedImage
                                       tags:tags]
             continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+                if (task.error) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        beginUploadCallback(nil, task.error);
+                    });
+
+                    return [BFTask taskWithError:task.error];
+                }
+
                 localImoji = task.result;
 
                 // trigger completion of the temporary imoji
@@ -471,6 +479,10 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
                 }];
             }]
             continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *getTask) {
+                if (getTask.error) {
+                    return [BFTask taskWithError:getTask.error];
+                }
+
                 if (cancellationToken.cancelled) {
                     return [BFTask cancelledTask];
                 }
