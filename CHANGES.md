@@ -1,5 +1,10 @@
 # Imoji SDK Changes
 
+### Version 2.0.6
+
+* Adopt new server version of 2.1.0 which will send down a more unified JSON result set for images
+* Expose image dimensions and file sizes in IMImojiObject
+
 ### Version 2.0.5
 
 * Guarded imoji upload task to handle nil values returned from image resizing.
