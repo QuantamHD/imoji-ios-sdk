@@ -51,6 +51,20 @@
 @property(nonatomic, strong, readonly, nonnull) NSDictionary *urls;
 
 /**
+ * @abstract A dictionary representation of all the dimensions of the images with IMImojiObjectRenderingOptions
+ * as the key. Missing values will contain an NSNull value. Use getImageDimensionsForRenderingOptions: for convenience
+ * for handling NSNull values.
+ */
+@property(nonatomic, strong, readonly, nullable) NSDictionary *imageDimensions;
+
+/**
+ * @abstract A dictionary representation of all the file sizes of the images with IMImojiObjectRenderingOptions
+ * as the key. Missing values will contain an NSNull value. Use getFileSizeForRenderingOptions: for convenience for
+ * handling NSNull values.
+ */
+@property(nonatomic, strong, readonly, nullable) NSDictionary *fileSizes;
+
+/**
  * @abstract Whether or not the Imoji has support for animation or not.
  */
 @property(nonatomic, readonly) BOOL supportsAnimation;
@@ -59,6 +73,17 @@
  * @abstract Gets a download URL for an Imoji given the requested rendering options
  */
 - (nullable NSURL *)getUrlForRenderingOptions:(nonnull IMImojiObjectRenderingOptions *)renderingOptions;
+
+/**
+ * @abstract Gets the image size dimensions for an Imoji given the requested rendering options. Return CGSizeZero
+ * if unable to determine the dimensions.
+ */
+- (CGSize)getImageDimensionsForRenderingOptions:(nonnull IMImojiObjectRenderingOptions *)renderingOptions;
+
+/**
+ * @abstract Gets the size of an image given the requested rendering options. Returns 0 if unable to determine the size.
+ */
+- (NSUInteger)getFileSizeForRenderingOptions:(nonnull IMImojiObjectRenderingOptions *)renderingOptions;
 
 /**
  * @abstract Fetches rendering options suitable for an animated version of the Imoji. Returns nil if the Imoji

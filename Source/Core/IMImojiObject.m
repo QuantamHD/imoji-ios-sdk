@@ -73,6 +73,30 @@
     return nil;
 }
 
+- (CGSize)getImageDimensionsForRenderingOptions:(nonnull IMImojiObjectRenderingOptions *)renderingOptions {
+    id imageDimension = self.imageDimensions[[IMImojiObjectRenderingOptions optionsWithRenderSize:renderingOptions.renderSize
+                                                                                      borderStyle:renderingOptions.borderStyle
+                                                                                      imageFormat:renderingOptions.imageFormat]];
+
+    if (imageDimension && [imageDimension isKindOfClass:[NSValue class]]) {
+        return ((NSValue *) imageDimension).CGSizeValue;
+    }
+
+    return CGSizeZero;
+}
+
+- (NSUInteger)getFileSizeForRenderingOptions:(nonnull IMImojiObjectRenderingOptions *)renderingOptions {
+    id fileSize = self.fileSizes[[IMImojiObjectRenderingOptions optionsWithRenderSize:renderingOptions.renderSize
+                                                                          borderStyle:renderingOptions.borderStyle
+                                                                          imageFormat:renderingOptions.imageFormat]];
+
+    if (fileSize && [fileSize isKindOfClass:[NSNumber class]]) {
+        return ((NSNumber *) fileSize).unsignedIntegerValue;
+    }
+
+    return 0;
+}
+
 - (nullable IMImojiObjectRenderingOptions *)supportedAnimatedRenderingOptionFromOption:(nonnull IMImojiObjectRenderingOptions *)renderingOptions {
     if (!self.supportsAnimation) {
         return nil;

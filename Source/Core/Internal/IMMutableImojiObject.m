@@ -33,11 +33,15 @@
 }
 - (instancetype)initWWithIdentifier:(nonnull NSString *)identifier
                                tags:(nonnull NSArray *)tags
-                               urls:(nonnull NSDictionary *)urls {
+                               urls:(nonnull NSDictionary *)urls
+                    imageDimensions:(nonnull NSDictionary *)imageDimensions
+                          fileSizes:(nonnull NSDictionary *)fileSizes {
     self = [super init];
     if (self) {
         _identifier = identifier;
         _urls = urls;
+        _fileSizes = fileSizes;
+        _imageDimensions = imageDimensions;
         _tags = tags;
         _supportsAnimation = urls && [urls[[IMImojiObjectRenderingOptions optionsWithRenderSize:IMImojiObjectRenderSizeThumbnail
                                                                                     borderStyle:IMImojiObjectBorderStyleNone
@@ -59,6 +63,14 @@
     return _urls;
 }
 
+- (NSDictionary *)fileSizes {
+    return _fileSizes;
+}
+
+- (NSDictionary *)imageDimensions {
+    return _imageDimensions;
+}
+
 - (BOOL)supportsAnimation {
     return _supportsAnimation;
 }
@@ -68,7 +80,21 @@
                                        urls:(nonnull NSDictionary *)urls {
     return [[IMMutableImojiObject alloc] initWWithIdentifier:identifier
                                                         tags:tags
-                                                        urls:urls];
+                                                        urls:urls
+                                             imageDimensions:@{}
+                                                   fileSizes:@{}];
+}
+
++ (nonnull instancetype)imojiWithIdentifier:(nonnull NSString *)identifier
+                                       tags:(nonnull NSArray *)tags
+                                       urls:(nonnull NSDictionary *)urls
+                            imageDimensions:(nonnull NSDictionary *)imageDimensions
+                                  fileSizes:(nonnull NSDictionary *)fileSizes {
+    return [[IMMutableImojiObject alloc] initWWithIdentifier:identifier
+                                                        tags:tags
+                                                        urls:urls
+                                             imageDimensions:imageDimensions
+                                                   fileSizes:fileSizes];
 }
 
 @end

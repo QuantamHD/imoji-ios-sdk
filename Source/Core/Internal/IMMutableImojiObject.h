@@ -31,11 +31,19 @@
     NSString *__nonnull _identifier;
     NSArray *__nonnull _tags;
     NSDictionary *__nonnull _urls;
+    NSDictionary *__nonnull _fileSizes;
+    NSDictionary *__nonnull _imageDimensions;
     BOOL _supportsAnimation;
 }
 
 + (nonnull instancetype)imojiWithIdentifier:(nonnull NSString *)identifier
                                        tags:(nonnull NSArray *)tags
                                        urls:(nonnull NSDictionary *)urls;
+
++ (nonnull instancetype)imojiWithIdentifier:(nonnull NSString *)identifier
+                                       tags:(nonnull NSArray *)tags
+                                       urls:(nonnull NSDictionary *)urls
+                            imageDimensions:(nonnull NSDictionary *)imageDimensions
+                                  fileSizes:(nonnull NSDictionary *)fileSizes;
 
 @end
