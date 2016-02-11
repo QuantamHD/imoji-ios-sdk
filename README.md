@@ -37,11 +37,30 @@ Initiate the client id and api token for ImojiSDK. You can add this to the appli
 ```
 
 ### Animated Stickers!!
-![alt tag](https://compass.imoji.io/10e/10ee60f8-6c68-43f8-9e2c-fca6e2b285ed-thumb.gif)
+![alt tag](https://media.imoji.io/10e/10ee60f8-6c68-43f8-9e2c-fca6e2b285ed/animated-150.gif)
 
-Animated stickers are loaded by default in versions 2.0.2 and higher. The ImojiSDK uses [YYImage](https://github.com/ibireme/YYImage) to load and display animated content for efficient loading.
+Imoji versions 2.0.2 and higher have support for loading animated stickers. The ImojiSDK uses [YYImage](https://github.com/ibireme/YYImage) to load and display animated content for efficient loading.
 
-Your application will need to either use YYAnimatedImageView (bundled in ImojiSDK) instead of UIImageView's or extract the contents of the animated gif into your own view (ex: FLAnimatedImage). 
+When rendering the Imoji, make sure to set **renderAnimatedIfSupported** to YES for the IMImojiObjectRenderingOptions instance. This'll instruct the rendering class to download and render animated content.
+
+Your application will need to either use YYAnimatedImageView (bundled in ImojiSDK) instead of UIImageView's or extract the contents of the animated gif into your own view (ex: FLAnimatedImage). YYAnimatedImageView's are a drop in replacement for UIImageView's so you can simply use that for all images (animated or still) if you wish.
+
+Loading Animated content using YYAnimatedImageView:
+
+```objective-c
+IMImojiObject *imoji;
+IMImojiObjectRenderingOptions *options = [IMImojiObjectRenderingOptions optionsWithRenderSize:IMImojiObjectRenderSizeThumbnail];
+options.renderAnimatedIfSupported = YES;
+
+YYAnimatedImageView* view = [YYAnimatedImageView new];
+
+[imojiSession renderImoji:imoji
+                  options:options
+                 callback:^(UIImage *image, NSError *renderError) {
+                     view.image = image;
+                 }];
+
+```
 
 To extract animated content, you can perform the following:
 
