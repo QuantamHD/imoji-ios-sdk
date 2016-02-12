@@ -8,7 +8,7 @@
 
 Sign up for a free developer account at [https://developer.imoji.io](https://developer.imoji.io) to get your API keys
 
-### Cocoa Pods Setup
+### CocoaPods Setup
 
 Add the ImojiSDK entry to your Podfile
 
