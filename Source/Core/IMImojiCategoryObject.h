@@ -53,9 +53,9 @@ extern NSUInteger const IMImojiObjectPriorityDefault;
 @property(nonatomic, strong, readonly, nonnull) IMImojiObject *previewImoji;
 
 /**
-* @abstract An array of IMImojiObjects that represent the category.
+* @abstract An array of IMImojiObjects that represent the category. This field is never nil.
 */
-@property(nonatomic, strong, readonly, nullable) NSArray *previewImojis;
+@property(nonatomic, strong, readonly, nonnull) NSArray *previewImojis;
 
 /**
 * @abstract The order of importance to display the category starting from 0

@@ -154,17 +154,17 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
                         }
 
                         NSArray *imojisDictionary = [dictionary im_checkedArrayForKey:@"imojis"];
-                        NSMutableArray *previewImojis = nil;
+                        NSMutableArray *previewImojis = [NSMutableArray new];
                         if (imojisDictionary) {
-                            previewImojis = [[NSMutableArray alloc] init];
                             for (NSDictionary *imojiDictionary in imojisDictionary) {
                                 [previewImojis addObject:[self readImojiObject:imojiDictionary]];
                             }
+                        } else if (dictionary[@"images"]) { // legacy support, pre server version v2.1
+                            [previewImojis addObject:[self readImojiObject:dictionary]];
                         }
 
                         [imojiCategories addObject:[IMMutableCategoryObject objectWithIdentifier:[dictionary im_checkedStringForKey:@"searchText"]
                                                                                            order:order++
-                                                                                    previewImoji:[self readImojiObject:dictionary]
                                                                                    previewImojis:previewImojis
                                                                                         priority:[dictionary im_checkedNumberForKey:@"priority" defaultValue:@0].unsignedIntegerValue
                                                                                            title:[dictionary im_checkedStringForKey:@"title"]

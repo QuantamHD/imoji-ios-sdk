@@ -25,7 +25,6 @@
 
 #import "IMMutableCategoryObject.h"
 #import "IMImojiObject.h"
-#import "IMArtist.h"
 #import "IMCategoryAttribution.h"
 
 
@@ -34,7 +33,6 @@
 }
 - (instancetype)initWithIdentifier:(NSString *)identifier
                              order:(NSUInteger)order
-                      previewImoji:(IMImojiObject *)previewImoji
                      previewImojis:(NSArray *)previewImojis
                           priority:(NSUInteger)priority
                              title:(NSString *)title
@@ -43,7 +41,6 @@
     if (self) {
         _identifier = identifier;
         _order = order;
-        _previewImoji = previewImoji;
         _previewImojis = previewImojis;
         _priority = priority;
         _title = title;
@@ -62,7 +59,7 @@
 }
 
 - (IMImojiObject *)previewImoji {
-    return _previewImoji;
+    return _previewImojis.firstObject;
 }
 
 - (NSArray *)previewImojis {
@@ -83,14 +80,12 @@
 
 + (instancetype)objectWithIdentifier:(NSString *)identifier
                                order:(NSUInteger)order
-                        previewImoji:(IMImojiObject *)previewImoji
                        previewImojis:(NSArray *)previewImojis
                             priority:(NSUInteger)priority
                                title:(NSString *)title
                          attribution:(IMCategoryAttribution *)attribution {
     return [[self alloc] initWithIdentifier:identifier
                                       order:order
-                               previewImoji:previewImoji
                               previewImojis:previewImojis
                                    priority:priority
                                       title:title

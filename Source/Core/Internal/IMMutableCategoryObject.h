@@ -35,7 +35,6 @@
 @private
     NSString *_identifier;
     NSString *_title;
-    IMImojiObject *_previewImoji;
     NSArray *_previewImojis;
     NSUInteger _order;
     NSUInteger _priority;
@@ -44,7 +43,6 @@
 
 + (instancetype)objectWithIdentifier:(NSString *)identifier
                                order:(NSUInteger)order
-                        previewImoji:(IMImojiObject *)previewImoji
                        previewImojis:(NSArray *)previewImojis
                             priority:(NSUInteger)priority
                                title:(NSString *)title
