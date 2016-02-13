@@ -604,26 +604,21 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
 
 #pragma mark Analytics
 
-- (nonnull NSOperation *)markImojiUsage:(nonnull IMImojiObject *)imoji
-                       originIdentifier:(nullable NSString *)originIdentifier
-                               callback:(nullable IMImojiSessionAsyncResponseCallback)callback {
-    NSOperation *cancellationToken = self.cancellationTokenOperation;
-    NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithDictionary:@{
-            @"imojiId" : imoji.identifier,
-            @"originIdentifier" : originIdentifier
-    }];
+- (void)markImojiUsage:(nonnull IMImojiObject *)imoji
+      originIdentifier:(nullable NSString *)originIdentifier {
+    if (originIdentifier && originIdentifier.length > 32) {
+        NSLog(@"WARNING: truncating originIdentifier '%@' to 32 characters.", originIdentifier);
+        originIdentifier = [originIdentifier substringToIndex:32];
+    }
 
-    [[self runValidatedGetTaskWithPath:@"/analytics/imoji/sent" andParameters:parameters]
+    [[self runValidatedGetTaskWithPath:@"/analytics/imoji/sent" andParameters:@{
+            @"imojiId" : imoji.identifier,
+            @"originIdentifier" : originIdentifier ? originIdentifier : [NSNull null]
+    }]
             continueWithExecutor:[BFExecutor mainThreadExecutor]
                        withBlock:^id(BFTask *task) {
-                           if (callback) {
-                               callback(task.error == nil, task.error);
-                           }
-
                            return nil;
                        }];
-
-    return cancellationToken;
 }
 
 

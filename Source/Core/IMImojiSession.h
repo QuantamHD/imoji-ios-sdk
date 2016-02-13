@@ -398,12 +398,9 @@ typedef void (^IMImojiSessionExportedImageResponseCallback)(UIImage *__nullable 
  * @param imojiObject The Imoji object to register for usage
  * @param originIdentifier Optional arbitrary identifier which developers can supply describing the action that
  * triggered the usage. String must be less than or equal to 32 characters.
- * @param callback Called once the operation is complete
- * @return An operation reference that can be used to cancel the request.
  */
-- (nonnull NSOperation *)markImojiUsage:(nonnull IMImojiObject *)imoji
-                       originIdentifier:(nullable NSString *)originIdentifier
-                               callback:(nullable IMImojiSessionAsyncResponseCallback)callback;
+- (void)markImojiUsage:(nonnull IMImojiObject *)imoji
+      originIdentifier:(nullable NSString *)originIdentifier;
 
 
 @end
