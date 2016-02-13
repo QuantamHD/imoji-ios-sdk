@@ -1,5 +1,9 @@
 # Imoji SDK Changes
 
+### Version 2.0.7
+
+* Adds analytics endpoints for tracking when an Imoji sticker was used by the user. This helps us adjust the weighting of the content in search results appropriately.
+
 ### Version 2.0.6
 
 * Adopt new server version of 2.1.0 which will send down a more unified JSON result set for images
