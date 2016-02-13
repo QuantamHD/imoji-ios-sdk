@@ -602,6 +602,30 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
     return cancellationToken;
 }
 
+#pragma mark Analytics
+
+- (nonnull NSOperation *)markImojiUsage:(nonnull IMImojiObject *)imoji
+                       originIdentifier:(nullable NSString *)originIdentifier
+                               callback:(nullable IMImojiSessionAsyncResponseCallback)callback {
+    NSOperation *cancellationToken = self.cancellationTokenOperation;
+    NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithDictionary:@{
+            @"imojiId" : imoji.identifier,
+            @"originIdentifier" : originIdentifier
+    }];
+
+    [[self runValidatedGetTaskWithPath:@"/analytics/imoji/sent" andParameters:parameters]
+            continueWithExecutor:[BFExecutor mainThreadExecutor]
+                       withBlock:^id(BFTask *task) {
+                           if (callback) {
+                               callback(task.error == nil, task.error);
+                           }
+
+                           return nil;
+                       }];
+
+    return cancellationToken;
+}
+
 
 #pragma mark Rendering
 

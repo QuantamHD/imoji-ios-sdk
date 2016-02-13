@@ -390,6 +390,24 @@ typedef void (^IMImojiSessionExportedImageResponseCallback)(UIImage *__nullable 
 
 @end
 
+@interface IMImojiSession (Analytics)
+
+/**
+ * @abstract Marks an Imoji sticker as being used for sharing. For example, if a user copied a sticker to the
+ * pasteboard in a keyboard application, that would qualify as the Imoji being used.
+ * @param imojiObject The Imoji object to register for usage
+ * @param originIdentifier Optional arbitrary identifier which developers can supply describing the action that
+ * triggered the usage. String must be less than or equal to 32 characters.
+ * @param callback Called once the operation is complete
+ * @return An operation reference that can be used to cancel the request.
+ */
+- (nonnull NSOperation *)markImojiUsage:(nonnull IMImojiObject *)imoji
+                       originIdentifier:(nullable NSString *)originIdentifier
+                               callback:(nullable IMImojiSessionAsyncResponseCallback)callback;
+
+
+@end
+
 /**
 * @abstract Delegate protocol for IMImojiSession
 */
