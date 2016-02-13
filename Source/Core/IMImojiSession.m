@@ -606,9 +606,9 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
 
 - (void)markImojiUsage:(nonnull IMImojiObject *)imoji
       originIdentifier:(nullable NSString *)originIdentifier {
-    if (originIdentifier && originIdentifier.length > 32) {
-        NSLog(@"WARNING: truncating originIdentifier '%@' to 32 characters.", originIdentifier);
-        originIdentifier = [originIdentifier substringToIndex:32];
+    if (originIdentifier && originIdentifier.length > 40) {
+        NSLog(@"WARNING: truncating originIdentifier '%@' to 40 characters.", originIdentifier);
+        originIdentifier = [originIdentifier substringToIndex:40];
     }
 
     [[self runValidatedGetTaskWithPath:@"/analytics/imoji/sent" andParameters:@{

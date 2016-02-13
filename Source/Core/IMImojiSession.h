@@ -397,7 +397,7 @@ typedef void (^IMImojiSessionExportedImageResponseCallback)(UIImage *__nullable 
  * pasteboard in a keyboard application, that would qualify as the Imoji being used.
  * @param imojiObject The Imoji object to register for usage
  * @param originIdentifier Optional arbitrary identifier which developers can supply describing the action that
- * triggered the usage. String must be less than or equal to 32 characters.
+ * triggered the usage. String must be less than or equal to 40 characters.
  */
 - (void)markImojiUsage:(nonnull IMImojiObject *)imoji
       originIdentifier:(nullable NSString *)originIdentifier;
