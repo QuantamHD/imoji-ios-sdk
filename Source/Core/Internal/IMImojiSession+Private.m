@@ -4,6 +4,7 @@
 //
 
 #import <Bolts/Bolts.h>
+#import <YYImage/YYImage.h>
 #import "IMImojiSession+Private.h"
 #import "IMImojiSessionCredentials.h"
 #import "ImojiSDK.h"
@@ -14,7 +15,6 @@
 #import "NSDictionary+Utils.h"
 #import "UIImage+Extensions.h"
 #import "NSString+Utils.h"
-#import "YYImage.h"
 
 NSString *const IMImojiSessionFileAccessTokenKey = @"at";
 NSString *const IMImojiSessionFileRefreshTokenKey = @"rt";

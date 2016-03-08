@@ -1,8 +1,9 @@
 # Imoji SDK Changes
 
-### Version 2.0.7
+### Version 2.1.0
 
 * Adds analytics endpoints for tracking when an Imoji sticker was used by the user. This helps us adjust the weighting of the content in search results appropriately.
+* Brings in YYImage as a pod dependency. Developers should now import their YYImage rom YYImage rather than ImojiSDK.
 
 ### Version 2.0.6
 

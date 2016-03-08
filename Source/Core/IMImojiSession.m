@@ -28,6 +28,7 @@
 #import <Bolts/BFExecutor.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <ImageIO/ImageIO.h>
+#import <YYImage/YYImage.h>
 #import "ImojiSDK.h"
 #import "NSDictionary+Utils.h"
 #import "IMMutableImojiObject.h"
@@ -38,7 +39,6 @@
 #import "IMArtist.h"
 #import "IMMutableArtist.h"
 #import "IMMutableCategoryAttribution.h"
-#import "YYImage.h"
 
 NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
 
