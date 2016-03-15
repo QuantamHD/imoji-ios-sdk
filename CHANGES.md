@@ -1,5 +1,9 @@
 # Imoji SDK Changes
 
+### Version 2.1.1
+
+* Deprecated fetchRenderingOptions because it is no longer being used.
+
 ### Version 2.1.0
 
 * Adds analytics endpoints for tracking when an Imoji sticker was used by the user. This helps us adjust the weighting of the content in search results appropriately.
