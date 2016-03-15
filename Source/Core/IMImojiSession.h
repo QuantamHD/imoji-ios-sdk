@@ -223,11 +223,6 @@ typedef void (^IMImojiSessionExportedImageResponseCallback)(UIImage *__nullable 
  */
 @property(nonatomic, readonly, nonnull) IMImojiSessionStoragePolicy *storagePolicy;
 
-/**
- * @abstract The default rendering options that are used to render Imoji's in IMImojiSessionImojiFetchedResponseCallback.
- */
-@property(nonatomic, nonnull) IMImojiObjectRenderingOptions *fetchRenderingOptions;
-
 @end
 
 /**
