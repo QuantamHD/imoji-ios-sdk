@@ -25,11 +25,40 @@
 
 #import <UIKit/UIKit.h>
 
-#import "IMImojiObject.h"
-#import "IMImojiCategoryObject.h"
-#import "IMImojiObjectRenderingOptions.h"
-#import "IMImojiSessionStoragePolicy.h"
-#import "IMImojiSession.h"
+////! Project version number for ImojiSDK.
+//FOUNDATION_EXPORT double ImojiSDKVersionNumber;
+//
+////! Project version string for ImojiSDK.
+//FOUNDATION_EXPORT const unsigned char ImojiSDKVersionString[];
+
+#import <ImojiSDK/BFTask+Utils.h>
+#import <ImojiSDK/NSDictionary+Utils.h>
+#import <ImojiSDK/NSString+Utils.h>
+#import <ImojiSDK/UIImage+Extensions.h>
+
+#import <ImojiSDK/IMImojiSession+Private.h>
+#import <ImojiSDK/IMImojiSession+Testing.h>
+//#import <ImojiSDK/IMImojiSessionCredentials.h>
+#import <ImojiSDK/IMMutableArtist.h>
+#import <ImojiSDK/IMMutableCategoryAttribution.h>
+#import <ImojiSDK/IMMutableCategoryObject.h>
+#import <ImojiSDK/IMMutableImojiObject.h>
+#import <ImojiSDK/ImojiSDKConstants.h>
+
+#import <ImojiSDK/RequestUtils.h>
+
+#import <ImojiSDK/IMArtist.h>
+#import <ImojiSDK/IMCategoryAttribution.h>
+#import <ImojiSDK/IMImojiObject.h>
+#import <ImojiSDK/IMImojiCategoryObject.h>
+#import <ImojiSDK/IMImojiObjectRenderingOptions.h>
+#import <ImojiSDK/IMImojiResultSetMetadata.h>
+#import <ImojiSDK/IMImojiSessionStoragePolicy.h>
+#import <ImojiSDK/IMImojiSession.h>
+
+#import <ImojiSDK/IMImojiApplicationUtility.h>
+#import <ImojiSDK/IMImojiResultSetMetadata.h>
+#import <ImojiSDK/ImojiSyncSDK.h>
 
 /**
 * @abstract Base class for coordinating with other ImojiSDK classes
