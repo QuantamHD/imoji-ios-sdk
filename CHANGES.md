@@ -3,6 +3,7 @@
 ### Version 2.1.1
 
 * Deprecated fetchRenderingOptions because it is no longer being used.
+* Pull in WebP libraries from YYImage to avoid issues for some developers where WebP files are not found
 
 ### Version 2.1.0
 
