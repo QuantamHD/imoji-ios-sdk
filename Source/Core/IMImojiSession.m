@@ -66,11 +66,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
 
 - (void)setupWithStoragePolicy:(IMImojiSessionStoragePolicy *)storagePolicy {
     _sessionState = IMImojiSessionStateNotConnected;
-
     _storagePolicy = storagePolicy;
-    _fetchRenderingOptions = [IMImojiObjectRenderingOptions optionsWithRenderSize:IMImojiObjectRenderSizeThumbnail
-                                                                      borderStyle:IMImojiObjectBorderStyleSticker
-                                                                      imageFormat:IMImojiObjectImageFormatWebP];
 
     self->_urlSession = [NSURLSession sessionWithConfiguration:[_storagePolicy generateURLSessionConfiguration]];
 
