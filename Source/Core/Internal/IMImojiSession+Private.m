@@ -547,7 +547,7 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
 
 - (NSArray *)convertServerDataSetToImojiArray:(NSDictionary *)serverResponse {
     NSArray *results = serverResponse[@"results"];
-    if (!results.count == 0) {
+    if (results.count != 0) {
         NSMutableArray *imojiObjectsArray = [NSMutableArray arrayWithCapacity:results.count];
         for (NSDictionary *result in results) {
             [imojiObjectsArray addObject:[self readImojiObject:result]];
