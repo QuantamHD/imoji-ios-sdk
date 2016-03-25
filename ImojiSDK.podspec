@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name     = 'ImojiSDK'
-  s.version  = '2.1.0'
+  s.version  = '2.1.1'
   s.license  = 'MIT'
   s.summary  = 'iOS SDK for Imoji. Integrate Stickers and custom emojis into your applications easily!'
   s.homepage = 'http://imoji.io/sdk'
@@ -23,8 +23,7 @@ Pod::Spec.new do |s|
 
   s.subspec 'Core' do |ss|
     ss.dependency "Bolts/Tasks", '~> 1.2'
-    ss.dependency "libwebp", "~> 0.5.0"
-    ss.dependency "YYImage/Core", "~> 1.0"
+    ss.dependency "YYImage/WebP", "~> 1.0"
 
     ss.ios.source_files = 'Source/Core/**/*.{h,m}'
     ss.ios.public_header_files = 'Source/Core/*.h', 'Source/Core/Util/YYImage/*.h'
