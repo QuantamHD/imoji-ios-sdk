@@ -240,6 +240,17 @@ typedef void (^IMImojiSessionExportedImageResponseCallback)(UIImage *__nullable 
                                                      callback:(nonnull IMImojiSessionImojiCategoriesResponseCallback)callback;
 
 /**
+* @abstract Fetches top level imoji categories given a classification type.
+* @param classification Type of category classification to retrieve
+* @param contextualSearchPhrase When set, instructs the server to return categories relevant to the search phrase.
+* @param callback Block callback to call when categories have been downloaded.
+* @return An operation reference that can be used to cancel the request.
+*/
+- (nonnull NSOperation *)getImojiCategoriesWithClassification:(IMImojiSessionCategoryClassification)classification
+                                       contextualSearchPhrase:(nullable NSString *)contextualSearchPhrase
+                                                     callback:(nonnull IMImojiSessionImojiCategoriesResponseCallback)callback;
+
+/**
 * @abstract Searches the imojis database with a given search term. The resultSetResponseCallback block is called once the results are available.
 * Imoji contents are downloaded individually and imojiResponseCallback is called once the thumbnail of that imoji has been downloaded.
 * @param searchTerm Search term to find imojis with. If nil or empty, the server will typically returned the featured set of imojis (this is subject to change).

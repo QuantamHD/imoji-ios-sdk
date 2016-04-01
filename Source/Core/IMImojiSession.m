@@ -112,14 +112,21 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
 
 #pragma mark Public Methods
 
-- (NSOperation *)getImojiCategoriesWithClassification:(IMImojiSessionCategoryClassification)classification
-                                             callback:(IMImojiSessionImojiCategoriesResponseCallback)callback {
+- (nonnull NSOperation *)getImojiCategoriesWithClassification:(IMImojiSessionCategoryClassification)classification
+                                                     callback:(nonnull IMImojiSessionImojiCategoriesResponseCallback)callback {
+    return [self getImojiCategoriesWithClassification:classification contextualSearchPhrase:nil callback:callback];
+}
+
+- (nonnull NSOperation *)getImojiCategoriesWithClassification:(IMImojiSessionCategoryClassification)classification
+                                       contextualSearchPhrase:(nullable NSString *)contextualSearchPhrase
+                                                     callback:(nonnull IMImojiSessionImojiCategoriesResponseCallback)callback {
     __block NSOperation *cancellationToken = self.cancellationTokenOperation;
     __block NSString *classificationParameter = [IMImojiSession categoryClassifications][@(classification)];
 
     [[self runValidatedGetTaskWithPath:@"/imoji/categories/fetch"
                          andParameters:@{
-                                 @"classification" : classificationParameter
+                                 @"classification" : classificationParameter,
+                                 @"contextualSearchPhrase" : contextualSearchPhrase != nil ? contextualSearchPhrase : [NSNull null]
                          }] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *getTask) {
         NSDictionary *results = getTask.result;
 
