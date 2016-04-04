@@ -39,6 +39,7 @@
 #import "IMArtist.h"
 #import "IMMutableArtist.h"
 #import "IMMutableCategoryAttribution.h"
+#import "IMCategoryFetchOptions.h"
 
 NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
 
@@ -114,19 +115,22 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
 
 - (nonnull NSOperation *)getImojiCategoriesWithClassification:(IMImojiSessionCategoryClassification)classification
                                                      callback:(nonnull IMImojiSessionImojiCategoriesResponseCallback)callback {
-    return [self getImojiCategoriesWithClassification:classification contextualSearchPhrase:nil callback:callback];
+    return [self getImojiCategoriesWithOptions:[IMCategoryFetchOptions optionsWithClassification:classification] callback:callback];
 }
 
-- (nonnull NSOperation *)getImojiCategoriesWithClassification:(IMImojiSessionCategoryClassification)classification
-                                       contextualSearchPhrase:(nullable NSString *)contextualSearchPhrase
-                                                     callback:(nonnull IMImojiSessionImojiCategoriesResponseCallback)callback {
+- (nonnull NSOperation *)getImojiCategoriesWithOptions:(IMCategoryFetchOptions *)options
+                                              callback:(nonnull IMImojiSessionImojiCategoriesResponseCallback)callback {
     __block NSOperation *cancellationToken = self.cancellationTokenOperation;
-    __block NSString *classificationParameter = [IMImojiSession categoryClassifications][@(classification)];
+    __block NSString *classificationParameter = [IMImojiSession categoryClassifications][@(options.classification)];
 
+    id contextualSearchPhrase = options.contextualSearchPhrase != nil ? options.contextualSearchPhrase : [NSNull null];
+    id contextualSearchLocale = options.contextualSearchLocale && options.contextualSearchLocale.localeIdentifier ? options.contextualSearchLocale.localeIdentifier : [NSNull null];
+    
     [[self runValidatedGetTaskWithPath:@"/imoji/categories/fetch"
                          andParameters:@{
                                  @"classification" : classificationParameter,
-                                 @"contextualSearchPhrase" : contextualSearchPhrase != nil ? contextualSearchPhrase : [NSNull null]
+                                 @"contextualSearchPhrase" : contextualSearchPhrase,
+                                 @"locale" : contextualSearchLocale
                          }] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *getTask) {
         NSDictionary *results = getTask.result;
 
