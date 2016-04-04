@@ -27,10 +27,24 @@
 
 @class IMArtist;
 
+/**
+*  @abstract Represents the attribution of the category
+*/
 @interface IMCategoryAttribution : NSObject
 
+/**
+ * @abstract A unique id for the attribution record
+ */
 @property(nonatomic, strong, readonly, nonnull) NSString *identifier;
+
+/**
+ * @abstract The artist/contributor information
+ */
 @property(nonatomic, strong, readonly, nonnull) IMArtist *artist;
+
+/**
+ * @abstract URL for the attribution
+ */
 @property(nonatomic, strong, readonly, nonnull) NSURL *URL;
 
 @end

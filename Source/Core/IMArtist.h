@@ -27,11 +27,29 @@
 
 @class IMImojiObject;
 
+/**
+ * @abstract Represents a creator of an Imoji or Category
+ */
 @interface IMArtist : NSObject
 
+/**
+ * @abstract Unique id for the artist
+ */
 @property(nonatomic, strong, readonly, nonnull) NSString *identifier;
+
+/**
+ * @abstract The name of the artist
+ */
 @property(nonatomic, strong, readonly, nonnull) NSString *name;
+
+/**
+ * @abstract Description of the artist
+ */
 @property(nonatomic, strong, readonly, nonnull) NSString *summary;
+
+/**
+ * @abstract An Imoji image representing the profile picture for the artist
+ */
 @property(nonatomic, strong, readonly, nullable) IMImojiObject *previewImoji;
 
 @end
