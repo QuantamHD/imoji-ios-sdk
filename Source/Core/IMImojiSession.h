@@ -255,7 +255,7 @@ typedef void (^IMImojiSessionImojiAttributionResponseCallback)(NSDictionary *__n
 * @param callback Block callback to call when categories have been downloaded.
 * @return An operation reference that can be used to cancel the request.
 */
-- (nonnull NSOperation *)getImojiCategoriesWithOptions:(IMCategoryFetchOptions *)options
+- (nonnull NSOperation *)getImojiCategoriesWithOptions:(nonnull IMCategoryFetchOptions *)options
                                               callback:(nonnull IMImojiSessionImojiCategoriesResponseCallback)callback;
 
 /**
