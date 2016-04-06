@@ -36,8 +36,6 @@
 #import "IMMutableCategoryObject.h"
 #import "BFTask+Utils.h"
 #import "IMImojiSession+Private.h"
-#import "IMArtist.h"
-#import "IMMutableArtist.h"
 #import "IMMutableCategoryAttribution.h"
 #import "IMCategoryFetchOptions.h"
 
@@ -150,14 +148,9 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
 
                     for (NSDictionary *dictionary in categories) {
                         NSDictionary *artistDictionary = dictionary[@"artist"];
-                        IMMutableCategoryAttribution *attribution = nil;
+                        IMCategoryAttribution *attribution = nil;
                         if (![artistDictionary isEqual:[NSNull null]]) {
-                            attribution = [IMMutableCategoryAttribution attributionWithIdentifier:[artistDictionary im_checkedStringForKey:@"packId"]
-                                                                                           artist:[IMMutableArtist artistWithIdentifier:[artistDictionary im_checkedStringForKey:@"id"]
-                                                                                                                                   name:[artistDictionary im_checkedStringForKey:@"name"]
-                                                                                                                                summary:[artistDictionary im_checkedStringForKey:@"description"]
-                                                                                                                           previewImoji:[self readImojiObject:artistDictionary]]
-                                                                                              URL:[[NSURL alloc] initWithString:[artistDictionary im_checkedStringForKey:@"packURL"]]];
+                            attribution = [self readAttribution:artistDictionary];
                         }
 
                         NSArray *imojisDictionary = [dictionary im_checkedArrayForKey:@"imojis"];
@@ -626,6 +619,72 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
                        withBlock:^id(BFTask *task) {
                            return nil;
                        }];
+}
+
+#pragma mark Attribution
+
+- (nonnull NSOperation *)fetchAttributionByImojiIdentifiers:(nonnull NSArray *)imojiObjectIdentifiers
+                                                   callback:(nonnull IMImojiSessionImojiAttributionResponseCallback)callback {
+
+    __block NSOperation *cancellationToken = self.cancellationTokenOperation;
+    if (!imojiObjectIdentifiers || imojiObjectIdentifiers.count == 0) {
+        callback(nil, [NSError errorWithDomain:IMImojiSessionErrorDomain
+                                          code:IMImojiSessionErrorCodeInvalidArgument
+                                      userInfo:@{
+                                              NSLocalizedDescriptionKey : @"imojiObjectIdentifiers is either nil or empty"
+                                      }]);
+        return cancellationToken;
+    }
+    BOOL validArray = YES;
+    for (id objectIdentifier in imojiObjectIdentifiers) {
+        if (!objectIdentifier || ![objectIdentifier isKindOfClass:[NSString class]]) {
+            validArray = NO;
+            break;
+        }
+    }
+
+    if (!validArray) {
+        callback(nil, [NSError errorWithDomain:IMImojiSessionErrorDomain
+                                          code:IMImojiSessionErrorCodeInvalidArgument
+                                      userInfo:@{
+                                              NSLocalizedDescriptionKey : @"imojiObjectIdentifiers must contain NSString objects only"
+                                      }]);
+        return cancellationToken;
+    }
+
+    NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithDictionary:@{
+            @"imojiIds" : [imojiObjectIdentifiers componentsJoinedByString:@","]
+    }];
+
+    [[self runValidatedGetTaskWithPath:@"/imoji/attribution" andParameters:parameters]
+            continueWithExecutor:[BFExecutor mainThreadExecutor]
+                       withBlock:^id(BFTask *getTask) {
+                           if (cancellationToken.cancelled) {
+                               return [BFTask cancelledTask];
+                           }
+
+                           NSDictionary *results = getTask.result;
+                           NSError *error;
+                           [self validateServerResponse:results error:&error];
+
+                           NSMutableDictionary *converted = [NSMutableDictionary dictionary];
+                           if ([results[@"attribution"] isKindOfClass:[NSDictionary class]]) {
+                               NSDictionary * attributionMap = results[@"attribution"];
+                               for (NSString *imojiId in [attributionMap allKeys]) {
+                                   converted[imojiId] = [self readAttribution:attributionMap[imojiId]];
+                               }
+                           }
+
+                           if (error) {
+                               callback(nil, error);
+                           } else {
+                               callback([NSDictionary dictionaryWithDictionary:converted], nil);
+                           }
+
+                           return nil;
+                       }];
+
+    return cancellationToken;
 }
 
 

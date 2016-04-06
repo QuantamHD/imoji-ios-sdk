@@ -180,6 +180,14 @@ typedef void (^IMImojiSessionCreationResponseCallback)(IMImojiObject *__nullable
 */
 typedef void (^IMImojiSessionExportedImageResponseCallback)(UIImage *__nullable image, NSData *__nullable data, NSString *__nullable typeIdentifier, NSError *__nullable error);
 
+/**
+* @abstract Callback used for fetching attribution for IMImoji identifiers.
+* @param attribution Dictionary object with the requested IMImoji id's as keys and IMCategoryAttribution objects as values
+* @param error An error with code equal to an IMImojiSessionErrorCode value or nil if the request succeeded
+*/
+typedef void (^IMImojiSessionImojiAttributionResponseCallback)(NSDictionary *__nullable attribution, NSError *__nullable error);
+
+
 @interface IMImojiSession : NSObject {
 @private
     IMImojiSessionState _sessionState;
@@ -407,6 +415,21 @@ typedef void (^IMImojiSessionExportedImageResponseCallback)(UIImage *__nullable 
  */
 - (void)markImojiUsage:(nonnull IMImojiObject *)imoji
       originIdentifier:(nullable NSString *)originIdentifier;
+
+
+@end
+
+
+@interface IMImojiSession (Attribution)
+
+/**
+* @abstract Gets attribution information for a set of IMImoji identifiers.
+* @param imojiObjectIdentifiers An array of NSString's representing the identifiers of the imojis to fetch.
+* @param callback Callback triggered with attribution results when available.
+* @return An operation reference that can be used to cancel the request.
+*/
+- (nonnull NSOperation *)fetchAttributionByImojiIdentifiers:(nonnull NSArray *)imojiObjectIdentifiers
+                                                   callback:(nonnull IMImojiSessionImojiAttributionResponseCallback)callback;
 
 
 @end

@@ -15,6 +15,8 @@
 #import "NSDictionary+Utils.h"
 #import "UIImage+Extensions.h"
 #import "NSString+Utils.h"
+#import "IMMutableCategoryAttribution.h"
+#import "IMMutableArtist.h"
 
 NSString *const IMImojiSessionFileAccessTokenKey = @"at";
 NSString *const IMImojiSessionFileRefreshTokenKey = @"rt";
@@ -758,33 +760,33 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
                         switch (renderingOptions.renderSize) {
                             case IMImojiObjectRenderSizeThumbnail:
                                 if (animated) {
-                                    url = path[ @"150"][@"url"];
+                                    url = path[@"150"][@"url"];
                                 } else {
-                                    url = path[ @"thumb"];
+                                    url = path[@"thumb"];
                                 }
                                 break;
 
                             case IMImojiObjectRenderSizeFullResolution:
                                 if (animated) {
-                                    url = path[ @"1200"][@"url"];
+                                    url = path[@"1200"][@"url"];
                                 } else {
-                                    url = path[ @"full"];
+                                    url = path[@"full"];
                                 }
                                 break;
 
                             case IMImojiObjectRenderSize320:
                                 if (animated) {
-                                    url = path[ @"320"][@"url"];
+                                    url = path[@"320"][@"url"];
                                 } else {
-                                    url = path[ @"320"];
+                                    url = path[@"320"];
                                 }
                                 break;
 
                             case IMImojiObjectRenderSize512:
                                 if (animated) {
-                                    url = path[ @"512"][@"url"];
+                                    url = path[@"512"][@"url"];
                                 } else {
-                                    url = path[ @"512"];
+                                    url = path[@"512"];
                                 }
                                 break;
                         }
@@ -882,6 +884,15 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
     } else {
         return nil;
     }
+}
+
+- (nonnull IMCategoryAttribution *)readAttribution:(nonnull NSDictionary *)attributionDictionary {
+    return [IMMutableCategoryAttribution attributionWithIdentifier:[attributionDictionary im_checkedStringForKey:@"packId"]
+                                                            artist:[IMMutableArtist artistWithIdentifier:[attributionDictionary im_checkedStringForKey:@"id"]
+                                                                                                    name:[attributionDictionary im_checkedStringForKey:@"name"]
+                                                                                                 summary:[attributionDictionary im_checkedStringForKey:@"description"]
+                                                                                            previewImoji:[self readImojiObject:attributionDictionary]]
+                                                               URL:[[NSURL alloc] initWithString:[attributionDictionary im_checkedStringForKey:@"packURL"]]];
 }
 
 #pragma mark Imoji Reading/Writing

@@ -11,6 +11,7 @@
 @class IMMutableImojiObject;
 @class BFTask;
 @class IMImojiSessionStoragePolicy;
+@class IMCategoryAttribution;
 
 @interface IMImojiSession (Private)
 
@@ -62,6 +63,8 @@
                           cancellationToken:(nonnull NSOperation *)cancellationToken;
 
 - (nonnull IMMutableImojiObject *)readImojiObject:(nonnull NSDictionary *)result;
+
+- (nonnull IMCategoryAttribution *)readAttribution:(nonnull NSDictionary *)attributionDictionary;
 
 - (nonnull BFTask *)uploadImageInBackgroundWithRetries:(nonnull UIImage *)image
                                              uploadUrl:(nonnull NSURL *)uploadUrl
