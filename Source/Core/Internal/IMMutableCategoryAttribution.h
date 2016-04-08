@@ -32,10 +32,14 @@
     NSString *_identifier;
     IMArtist *_artist;
     NSURL *_URL;
+    IMAttributionURLCategory _urlCategory;
+    NSArray *_relatedTags;
 }
 
 + (instancetype)attributionWithIdentifier:(NSString *)identifier
                                    artist:(IMArtist *)artist
-                                      URL:(NSURL *)URL;
+                                      URL:(NSURL *)URL
+                              urlCategory:(IMAttributionURLCategory)urlCategory
+                              relatedTags:(NSArray *)relatedTags;
 
 @end

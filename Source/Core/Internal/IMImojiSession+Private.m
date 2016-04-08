@@ -887,12 +887,33 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
 }
 
 - (nonnull IMCategoryAttribution *)readAttribution:(nonnull NSDictionary *)attributionDictionary {
+    static NSDictionary *urlCategoryMappings;
+    static dispatch_once_t token;
+
+    dispatch_once(&token, ^{
+        urlCategoryMappings = @{
+                @"website" : @(IMAttributionURLCategoryWebsite),
+                @"video" : @(IMAttributionURLCategoryVideo),
+                @"instagram" : @(IMAttributionURLCategoryInstagram),
+                @"twitter" : @(IMAttributionURLCategoryTwitter),
+                @"app store" : @(IMAttributionURLCategoryAppStore)
+        };
+    });
+
+    IMAttributionURLCategory urlCategory = IMAttributionURLCategoryWebsite;
+    NSString *urlCategoryString = [attributionDictionary im_checkedStringForKey:@"urlCategory"];
+    if (urlCategoryString && urlCategoryMappings[urlCategoryString]) {
+        urlCategory = (IMAttributionURLCategory) ((NSNumber *) urlCategoryMappings[urlCategoryString]).unsignedIntegerValue;
+    }
+
     return [IMMutableCategoryAttribution attributionWithIdentifier:[attributionDictionary im_checkedStringForKey:@"packId"]
                                                             artist:[IMMutableArtist artistWithIdentifier:[attributionDictionary im_checkedStringForKey:@"id"]
                                                                                                     name:[attributionDictionary im_checkedStringForKey:@"name"]
                                                                                                  summary:[attributionDictionary im_checkedStringForKey:@"description"]
                                                                                             previewImoji:[self readImojiObject:attributionDictionary]]
-                                                               URL:[[NSURL alloc] initWithString:[attributionDictionary im_checkedStringForKey:@"packURL"]]];
+                                                               URL:[[NSURL alloc] initWithString:[attributionDictionary im_checkedStringForKey:@"packURL"]]
+                                                       urlCategory:urlCategory
+                                                       relatedTags:[attributionDictionary im_checkedArrayForKey:@"relatedTags" defaultValue:@[]]];
 }
 
 #pragma mark Imoji Reading/Writing
