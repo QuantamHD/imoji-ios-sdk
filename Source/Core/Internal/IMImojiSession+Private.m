@@ -901,19 +901,33 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
     });
 
     IMAttributionURLCategory urlCategory = IMAttributionURLCategoryWebsite;
-    NSString *urlCategoryString = [attributionDictionary im_checkedStringForKey:@"urlCategory"];
+    NSString *urlCategoryString = [attributionDictionary im_checkedStringForKey:@"packURLCategory"];
     if (urlCategoryString && urlCategoryMappings[urlCategoryString]) {
         urlCategory = (IMAttributionURLCategory) ((NSNumber *) urlCategoryMappings[urlCategoryString]).unsignedIntegerValue;
     }
 
-    return [IMMutableCategoryAttribution attributionWithIdentifier:[attributionDictionary im_checkedStringForKey:@"packId"]
-                                                            artist:[IMMutableArtist artistWithIdentifier:[attributionDictionary im_checkedStringForKey:@"id"]
-                                                                                                    name:[attributionDictionary im_checkedStringForKey:@"name"]
-                                                                                                 summary:[attributionDictionary im_checkedStringForKey:@"description"]
-                                                                                            previewImoji:[self readImojiObject:attributionDictionary]]
-                                                               URL:[[NSURL alloc] initWithString:[attributionDictionary im_checkedStringForKey:@"packURL"]]
+    NSString *attributionIdentifier = [attributionDictionary im_checkedStringForKey:@"packId"];
+    NSArray *relatedTags = [attributionDictionary im_checkedArrayForKey:@"relatedTags" defaultValue:@[]];
+
+    IMArtist *artist = nil;
+    if (attributionDictionary[@"id"]) {
+        artist = [IMMutableArtist artistWithIdentifier:[attributionDictionary im_checkedStringForKey:@"id"]
+                                                  name:[attributionDictionary im_checkedStringForKey:@"name"]
+                                               summary:[attributionDictionary im_checkedStringForKey:@"description"]
+                                          previewImoji:[self readImojiObject:attributionDictionary]];
+    }
+
+
+    NSURL *attributionURL;
+    if (attributionDictionary[@"packURL"]) {
+        attributionURL = [[NSURL alloc] initWithString:[attributionDictionary im_checkedStringForKey:@"packURL"]];
+    }
+
+    return [IMMutableCategoryAttribution attributionWithIdentifier:attributionIdentifier
+                                                            artist:artist
+                                                               URL:attributionURL
                                                        urlCategory:urlCategory
-                                                       relatedTags:[attributionDictionary im_checkedArrayForKey:@"relatedTags" defaultValue:@[]]];
+                                                       relatedTags:relatedTags];
 }
 
 #pragma mark Imoji Reading/Writing

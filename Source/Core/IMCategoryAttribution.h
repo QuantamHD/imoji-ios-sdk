@@ -66,17 +66,17 @@ typedef NS_ENUM(NSUInteger, IMAttributionURLCategory) {
 /**
  * @abstract A unique id for the attribution record.
  */
-@property(nonatomic, strong, readonly, nonnull) NSString *identifier;
+@property(nonatomic, strong, readonly, nullable) NSString *identifier;
 
 /**
  * @abstract The artist/contributor information.
  */
-@property(nonatomic, strong, readonly, nonnull) IMArtist *artist;
+@property(nonatomic, strong, readonly, nullable) IMArtist *artist;
 
 /**
  * @abstract URL for the attribution.
  */
-@property(nonatomic, strong, readonly, nonnull) NSURL *URL;
+@property(nonatomic, strong, readonly, nullable) NSURL *URL;
 
 /**
  * @abstract Classification of the URL.
