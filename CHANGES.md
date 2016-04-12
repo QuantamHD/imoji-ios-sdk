@@ -2,8 +2,11 @@
 
 ### Version 2.1.1
 
+* Adds the ability to get attribution for an individual Imoji object
+* Expands attribution and adds url category (either video, twitter, instagram, etc)
 * Adds the ability for developers to send contextual search phrases to category fetching in order to retrieve results relevant to the search phrase
 * Deprecated fetchRenderingOptions because it is no longer being used.
+* Bring in webp depedency from YYImage
 
 ### Version 2.1.0
 
