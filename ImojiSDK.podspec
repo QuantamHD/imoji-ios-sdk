@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name     = 'ImojiSDK'
-  s.version  = '2.1.1'
+  s.version  = '2.2.0'
   s.license  = 'MIT'
   s.summary  = 'iOS SDK for Imoji. Integrate Stickers and custom emojis into your applications easily!'
   s.homepage = 'http://imoji.io/sdk'
@@ -12,14 +12,6 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = '7.0'
 
   s.requires_arc = true
-
-  s.subspec 'Sync' do |ss|
-    ss.dependency "Bolts/AppLinks", '~> 1.2'
-    ss.dependency "ImojiSDK/Core"
-
-    ss.ios.source_files = 'Source/Sync/**/*.{h,m}'
-    ss.ios.public_header_files = 'Source/Sync/*.h'
-  end
 
   s.subspec 'Core' do |ss|
     ss.dependency "Bolts/Tasks", '~> 1.2'
