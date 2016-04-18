@@ -576,10 +576,18 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
 - (NSOperation *)reportImojiAsAbusive:(IMImojiObject *)imojiObject
                                reason:(NSString *)reason
                              callback:(IMImojiSessionAsyncResponseCallback)callback {
+    return [self reportImojiAsAbusiveWithIdentifier:imojiObject.identifier
+                                             reason:reason
+                                           callback:callback];
+}
+
+- (nonnull NSOperation *)reportImojiAsAbusiveWithIdentifier:(nonnull NSString *)imojiIdentifier
+                                                     reason:(nullable NSString *)reason
+                                                   callback:(nonnull IMImojiSessionAsyncResponseCallback)callback {
     __block NSOperation *cancellationToken = self.cancellationTokenOperation;
 
     [[self runValidatedPostTaskWithPath:@"/imoji/reportAbusive" andParameters:@{
-            @"imojiId" : imojiObject.identifier,
+            @"imojiId" : imojiIdentifier,
             @"reason" : reason
     }] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *getTask) {
         if (cancellationToken.cancelled) {
@@ -606,13 +614,18 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
 
 - (void)markImojiUsage:(nonnull IMImojiObject *)imoji
       originIdentifier:(nullable NSString *)originIdentifier {
+    [self markImojiUsageWithIdentifier:imoji.identifier originIdentifier:originIdentifier];
+}
+
+- (void)markImojiUsageWithIdentifier:(nonnull NSString *)imojiIdentifier
+                    originIdentifier:(nullable NSString *)originIdentifier {
     if (originIdentifier && originIdentifier.length > 40) {
         NSLog(@"WARNING: truncating originIdentifier '%@' to 40 characters.", originIdentifier);
         originIdentifier = [originIdentifier substringToIndex:40];
     }
 
     [[self runValidatedGetTaskWithPath:@"/analytics/imoji/sent" andParameters:@{
-            @"imojiId" : imoji.identifier,
+            @"imojiId" : imojiIdentifier,
             @"originIdentifier" : originIdentifier ? originIdentifier : [NSNull null]
     }]
             continueWithExecutor:[BFExecutor mainThreadExecutor]

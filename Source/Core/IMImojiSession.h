@@ -397,10 +397,23 @@ typedef void (^IMImojiSessionImojiAttributionResponseCallback)(NSDictionary *__n
  * @param reason Optional text describing the reason why the content is being reported
  * @param callback Called once the save operation is complete
  * @return An operation reference that can be used to cancel the request.
+ * DEPRECATED: Use reportImojiAsAbusiveWithIdentifier:reason:callback: instead
  */
 - (nonnull NSOperation *)reportImojiAsAbusive:(nonnull IMImojiObject *)imojiObject
                                        reason:(nullable NSString *)reason
-                                     callback:(nonnull IMImojiSessionAsyncResponseCallback)callback;
+                                     callback:(nonnull IMImojiSessionAsyncResponseCallback)callback DEPRECATED_ATTRIBUTE;
+
+/**
+ * @abstract Reports an Imoji sticker as abusive. You may expose this method in your application in order for users to have the ability to flag
+ * content as not appropriate. Reported Imojis are not removed instantly but are reviewed internally before removal.
+ * @param imojiIdentifier ID of the Imoji object to report
+ * @param reason Optional text describing the reason why the content is being reported
+ * @param callback Called once the save operation is complete
+ * @return An operation reference that can be used to cancel the request.
+ */
+- (nonnull NSOperation *)reportImojiAsAbusiveWithIdentifier:(nonnull NSString *)imojiIdentifier
+                                                     reason:(nullable NSString *)reason
+                                                   callback:(nonnull IMImojiSessionAsyncResponseCallback)callback;
 
 @end
 
@@ -412,9 +425,19 @@ typedef void (^IMImojiSessionImojiAttributionResponseCallback)(NSDictionary *__n
  * @param imojiObject The Imoji object to register for usage
  * @param originIdentifier Optional arbitrary identifier which developers can supply describing the action that
  * triggered the usage. String must be less than or equal to 40 characters.
+ * DEPRECATED: Use markImojiUsageWithIdentifier:originIdentifier: instead
  */
 - (void)markImojiUsage:(nonnull IMImojiObject *)imoji
-      originIdentifier:(nullable NSString *)originIdentifier;
+      originIdentifier:(nullable NSString *)originIdentifier DEPRECATED_ATTRIBUTE;
+/**
+ * @abstract Marks an Imoji sticker as being used for sharing. For example, if a user copied a sticker to the
+ * pasteboard in a keyboard application, that would qualify as the Imoji being used.
+ * @param imojiIdentifier ID of the Imoji object to register for usage
+ * @param originIdentifier Optional arbitrary identifier which developers can supply describing the action that
+ * triggered the usage. String must be less than or equal to 40 characters.
+ */
+- (void)markImojiUsageWithIdentifier:(nonnull NSString *)imojiIdentifier
+                    originIdentifier:(nullable NSString *)originIdentifier;
 
 
 @end
