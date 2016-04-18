@@ -24,6 +24,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "IMImojiObject.h"
 
 @class IMArtist;
 
@@ -87,5 +88,10 @@ typedef NS_ENUM(NSUInteger, IMAttributionURLCategory) {
  * @abstract One or more searchable tags that’s relevant to the attribution.
  */
 @property(nonatomic, nullable) NSArray *relatedTags;
+
+/**
+ * @abstract The license style for the category attribution object.
+ */
+@property(nonatomic) IMImojiObjectLicenseStyle licenseStyle;
 
 @end

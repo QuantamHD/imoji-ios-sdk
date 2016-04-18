@@ -923,11 +923,17 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
         attributionURL = [[NSURL alloc] initWithString:[attributionDictionary im_checkedStringForKey:@"packURL"]];
     }
 
+    IMImojiObjectLicenseStyle licenseStyle = IMImojiObjectLicenseStyleNonCommercial;
+    if (attributionDictionary[@"licenseStyle"] && [@"commercialPrint" isEqualToString:attributionDictionary[@"licenseStyle"]]) {
+        licenseStyle = IMImojiObjectLicenseStyleCommercialPrint;
+    }
+
     return [IMMutableCategoryAttribution attributionWithIdentifier:attributionIdentifier
                                                             artist:artist
                                                                URL:attributionURL
                                                        urlCategory:urlCategory
-                                                       relatedTags:relatedTags];
+                                                       relatedTags:relatedTags
+                                                      licenseStyle:licenseStyle];
 }
 
 #pragma mark Imoji Reading/Writing

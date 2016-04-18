@@ -34,12 +34,14 @@
     NSURL *_URL;
     IMAttributionURLCategory _urlCategory;
     NSArray *_relatedTags;
+    IMImojiObjectLicenseStyle _licenseStyle;
 }
 
 + (instancetype)attributionWithIdentifier:(NSString *)identifier
                                    artist:(IMArtist *)artist
                                       URL:(NSURL *)URL
                               urlCategory:(IMAttributionURLCategory)urlCategory
-                              relatedTags:(NSArray *)relatedTags;
+                              relatedTags:(NSArray *)relatedTags
+                             licenseStyle:(IMImojiObjectLicenseStyle)licenseStyle;
 
 @end

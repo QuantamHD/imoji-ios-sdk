@@ -31,7 +31,8 @@
                              artist:(IMArtist *)artist
                                 URL:(NSURL *)URL
                         urlCategory:(IMAttributionURLCategory)urlCategory
-                        relatedTags:(NSArray *)relatedTags {
+                        relatedTags:(NSArray *)relatedTags
+                       licenseStyle:(IMImojiObjectLicenseStyle)licenseStyle {
     self = [super init];
     if (self) {
         _identifier = identifier;
@@ -39,6 +40,7 @@
         _URL = URL;
         _urlCategory = urlCategory;
         _relatedTags = relatedTags;
+        _licenseStyle = licenseStyle;
     }
 
     return self;
@@ -64,17 +66,22 @@
     return _relatedTags;
 }
 
+- (IMImojiObjectLicenseStyle)licenseStyle {
+    return _licenseStyle;
+}
 
 + (instancetype)attributionWithIdentifier:(NSString *)identifier
                                    artist:(IMArtist *)artist
                                       URL:(NSURL *)URL
                               urlCategory:(IMAttributionURLCategory)urlCategory
-                              relatedTags:(NSArray *)relatedTags {
+                              relatedTags:(NSArray *)relatedTags
+                             licenseStyle:(IMImojiObjectLicenseStyle)licenseStyle {
     return [[IMMutableCategoryAttribution alloc] initWWithIdentifier:identifier
                                                               artist:artist
                                                                  URL:URL
                                                          urlCategory:urlCategory
-                                                         relatedTags:relatedTags];
+                                                         relatedTags:relatedTags
+                                                        licenseStyle:licenseStyle];
 }
 
 @end

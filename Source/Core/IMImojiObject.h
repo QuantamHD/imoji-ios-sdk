@@ -28,6 +28,22 @@
 #import "IMImojiObjectRenderingOptions.h"
 
 /**
+* @abstract Describes the license style for content within the Imoji SDK
+*/
+typedef NS_ENUM(NSUInteger, IMImojiObjectLicenseStyle) {
+    /**
+     * @abstract Allows the developer to display the content for non-commercial use cases only. Also, disallows any
+     * printing or non-electronic redistribution of the content.
+     */
+            IMImojiObjectLicenseStyleNonCommercial,
+
+    /**
+     * @abstract Grants the developer to print the content (ex: clothing, posters, etc) for commercial purposes.
+     */
+            IMImojiObjectLicenseStyleCommercialPrint
+};
+
+/**
 * An ImojiObject is a reference to a sticker within the ImojiSDK. Consumers should not create this object directly,
 * rather, they should use IMImojiSession to get them from the server.
 */
