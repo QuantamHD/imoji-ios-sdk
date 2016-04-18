@@ -1,5 +1,10 @@
 # Imoji SDK Changes
 
+### Version 2.2.0
+
+* Deprecate reportImojiAsAbusive and markImojiUsage in favor of reportImojiAsAbusiveWithIdentifier and markImojiUsageWithIdentifier.
+* Removes Sync subspec, functionality is no longer supported
+
 ### Version 2.1.1
 
 * Adds the ability to get attribution for an individual Imoji object
