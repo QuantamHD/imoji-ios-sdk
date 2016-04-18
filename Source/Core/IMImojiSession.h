@@ -50,12 +50,7 @@ typedef NS_ENUM(NSUInteger, IMImojiSessionState) {
     /**
     * @abstract The session is connected with the server but not synchronized with a user account
     */
-            IMImojiSessionStateConnected,
-
-    /**
-    * @abstract The session is connected with the server and synchronized with a user account
-    */
-            IMImojiSessionStateConnectedSynchronized
+            IMImojiSessionStateConnected
 };
 
 /**

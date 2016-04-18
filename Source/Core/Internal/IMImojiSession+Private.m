@@ -36,7 +36,7 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
     [IMImojiSession credentials].accountSynchronized = authenticationInfo[IMImojiSessionFileUserSynchronizedKey] && ((NSNumber *) authenticationInfo[IMImojiSessionFileUserSynchronizedKey]).boolValue;
     [IMImojiSession credentials].clientId = authenticationInfo[IMImojiSessionFileClientIdKey];
 
-    [self updateImojiState:[IMImojiSession credentials].accountSynchronized ? IMImojiSessionStateConnectedSynchronized : IMImojiSessionStateConnected];
+    [self updateImojiState:IMImojiSessionStateConnected];
 }
 
 - (void)readAuthenticationCredentials {
@@ -328,7 +328,7 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
                                 [IMImojiSession credentials].expirationDate = [NSDate dateWithTimeIntervalSinceNow:((NSNumber *) results[@"expires_in"]).integerValue];
 
                                 [self writeAuthenticationCredentials];
-                                [self updateImojiState:[IMImojiSession credentials].accountSynchronized ? IMImojiSessionStateConnectedSynchronized : IMImojiSessionStateConnected];
+                                [self updateImojiState:IMImojiSessionStateConnected];
                                 taskCompletionSource.result = [IMImojiSession credentials].accessToken;
 
                             } else {
@@ -344,7 +344,7 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
                     [self getNewAccessTokenWithCompletionSource:taskCompletionSource];
                 } else {
                     taskCompletionSource.result = [IMImojiSession credentials].accessToken;
-                    [self updateImojiState:[IMImojiSession credentials].accountSynchronized ? IMImojiSessionStateConnectedSynchronized : IMImojiSessionStateConnected];
+                    [self updateImojiState:IMImojiSessionStateConnected];
                 }
             }
         } else {

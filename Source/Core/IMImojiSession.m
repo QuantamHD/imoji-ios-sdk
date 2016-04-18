@@ -369,16 +369,6 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
                                  callback:(IMImojiSessionAsyncResponseCallback)callback {
     __block NSOperation *cancellationToken = self.cancellationTokenOperation;
 
-    if (self.sessionState != IMImojiSessionStateConnectedSynchronized) {
-        callback(NO, [NSError errorWithDomain:IMImojiSessionErrorDomain
-                                         code:IMImojiSessionErrorCodeSessionNotSynchronized
-                                     userInfo:@{
-                                             NSLocalizedDescriptionKey : @"IMImojiSession has not been synchronized."
-                                     }]);
-
-        return cancellationToken;
-    }
-
     [[self runValidatedPostTaskWithPath:@"/user/imoji/collection/add" andParameters:@{
             @"imojiId" : imojiObject.identifier
     }] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *getTask) {
@@ -406,16 +396,6 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
                                                       imojiResponseCallback:(IMImojiSessionImojiFetchedResponseCallback)imojiResponseCallback {
     NSOperation *cancellationToken = self.cancellationTokenOperation;
 
-    if (self.sessionState != IMImojiSessionStateConnectedSynchronized) {
-        resultSetResponseCallback(nil, [NSError errorWithDomain:IMImojiSessionErrorDomain
-                                                           code:IMImojiSessionErrorCodeSessionNotSynchronized
-                                                       userInfo:@{
-                                                               NSLocalizedDescriptionKey : @"IMImojiSession has not been synchronized."
-                                                       }]);
-
-        return cancellationToken;
-    }
-
     [[self runValidatedGetTaskWithPath:@"/user/imoji/fetch" andParameters:@{}] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *getTask) {
         if (cancellationToken.cancelled) {
             return [BFTask cancelledTask];
@@ -439,10 +419,6 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
     }];
 
     return cancellationToken;
-}
-
-- (void)clearUserSynchronizationStatus:(IMImojiSessionAsyncResponseCallback)callback {
-    [self renewCredentials:callback];
 }
 
 #pragma mark Imoji Modification
