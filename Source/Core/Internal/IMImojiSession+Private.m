@@ -695,6 +695,10 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
     if (result) {
         NSString *imojiId = [result im_checkedStringForKey:@"imojiId"] ? [result im_checkedStringForKey:@"imojiId"] : [result im_checkedStringForKey:@"id"];
         NSArray *tags = [result[@"tags"] isKindOfClass:[NSArray class]] ? result[@"tags"] : @[];
+        IMImojiObjectLicenseStyle licenseStyle = IMImojiObjectLicenseStyleNonCommercial;
+        if (result[@"licenseStyle"] && [@"commercialPrint" isEqualToString:result[@"licenseStyle"]]) {
+            licenseStyle = IMImojiObjectLicenseStyleCommercialPrint;
+        }
 
         BOOL readLegacy = [result[@"urls"] isKindOfClass:[NSDictionary class]];
         NSDictionary *imagesDictionary = readLegacy ? result[@"urls"] : result[@"images"];
@@ -880,7 +884,8 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
                                                     tags:tags
                                                     urls:imageUrls
                                          imageDimensions:dimensions
-                                               fileSizes:fileSizes];
+                                               fileSizes:fileSizes
+                                            licenseStyle:licenseStyle];
     } else {
         return nil;
     }

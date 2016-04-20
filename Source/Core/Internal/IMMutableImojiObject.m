@@ -35,7 +35,8 @@
                                tags:(nonnull NSArray *)tags
                                urls:(nonnull NSDictionary *)urls
                     imageDimensions:(nonnull NSDictionary *)imageDimensions
-                          fileSizes:(nonnull NSDictionary *)fileSizes {
+                          fileSizes:(nonnull NSDictionary *)fileSizes
+                       licenseStyle:(IMImojiObjectLicenseStyle)licenseStyle {
     self = [super init];
     if (self) {
         _identifier = identifier;
@@ -43,6 +44,7 @@
         _fileSizes = fileSizes;
         _imageDimensions = imageDimensions;
         _tags = tags;
+        _licenseStyle = licenseStyle;
         _supportsAnimation = urls && [urls[[IMImojiObjectRenderingOptions optionsWithRenderSize:IMImojiObjectRenderSizeThumbnail
                                                                                     borderStyle:IMImojiObjectBorderStyleNone
                                                                                     imageFormat:IMImojiObjectImageFormatAnimatedGif]] isKindOfClass:[NSURL class]];
@@ -75,6 +77,10 @@
     return _supportsAnimation;
 }
 
+- (IMImojiObjectLicenseStyle)licenseStyle {
+    return _licenseStyle;
+}
+
 + (nonnull instancetype)imojiWithIdentifier:(nonnull NSString *)identifier
                                        tags:(nonnull NSArray *)tags
                                        urls:(nonnull NSDictionary *)urls {
@@ -82,19 +88,22 @@
                                                         tags:tags
                                                         urls:urls
                                              imageDimensions:@{}
-                                                   fileSizes:@{}];
+                                                   fileSizes:@{}
+                                                licenseStyle:IMImojiObjectLicenseStyleNonCommercial];
 }
 
 + (nonnull instancetype)imojiWithIdentifier:(nonnull NSString *)identifier
                                        tags:(nonnull NSArray *)tags
                                        urls:(nonnull NSDictionary *)urls
                             imageDimensions:(nonnull NSDictionary *)imageDimensions
-                                  fileSizes:(nonnull NSDictionary *)fileSizes {
+                                  fileSizes:(nonnull NSDictionary *)fileSizes
+                               licenseStyle:(IMImojiObjectLicenseStyle)licenseStyle {
     return [[IMMutableImojiObject alloc] initWWithIdentifier:identifier
                                                         tags:tags
                                                         urls:urls
                                              imageDimensions:imageDimensions
-                                                   fileSizes:fileSizes];
+                                                   fileSizes:fileSizes
+                                                licenseStyle:licenseStyle];
 }
 
 @end

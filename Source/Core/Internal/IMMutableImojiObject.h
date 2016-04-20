@@ -34,6 +34,7 @@
     NSDictionary *__nonnull _fileSizes;
     NSDictionary *__nonnull _imageDimensions;
     BOOL _supportsAnimation;
+    IMImojiObjectLicenseStyle _licenseStyle;
 }
 
 + (nonnull instancetype)imojiWithIdentifier:(nonnull NSString *)identifier
@@ -44,6 +45,7 @@
                                        tags:(nonnull NSArray *)tags
                                        urls:(nonnull NSDictionary *)urls
                             imageDimensions:(nonnull NSDictionary *)imageDimensions
-                                  fileSizes:(nonnull NSDictionary *)fileSizes;
+                                  fileSizes:(nonnull NSDictionary *)fileSizes
+                               licenseStyle:(IMImojiObjectLicenseStyle)licenseStyle;
 
 @end

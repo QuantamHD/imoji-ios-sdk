@@ -86,6 +86,11 @@ typedef NS_ENUM(NSUInteger, IMImojiObjectLicenseStyle) {
 @property(nonatomic, readonly) BOOL supportsAnimation;
 
 /**
+ * @abstract The license style for the category attribution object.
+ */
+@property(nonatomic) IMImojiObjectLicenseStyle licenseStyle;
+
+/**
  * @abstract Gets a download URL for an Imoji given the requested rendering options
  */
 - (nullable NSURL *)getUrlForRenderingOptions:(nonnull IMImojiObjectRenderingOptions *)renderingOptions;
