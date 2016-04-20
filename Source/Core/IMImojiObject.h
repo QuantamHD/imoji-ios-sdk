@@ -35,12 +35,12 @@ typedef NS_ENUM(NSUInteger, IMImojiObjectLicenseStyle) {
      * @abstract Allows the developer to display the content for non-commercial use cases only. Also, disallows any
      * printing or non-electronic redistribution of the content.
      */
-            IMImojiObjectLicenseStyleNonCommercial,
+            IMImojiObjectLicenseStyleNonCommercial = 1,
 
     /**
      * @abstract Grants the developer to print the content (ex: clothing, posters, etc) for commercial purposes.
      */
-            IMImojiObjectLicenseStyleCommercialPrint
+            IMImojiObjectLicenseStyleCommercialPrint = 2
 };
 
 /**

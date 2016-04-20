@@ -121,15 +121,24 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
     __block NSOperation *cancellationToken = self.cancellationTokenOperation;
     __block NSString *classificationParameter = [IMImojiSession categoryClassifications][@(options.classification)];
 
-    id contextualSearchPhrase = options.contextualSearchPhrase != nil ? options.contextualSearchPhrase : [NSNull null];
-    id contextualSearchLocale = options.contextualSearchLocale && options.contextualSearchLocale.localeIdentifier ? options.contextualSearchLocale.localeIdentifier : [NSNull null];
-    
+    NSMutableDictionary *parameters = [NSMutableDictionary new];
+
+    parameters[@"classification"] = classificationParameter;
+    if (options.contextualSearchPhrase != nil) {
+        parameters[@"contextualSearchPhrase"] = options.contextualSearchPhrase;
+
+        if (options.contextualSearchLocale && options.contextualSearchLocale.localeIdentifier) {
+            parameters[@"locale"] = options.contextualSearchLocale.localeIdentifier;
+        }
+    }
+
+    if (options.licenseStyles) {
+        parameters[@"licenseStyles"] = options.licenseStyles;
+    }
+
     [[self runValidatedGetTaskWithPath:@"/imoji/categories/fetch"
-                         andParameters:@{
-                                 @"classification" : classificationParameter,
-                                 @"contextualSearchPhrase" : contextualSearchPhrase,
-                                 @"locale" : contextualSearchLocale
-                         }] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *getTask) {
+                         andParameters:parameters]
+            continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *getTask) {
         NSDictionary *results = getTask.result;
 
         __block NSError *error;
@@ -658,7 +667,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
 
                            NSMutableDictionary *converted = [NSMutableDictionary dictionary];
                            if ([results[@"attribution"] isKindOfClass:[NSDictionary class]]) {
-                               NSDictionary * attributionMap = results[@"attribution"];
+                               NSDictionary *attributionMap = results[@"attribution"];
                                for (NSString *imojiId in [attributionMap allKeys]) {
                                    converted[imojiId] = [self readAttribution:attributionMap[imojiId]];
                                }
@@ -889,7 +898,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
 
         if ([image isKindOfClass:[YYImage class]] && options.renderAnimatedIfSupported && imoji.supportsAnimation) {
             YYImage *yyImage = (YYImage *) image;
-            
+
             YYImageEncoder *encoder = [[YYImageEncoder alloc] initWithType:YYImageTypeGIF];
             encoder.loopCount = yyImage.animatedImageLoopCount;
             for (NSUInteger i = 0; i < yyImage.animatedImageFrameCount; ++i) {

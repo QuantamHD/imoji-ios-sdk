@@ -26,6 +26,11 @@
  */
 @property(nonatomic, strong, nullable) NSLocale *contextualSearchLocale;
 
+/**
+ * @abstract A bit-field of one or more IMImojiObjectLicenseStyle values to filter the categories on.
+ */
+@property(nonatomic, strong, nullable) NSNumber *licenseStyles;
+
 + (nonnull instancetype)optionsWithClassification:(IMImojiSessionCategoryClassification)classification;
 
 + (nonnull instancetype)optionsWithClassification:(IMImojiSessionCategoryClassification)classification
