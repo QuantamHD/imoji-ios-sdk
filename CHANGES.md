@@ -2,8 +2,10 @@
 
 ### Version 2.2.0
 
+* Adds **licenseStyle** metadata to CategoryAttribution and Imoji objects. Developers can use this to determine which content can or cannot be used for commerical purposes (arrangements need to be made with Imoji prior to integrating)
 * Deprecate reportImojiAsAbusive and markImojiUsage in favor of reportImojiAsAbusiveWithIdentifier and markImojiUsageWithIdentifier.
 * Removes Sync subspec, functionality is no longer supported
+* Ability to filter categories by license styles
 
 ### Version 2.1.1
 
