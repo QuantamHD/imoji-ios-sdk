@@ -1,5 +1,9 @@
 # Imoji SDK Changes
 
+### Version 2.2.1
+
+* Adds **relatedCategories** to search results. Clients can use this to show multiple related terms instead of just one (relatedSearchTerm).
+
 ### Version 2.2.0
 
 * Adds **licenseStyle** metadata to CategoryAttribution and Imoji objects. Developers can use this to determine which content can or cannot be used for commerical purposes (arrangements need to be made with Imoji prior to integrating)
