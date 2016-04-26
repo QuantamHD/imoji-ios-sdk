@@ -27,6 +27,8 @@
 #import <UIKit/UIKit.h>
 #import "IMImojiObjectRenderingOptions.h"
 
+@class IMImojiCategoryObject;
+
 /**
 * Represents metadata returned from ImojiAPI searches
 */
@@ -37,6 +39,11 @@
  * scrolling of results of related results.
 */
 @property(nonatomic, strong, nullable) NSString *relatedSearchTerm;
+
+/**
+* @abstract An array of categories related to the search term used to generate the result set.
+*/
+@property(nonatomic, strong, nullable) NSArray<IMImojiCategoryObject * > *relatedCategories;
 
 /**
 * @abstract Number of items returned in the result set.

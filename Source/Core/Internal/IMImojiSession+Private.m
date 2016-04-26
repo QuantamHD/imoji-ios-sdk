@@ -17,6 +17,7 @@
 #import "NSString+Utils.h"
 #import "IMMutableCategoryAttribution.h"
 #import "IMMutableArtist.h"
+#import "IMMutableCategoryObject.h"
 
 NSString *const IMImojiSessionFileAccessTokenKey = @"at";
 NSString *const IMImojiSessionFileRefreshTokenKey = @"rt";
@@ -563,6 +564,7 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
 
 - (void)handleImojiFetchResponse:(NSArray *)imojiObjects
                relatedSearchTerm:(NSString *)relatedSearchTerm
+               relatedCategories:(NSArray<IMImojiCategoryObject *> *)relatedCategories
                cancellationToken:(NSOperation *)cancellationToken
           searchResponseCallback:(IMImojiSessionResultSetResponseCallback)searchResponseCallback
            imojiResponseCallback:(IMImojiSessionImojiFetchedResponseCallback)imojiResponseCallback {
@@ -573,6 +575,7 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
     if (searchResponseCallback) {
         IMImojiResultSetMetadata *resultSetMetadata = [IMImojiResultSetMetadata new];
         resultSetMetadata.relatedSearchTerm = relatedSearchTerm;
+        resultSetMetadata.relatedCategories = relatedCategories;
         resultSetMetadata.resultCount = @(imojiObjects.count);
         searchResponseCallback(resultSetMetadata, nil);
     }
@@ -648,6 +651,38 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
     }];
 
     return taskCompletionSource.task;
+}
+
+- (NSArray *)readCategories:(NSArray *)categories {
+    NSMutableArray *imojiCategories = [NSMutableArray arrayWithCapacity:categories.count > 0 ? categories.count : 1];
+    NSUInteger order = 0;
+
+    for (NSDictionary *dictionary in categories) {
+        NSDictionary *artistDictionary = dictionary[@"artist"];
+        IMCategoryAttribution *attribution = nil;
+        if (![artistDictionary isEqual:[NSNull null]]) {
+            attribution = [self readAttribution:artistDictionary];
+        }
+
+        NSArray *imojisDictionary = [dictionary im_checkedArrayForKey:@"imojis"];
+        NSMutableArray *previewImojis = [NSMutableArray new];
+        if (imojisDictionary) {
+            for (NSDictionary *imojiDictionary in imojisDictionary) {
+                [previewImojis addObject:[self readImojiObject:imojiDictionary]];
+            }
+        } else if (dictionary[@"images"]) { // legacy support, pre server version v2.1
+            [previewImojis addObject:[self readImojiObject:dictionary]];
+        }
+
+        [imojiCategories addObject:[IMMutableCategoryObject objectWithIdentifier:[dictionary im_checkedStringForKey:@"searchText"]
+                                                                           order:order++
+                                                                   previewImojis:previewImojis
+                                                                        priority:[dictionary im_checkedNumberForKey:@"priority" defaultValue:@0].unsignedIntegerValue
+                                                                           title:[dictionary im_checkedStringForKey:@"title"]
+                                                                     attribution:attribution]];
+    }
+
+    return imojiCategories;
 }
 
 - (BFTask *)uploadImageInBackgroundWithRetries:(UIImage *)image

@@ -148,39 +148,10 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
         } else {
             NSArray *categories = results[@"categories"];
             if (callback) {
-                __block NSUInteger order = 0;
-
                 if ([categories isEqual:[NSNull null]]) {
                     callback(nil, nil);
                 } else {
-                    NSMutableArray *imojiCategories = [NSMutableArray arrayWithCapacity:categories.count];
-
-                    for (NSDictionary *dictionary in categories) {
-                        NSDictionary *artistDictionary = dictionary[@"artist"];
-                        IMCategoryAttribution *attribution = nil;
-                        if (![artistDictionary isEqual:[NSNull null]]) {
-                            attribution = [self readAttribution:artistDictionary];
-                        }
-
-                        NSArray *imojisDictionary = [dictionary im_checkedArrayForKey:@"imojis"];
-                        NSMutableArray *previewImojis = [NSMutableArray new];
-                        if (imojisDictionary) {
-                            for (NSDictionary *imojiDictionary in imojisDictionary) {
-                                [previewImojis addObject:[self readImojiObject:imojiDictionary]];
-                            }
-                        } else if (dictionary[@"images"]) { // legacy support, pre server version v2.1
-                            [previewImojis addObject:[self readImojiObject:dictionary]];
-                        }
-
-                        [imojiCategories addObject:[IMMutableCategoryObject objectWithIdentifier:[dictionary im_checkedStringForKey:@"searchText"]
-                                                                                           order:order++
-                                                                                   previewImojis:previewImojis
-                                                                                        priority:[dictionary im_checkedNumberForKey:@"priority" defaultValue:@0].unsignedIntegerValue
-                                                                                           title:[dictionary im_checkedStringForKey:@"title"]
-                                                                                     attribution:attribution]];
-                    }
-
-                    callback(imojiCategories, nil);
+                    callback([self readCategories:categories], nil);
                 }
             }
         }
@@ -222,6 +193,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
         } else {
             [self handleImojiFetchResponse:[self convertServerDataSetToImojiArray:results]
                          relatedSearchTerm:[results im_checkedStringForKey:@"followupSearchTerm"]
+                         relatedCategories:[self readCategories:[results im_checkedArrayForKey:@"relatedCategories" defaultValue:@[]]]
                          cancellationToken:cancellationToken
                     searchResponseCallback:resultSetResponseCallback
                      imojiResponseCallback:imojiResponseCallback];
@@ -268,6 +240,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
         } else {
             [self handleImojiFetchResponse:[self convertServerDataSetToImojiArray:results]
                          relatedSearchTerm:[results im_checkedStringForKey:@"followupSearchTerm"]
+                         relatedCategories:[self readCategories:[results im_checkedArrayForKey:@"relatedCategories" defaultValue:@[]]]
                          cancellationToken:cancellationToken
                     searchResponseCallback:resultSetResponseCallback
                      imojiResponseCallback:imojiResponseCallback];
@@ -327,6 +300,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
 
             [self handleImojiFetchResponse:imojiObjects
                          relatedSearchTerm:[results im_checkedStringForKey:@"followupSearchTerm"]
+                         relatedCategories:[self readCategories:[results im_checkedArrayForKey:@"relatedCategories" defaultValue:@[]]]
                          cancellationToken:cancellationToken
                     searchResponseCallback:nil
                      imojiResponseCallback:fetchedResponseCallback];
@@ -363,6 +337,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
         } else {
             [self handleImojiFetchResponse:[self convertServerDataSetToImojiArray:results]
                          relatedSearchTerm:[results im_checkedStringForKey:@"followupSearchTerm"]
+                         relatedCategories:[self readCategories:[results im_checkedArrayForKey:@"relatedCategories" defaultValue:@[]]]
                          cancellationToken:cancellationToken
                     searchResponseCallback:resultSetResponseCallback
                      imojiResponseCallback:imojiResponseCallback];
@@ -419,6 +394,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
         } else {
             [self handleImojiFetchResponse:[self convertServerDataSetToImojiArray:results]
                          relatedSearchTerm:[results im_checkedStringForKey:@"followupSearchTerm"]
+                         relatedCategories:[self readCategories:[results im_checkedArrayForKey:@"relatedCategories" defaultValue:@[]]]
                          cancellationToken:cancellationToken
                     searchResponseCallback:resultSetResponseCallback
                      imojiResponseCallback:imojiResponseCallback];

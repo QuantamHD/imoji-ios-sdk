@@ -52,7 +52,8 @@
 - (nonnull NSArray *)convertServerDataSetToImojiArray:(nonnull NSDictionary *)serverResponse;
 
 - (void)handleImojiFetchResponse:(nonnull NSArray *)imojiObjects
-               relatedSearchTerm:(nonnull NSString *)relatedSearchTerm
+               relatedSearchTerm:(nullable NSString *)relatedSearchTerm
+               relatedCategories:(nullable NSArray<IMImojiCategoryObject *> *)relatedCategories
                cancellationToken:(nonnull NSOperation *)cancellationToken
           searchResponseCallback:(nullable IMImojiSessionResultSetResponseCallback)searchResponseCallback
            imojiResponseCallback:(nullable IMImojiSessionImojiFetchedResponseCallback)imojiResponseCallback;
@@ -65,6 +66,8 @@
 - (nonnull IMMutableImojiObject *)readImojiObject:(nonnull NSDictionary *)result;
 
 - (nonnull IMCategoryAttribution *)readAttribution:(nonnull NSDictionary *)attributionDictionary;
+
+- (nonnull NSArray<IMImojiCategoryObject *> *)readCategories:(nonnull NSArray *)categories;
 
 - (nonnull BFTask *)uploadImageInBackgroundWithRetries:(nonnull UIImage *)image
                                              uploadUrl:(nonnull NSURL *)uploadUrl
