@@ -34,10 +34,4 @@
 - (UIImage *)im_resizedImageToFitInSize:(CGSize)boundingSize
                          scaleIfSmaller:(BOOL)scale;
 
-- (UIImage *)im_imageWithScreenScale;
-
-- (UIImage *)im_imageWithAspect:(CGSize)aspect;
-
-- (CGSize)im_imageSizeWithAspect:(CGSize)aspect;
-
 @end

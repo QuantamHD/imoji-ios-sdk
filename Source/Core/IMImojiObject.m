@@ -62,6 +62,10 @@
 }
 
 - (nullable NSURL *)getUrlForRenderingOptions:(nonnull IMImojiObjectRenderingOptions *)renderingOptions {
+    if (renderingOptions.aspectRatio || renderingOptions.targetSize) {
+        return [self generateImageUrlWithRenderingOptions:renderingOptions];
+    }
+
     id url = self.urls[[IMImojiObjectRenderingOptions optionsWithRenderSize:renderingOptions.renderSize
                                                                 borderStyle:renderingOptions.borderStyle
                                                                 imageFormat:renderingOptions.imageFormat]];
@@ -119,6 +123,60 @@
     }
 
     return nil;
+}
+
+- (nonnull NSURL *)generateImageUrlWithRenderingOptions:(nonnull IMImojiObjectRenderingOptions *)renderingOptions {
+    NSMutableString *urlString = [NSMutableString string];
+    [urlString appendFormat:@"https://render.imoji.io/%@/%@/", [self.identifier substringToIndex:3], self.identifier];
+    if (renderingOptions.renderAnimatedIfSupported && self.supportsAnimation) {
+        [urlString appendString:@"animated-"];
+    } else if (renderingOptions.borderStyle == IMImojiObjectBorderStyleNone) {
+        [urlString appendString:@"unbordered-"];
+    } else {
+        [urlString appendString:@"bordered-"];
+    }
+
+    if (renderingOptions.targetSize) {
+        CGSize size = [renderingOptions.targetSize CGSizeValue];
+        CGFloat maxSize = MAX(size.width, size.height);
+        [urlString appendFormat:@"%@", @(maxSize)];
+    } else {
+        switch (renderingOptions.renderSize) {
+            case IMImojiObjectRenderSizeThumbnail:
+                [urlString appendString:@"150"];
+                break;
+            case IMImojiObjectRenderSizeFullResolution:
+                [urlString appendString:@"1200"];
+                break;
+            case IMImojiObjectRenderSize320:
+                [urlString appendString:@"320"];
+                break;
+            case IMImojiObjectRenderSize512:
+                [urlString appendString:@"512"];
+                break;
+        }
+    }
+
+    if (renderingOptions.aspectRatio) {
+        CGSize aspectRatio = [renderingOptions.aspectRatio CGSizeValue];
+        [urlString appendFormat:@"-%@x%@", @(aspectRatio.width), @(aspectRatio.height)];
+    }
+
+    switch (renderingOptions.imageFormat) {
+        case IMImojiObjectImageFormatPNG:
+            [urlString appendString:@".png"];
+            break;
+        case IMImojiObjectImageFormatAnimatedGif:
+            [urlString appendString:@".gif"];
+            break;
+
+        case IMImojiObjectImageFormatWebP:
+        case IMImojiObjectImageFormatAnimatedWebp:
+            [urlString appendString:@".webp"];
+            break;
+    }
+
+    return [NSURL URLWithString:urlString];
 }
 
 @end

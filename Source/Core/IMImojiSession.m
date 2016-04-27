@@ -33,8 +33,6 @@
 #import "NSDictionary+Utils.h"
 #import "IMMutableImojiObject.h"
 #import "UIImage+Extensions.h"
-#import "IMMutableCategoryObject.h"
-#import "BFTask+Utils.h"
 #import "IMImojiSession+Private.h"
 #import "IMMutableCategoryAttribution.h"
 #import "IMCategoryFetchOptions.h"
@@ -800,120 +798,11 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
                 if (task.error) {
                     callback(nil, task.error);
                 } else {
-                    [BFTask im_serialBackgroundTaskWithBlock:^id(BFTask *bgTask) {
-                        NSError *error;
-                        UIImage *image = [self renderImoji:imoji
-                                                   options:requestedRenderingOptions
-                                                     image:task.result
-                                                     error:&error];
-
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            if (!cancellationToken.cancelled) {
-                                callback(image, error);
-                            }
-                        });
-
-                        return nil;
-                    }];
+                    callback(task.result, nil);
                 }
 
                 return nil;
             }];
-}
-
-- (UIImage *)renderImoji:(IMMutableImojiObject *)imoji
-                 options:(IMImojiObjectRenderingOptions *)options
-                   image:(UIImage *)image
-                   error:(NSError **)error {
-
-    CGSize targetSize = options.targetSize ? options.targetSize.CGSizeValue : CGSizeZero;
-    CGSize aspectRatio = options.aspectRatio ? options.aspectRatio.CGSizeValue : CGSizeZero;
-    CGSize maximumRenderSize = options.maximumRenderSize ? options.maximumRenderSize.CGSizeValue : CGSizeZero;
-
-    if (image) {
-        if (image.size.width == 0 || image.size.height == 0) {
-            if (error) {
-                *error = [NSError errorWithDomain:IMImojiSessionErrorDomain
-                                             code:IMImojiSessionErrorCodeInvalidImage
-                                         userInfo:@{
-                                                 NSLocalizedDescriptionKey : [NSString stringWithFormat:@"Invalid image for imoji %@", imoji.identifier]
-                                         }];
-            }
-            return nil;
-        }
-
-        if (targetSize.width <= 0 || targetSize.height <= 0) {
-            targetSize = image.size;
-        }
-
-        // size the image appropriately for aspect enabled outputs, this allows the caller to specify a maximum
-        // rendered image size with aspect
-        if (!CGSizeEqualToSize(CGSizeZero, aspectRatio) && !CGSizeEqualToSize(CGSizeZero, maximumRenderSize)) {
-            // get the potential size of the image with aspect
-            CGSize targetSizeWithAspect = [image im_imageSizeWithAspect:aspectRatio];
-
-            // scale down the size to whatever the caller specified
-            if (targetSizeWithAspect.width > maximumRenderSize.width) {
-                targetSizeWithAspect = CGSizeMake(maximumRenderSize.width, targetSizeWithAspect.height * maximumRenderSize.width / targetSizeWithAspect.width);
-            } else if (maximumRenderSize.height > 0.0f && targetSizeWithAspect.height > maximumRenderSize.height) {
-                targetSizeWithAspect = CGSizeMake(targetSizeWithAspect.width * maximumRenderSize.height / targetSizeWithAspect.height, maximumRenderSize.height);
-            }
-
-            // snap to either the max width or height of the aspect region and reset the shadow/border values appropriately
-            if (image.size.width > targetSizeWithAspect.width) {
-                targetSize = CGSizeMake(targetSizeWithAspect.width, targetSizeWithAspect.width);
-            } else if (image.size.height > targetSizeWithAspect.height) {
-                targetSize = CGSizeMake(targetSizeWithAspect.height, targetSizeWithAspect.height);
-            }
-        }
-
-        // same size and ratio, no need to perform operations
-        if (CGSizeEqualToSize(image.size, targetSize) && CGSizeEqualToSize(CGSizeZero, aspectRatio)) {
-            return image;
-        }
-
-        if ([image isKindOfClass:[YYImage class]] && options.renderAnimatedIfSupported && imoji.supportsAnimation) {
-            YYImage *yyImage = (YYImage *) image;
-
-            YYImageEncoder *encoder = [[YYImageEncoder alloc] initWithType:YYImageTypeGIF];
-            encoder.loopCount = yyImage.animatedImageLoopCount;
-            for (NSUInteger i = 0; i < yyImage.animatedImageFrameCount; ++i) {
-                UIImage *imageAtFrame = [yyImage animatedImageFrameAtIndex:i];
-                UIImage *resizedImage = CGSizeEqualToSize(targetSize, CGSizeZero) ? imageAtFrame :
-                        [imageAtFrame im_resizedImageToFitInSize:targetSize scaleIfSmaller:YES];
-
-                if (!CGSizeEqualToSize(CGSizeZero, aspectRatio)) {
-                    resizedImage = [resizedImage im_imageWithAspect:aspectRatio];
-                }
-
-                [encoder addImage:[resizedImage im_imageWithScreenScale]
-                         duration:[yyImage animatedImageDurationAtIndex:i]];
-            }
-
-            return [YYImage imageWithData:[encoder encode]];
-        } else {
-            UIImage *resizedImage = CGSizeEqualToSize(targetSize, CGSizeZero) ? image :
-                    [image im_resizedImageToFitInSize:targetSize scaleIfSmaller:YES];
-
-            if (!CGSizeEqualToSize(CGSizeZero, aspectRatio)) {
-                resizedImage = [resizedImage im_imageWithAspect:aspectRatio];
-            }
-
-            resizedImage = [resizedImage im_imageWithScreenScale];
-
-            return resizedImage;
-        }
-    } else {
-        if (error) {
-            *error = [NSError errorWithDomain:IMImojiSessionErrorDomain
-                                         code:IMImojiSessionErrorCodeImojiDoesNotExist
-                                     userInfo:@{
-                                             NSLocalizedDescriptionKey : [NSString stringWithFormat:@"imoji %@ does not exist", imoji.identifier]
-                                     }];
-        }
-    }
-
-    return nil;
 }
 
 #pragma mark Static
