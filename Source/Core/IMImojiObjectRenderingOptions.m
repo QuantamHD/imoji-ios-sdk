@@ -74,8 +74,6 @@
         return NO;
     if (self.targetSize != options.targetSize && ![self.targetSize isEqualToValue:options.targetSize])
         return NO;
-    if (self.maximumRenderSize != options.maximumRenderSize && ![self.maximumRenderSize isEqualToValue:options.maximumRenderSize])
-        return NO;
     if (self.borderStyle != options.borderStyle)
         return NO;
     if (self.imageFormat != options.imageFormat)
@@ -89,7 +87,6 @@
     NSUInteger hash = [self.aspectRatio hash];
     hash = hash * 31u + (NSUInteger) self.renderSize;
     hash = hash * 31u + [self.targetSize hash];
-    hash = hash * 31u + [self.maximumRenderSize hash];
     hash = hash * 31u + (NSUInteger) self.borderStyle;
     hash = hash * 31u + (NSUInteger) self.imageFormat;
     hash = hash * 31u + (NSUInteger) self.renderAnimatedIfSupported;
@@ -103,7 +100,6 @@
         copy.aspectRatio = self.aspectRatio;
         copy.renderSize = self.renderSize;
         copy.targetSize = self.targetSize;
-        copy.maximumRenderSize = self.maximumRenderSize;
         copy.borderStyle = self.borderStyle;
         copy.imageFormat = self.imageFormat;
         copy.renderAnimatedIfSupported = self.renderAnimatedIfSupported;
