@@ -108,7 +108,9 @@
 
     // if the requested rendering options are for WebP, try to load an animated webp image, otherwise fallback to gif
     IMImojiObjectRenderingOptions *animatedRenderingOptions = [renderingOptions toAnimatedRenderingOptions];
-    if (renderingOptions.imageFormat == IMImojiObjectImageFormatWebP) {
+
+    // aspect ratio is not supported for animated wepb
+    if (renderingOptions.imageFormat == IMImojiObjectImageFormatWebP && !renderingOptions.aspectRatio) {
         animatedRenderingOptions.imageFormat = IMImojiObjectImageFormatAnimatedWebp;
 
         if ([self getUrlForRenderingOptions:animatedRenderingOptions]) {
