@@ -641,7 +641,7 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
                     });
                 }
             } else {
-                taskCompletionSource.result = [YYImage imageWithData:(NSData *) urlTask.result];
+                taskCompletionSource.result = [YYImage imageWithData:(NSData *) urlTask.result scale:[UIScreen mainScreen].scale];
             }
 
             return nil;
