@@ -734,7 +734,8 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
 
                         for (NSUInteger i = 0; i < frameCount; i++) {
                             NSDictionary *frameProperties = @{(__bridge NSString *) kCGImagePropertyGIFDictionary : @{
-                                    (__bridge NSString *) kCGImagePropertyGIFUnclampedDelayTime : @([yyImage animatedImageDurationAtIndex:i])
+                                    (__bridge NSString *) kCGImagePropertyGIFUnclampedDelayTime : @([yyImage animatedImageDurationAtIndex:i]),
+                                    (__bridge NSString *) kCGImagePropertyGIFDelayTime : @([yyImage animatedImageDurationAtIndex:i])
                             }};
                             CGImageDestinationAddImage(destination, [[yyImage animatedImageFrameAtIndex:i] CGImage], (__bridge CFDictionaryRef) frameProperties);
                         }
