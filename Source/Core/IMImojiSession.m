@@ -532,14 +532,6 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
     return cancellationToken;
 }
 
-- (NSOperation *)reportImojiAsAbusive:(IMImojiObject *)imojiObject
-                               reason:(NSString *)reason
-                             callback:(IMImojiSessionAsyncResponseCallback)callback {
-    return [self reportImojiAsAbusiveWithIdentifier:imojiObject.identifier
-                                             reason:reason
-                                           callback:callback];
-}
-
 - (nonnull NSOperation *)reportImojiAsAbusiveWithIdentifier:(nonnull NSString *)imojiIdentifier
                                                      reason:(nullable NSString *)reason
                                                    callback:(nonnull IMImojiSessionAsyncResponseCallback)callback {
@@ -570,11 +562,6 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
 }
 
 #pragma mark Analytics
-
-- (void)markImojiUsage:(nonnull IMImojiObject *)imoji
-      originIdentifier:(nullable NSString *)originIdentifier {
-    [self markImojiUsageWithIdentifier:imoji.identifier originIdentifier:originIdentifier];
-}
 
 - (void)markImojiUsageWithIdentifier:(nonnull NSString *)imojiIdentifier
                     originIdentifier:(nullable NSString *)originIdentifier {
