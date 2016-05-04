@@ -217,12 +217,6 @@ typedef void (^IMImojiSessionImojiAttributionResponseCallback)(NSDictionary *__n
 @property(nonatomic, strong, nullable) id <IMImojiSessionDelegate> delegate;
 
 /**
- * @abstract An optional cache instance to be used for optimizing rendering calls
- * DEPRECATED: Cache settings can be modified by overriding generateURLSessionConfiguration in IMImojiSessionStoragePolicy
-*/
-@property(nonatomic, strong, nullable) NSCache *contentCache DEPRECATED_ATTRIBUTE;
-
-/**
  * @abstract The storage policy used for determining how to store Imojis on the local file store.
  */
 @property(nonatomic, readonly, nonnull) IMImojiSessionStoragePolicy *storagePolicy;
