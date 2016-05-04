@@ -124,6 +124,31 @@ typedef NS_ENUM(NSUInteger, IMImojiSessionCategoryClassification) {
 };
 
 /**
+* @abstract Defines various categorizations of content within a user's collection
+*/
+typedef NS_ENUM(NSUInteger, IMImojiCollectionType) {
+    /**
+    * @abstract Recently used content
+    */
+            IMImojiCollectionTypeRecents,
+
+    /**
+    * @abstract Content created by the user
+    */
+            IMImojiCollectionTypeCreated,
+
+    /**
+    * @abstract Content imported into the collection explicitly
+    */
+            IMImojiCollectionTypeLiked,
+
+    /**
+    * @abstract All content in the user's collection
+    */
+            IMImojiCollectionTypeAll
+};
+
+/**
 * @abstract Callback used for triggering when the server has loaded a result set
 * @param metadata Result set metadata for the request.
 * @param error An error with code equal to an IMImojiSessionErrorCode value or nil if the request succeeded
@@ -328,27 +353,40 @@ typedef void (^IMImojiSessionImojiAttributionResponseCallback)(NSDictionary *__n
                                      callback:(nonnull IMImojiSessionExportedImageResponseCallback)callback;
 @end
 
-@interface IMImojiSession (SynchronizedUserActions)
+@interface IMImojiSession (CollectionManagement)
 
 /**
-* @abstract Gets imojis associated to the synchronized user account. The sessionState must be IMImojiSessionStateConnectedSynchronized
-* in order to receive user imojis.
+* @abstract Gets all imojis in a user's collection.
 * @param resultSetResponseCallback Callback triggered when the results are available or if an error occurred.
 * @param imojiResponseCallback Callback triggered when an imoji is available to render.
 * @return An operation reference that can be used to cancel the request.
+ * DEPRECATED: Use fetchCollectedImojisWithType: with IMImojiCollectionTypeAll for the type.
 */
 - (nonnull NSOperation *)getImojisForAuthenticatedUserWithResultSetResponseCallback:(nonnull IMImojiSessionResultSetResponseCallback)resultSetResponseCallback
-                                                              imojiResponseCallback:(nonnull IMImojiSessionImojiFetchedResponseCallback)imojiResponseCallback;
+                                                              imojiResponseCallback:(nonnull IMImojiSessionImojiFetchedResponseCallback)imojiResponseCallback DEPRECATED_ATTRIBUTE;
 
 /**
-* @abstract Adds a given IMImojiObject to a users collection which is also synchronized with their account.
-* The sessionState must be IMImojiSessionStateConnectedSynchronized in order to receive user imojis.
+* @abstract Adds a given IMImojiObject to a users collection. The content can be fetched by calling
+* fetchCollectedImojisWithType: with IMImojiCollectionTypeLiked for the type.
 * @param imojiObject The Imoji object to save to the users collection
 * @param callback Called once the save operation is complete
 * @return An operation reference that can be used to cancel the request.
 */
 - (nonnull NSOperation *)addImojiToUserCollection:(nonnull IMImojiObject *)imojiObject
                                          callback:(nonnull IMImojiSessionAsyncResponseCallback)callback;
+
+
+/**
+* @abstract Gets imojis associated to a user's collection which can be accumulated by calling either
+* addImojiToUserCollection (Liked), createImojiWithRawImage (Created) or markImojiUsageWithIdentifier (Recents).
+* @param collectionType The type of collection to filter on.
+* @param resultSetResponseCallback Callback triggered when the results are available or if an error occurred.
+* @param imojiResponseCallback Callback triggered when an imoji is available to render.
+* @return An operation reference that can be used to cancel the request.
+*/
+- (nonnull NSOperation *)fetchCollectedImojisWithType:(IMImojiCollectionType)collectionType
+                            resultSetResponseCallback:(nonnull IMImojiSessionResultSetResponseCallback)resultSetResponseCallback
+                                imojiResponseCallback:(nonnull IMImojiSessionImojiFetchedResponseCallback)imojiResponseCallback;
 
 @end
 
@@ -397,7 +435,8 @@ typedef void (^IMImojiSessionImojiAttributionResponseCallback)(NSDictionary *__n
 
 /**
  * @abstract Marks an Imoji sticker as being used for sharing. For example, if a user copied a sticker to the
- * pasteboard in a keyboard application, that would qualify as the Imoji being used.
+ * pasteboard in a keyboard application, that would qualify as the Imoji being used. The Imoji sticker will be added
+ * to the user's collection which can be retrieved by calling fetchCollectedImojisWithType.
  * @param imojiIdentifier ID of the Imoji object to register for usage
  * @param originIdentifier Optional arbitrary identifier which developers can supply describing the action that
  * triggered the usage. String must be less than or equal to 40 characters.

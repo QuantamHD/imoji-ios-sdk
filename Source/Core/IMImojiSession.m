@@ -376,9 +376,31 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
 
 - (NSOperation *)getImojisForAuthenticatedUserWithResultSetResponseCallback:(IMImojiSessionResultSetResponseCallback)resultSetResponseCallback
                                                       imojiResponseCallback:(IMImojiSessionImojiFetchedResponseCallback)imojiResponseCallback {
-    NSOperation *cancellationToken = self.cancellationTokenOperation;
+    return [self fetchCollectedImojisWithType:IMImojiCollectionTypeAll
+                    resultSetResponseCallback:resultSetResponseCallback
+                        imojiResponseCallback:imojiResponseCallback];
+}
 
-    [[self runValidatedGetTaskWithPath:@"/user/imoji/fetch" andParameters:@{}] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *getTask) {
+- (nonnull NSOperation *)fetchCollectedImojisWithType:(IMImojiCollectionType)collectionType
+                            resultSetResponseCallback:(nonnull IMImojiSessionResultSetResponseCallback)resultSetResponseCallback
+                                imojiResponseCallback:(nonnull IMImojiSessionImojiFetchedResponseCallback)imojiResponseCallback {
+    NSOperation *cancellationToken = self.cancellationTokenOperation;
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:1];
+    switch (collectionType) {
+        case IMImojiCollectionTypeRecents:
+            params[@"collectionType"] = @"recents";
+            break;
+        case IMImojiCollectionTypeCreated:
+            params[@"collectionType"] = @"created";
+            break;
+        case IMImojiCollectionTypeLiked:
+            params[@"collectionType"] = @"liked";
+            break;
+        case IMImojiCollectionTypeAll:
+            break;
+    }
+
+    [[self runValidatedGetTaskWithPath:@"/user/imoji/fetch" andParameters:params] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *getTask) {
         if (cancellationToken.cancelled) {
             return [BFTask cancelledTask];
         }
