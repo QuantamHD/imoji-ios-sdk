@@ -4,6 +4,9 @@
 
 * Adds **relatedCategories** to search results. Clients can use this to show multiple related terms instead of just one (relatedSearchTerm).
 * For developers using targetSize or aspectRatio, we're now processing the resize request on the server to avoid having the client do too much work. As a result, your app will not have to worry about memory issues when creating for example, a resized animated image. 
+* Removes deprecated methods reportImojiAsAbusive and markImojiUsage
+* Removes deprecated contentCache
+* Fixes a bug in which some animated gifs where exporting with animation speeds that were too fast.
 
 ### Version 2.2.0
 
