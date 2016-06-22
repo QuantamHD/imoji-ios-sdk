@@ -201,6 +201,15 @@ typedef void (^IMImojiSessionCreationResponseCallback)(IMImojiObject *__nullable
 typedef void (^IMImojiSessionExportedImageResponseCallback)(UIImage *__nullable image, NSData *__nullable data, NSString *__nullable typeIdentifier, NSError *__nullable error);
 
 /**
+* @abstract Callback used for exporting Imoji to an NSData reference for export (ex: sharing to iMessage, Instagram, etc).
+* @param image UIImage representation of the IMImojiObject.
+* @param data NSData reference safe for exporting.
+* @param typeIdentifier Either kUTTypeGIF or kUTTypePNG if the operation succeeded. nil otherwise.
+* @param error An error with code equal to an IMImojiSessionErrorCode value or nil if the request succeeded.
+*/
+typedef void (^IMImojiSessionMSStickerResponseCallback)(NSObject *__nullable msStickerObject, NSError *__nullable error);
+
+/**
 * @abstract Callback used for fetching attribution for IMImoji identifiers.
 * @param attribution Dictionary object with the requested IMImoji id's as keys and IMCategoryAttribution objects as values
 * @param error An error with code equal to an IMImojiSessionErrorCode value or nil if the request succeeded
@@ -351,6 +360,18 @@ typedef void (^IMImojiSessionImojiAttributionResponseCallback)(NSDictionary *__n
 - (nonnull NSOperation *)renderImojiForExport:(nonnull IMImojiObject *)imoji
                                       options:(nonnull IMImojiObjectRenderingOptions *)options
                                      callback:(nonnull IMImojiSessionExportedImageResponseCallback)callback;
+
+/**
+ * @abstract Renders an imoji object as an MSSticker object
+ * @param imoji The imoji to render.
+ * @param options Set of options to render the imoji with.
+ * @param callback Called once the imoji image and data have been rendered.
+ * @see [MSSticker](https://developer.apple.com/reference/messages/mssticker)
+ * @return An operation reference that can be used to cancel the request.
+ */
+- (nonnull NSOperation *)renderImojiAsMSSticker:(nonnull IMImojiObject *)imoji
+                                        options:(nonnull IMImojiObjectRenderingOptions *)options
+                                       callback:(nonnull IMImojiSessionMSStickerResponseCallback)callback;
 @end
 
 @interface IMImojiSession (CollectionManagement)
