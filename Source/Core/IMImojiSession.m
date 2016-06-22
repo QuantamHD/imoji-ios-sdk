@@ -801,7 +801,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
                                  reason:@"MSSticker rendering only supported with iOS 10 SDK and higher"
                                userInfo:nil] raise];
 
-        return [NSOperation new];
+        return self.cancellationTokenOperation;
     }
 
     __block NSURL *url = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@%@-%@.%@",
@@ -830,7 +830,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
             return nil;
         }];
         
-        return [NSOperation new];
+        return self.cancellationTokenOperation;
     }
 
 
@@ -852,6 +852,8 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
     [[NSException exceptionWithName:@"imoji runtime exception"
                             reason:@"MSSticker rendering only supported with iOS 10 SDK and higher"
                           userInfo:nil] raise];
+    
+    return self.cancellationTokenOperation;
 #endif
 }
 
