@@ -841,7 +841,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
                                      if (error) {
                                          callback(nil, error);
                                      } else {
-                                         [UIImagePNGRepresentation(image) writeToURL:url atomically:YES];
+                                         [data writeToURL:url atomically:YES];
                                          stickerCallback();
                                      }
                                      
