@@ -1,5 +1,11 @@
 # Imoji SDK Changes
 
+### Version 2.3.0
+
+* Adds support for rendering Imoji stickers as MSStickers for iOS 10! See [https://developer.apple.com/reference/messages/mssticker](https://developer.apple.com/reference/messages/mssticker)
+* Addresses an issue with exporting non gif images as PNG
+* Make sure renderAnimatedIfSupported is set to true for [IMImojiObjectRenderingOptions optionsWithAnimationAndRenderSize]
+
 ### Version 2.2.1
 
 * Adds **relatedCategories** to search results. Clients can use this to show multiple related terms instead of just one (relatedSearchTerm).
