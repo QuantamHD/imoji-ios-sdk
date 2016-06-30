@@ -31,6 +31,12 @@
 #import "IMImojiSessionStoragePolicy.h"
 #import "IMImojiSession.h"
 
+#if __has_include(<Messages/Messages.h>)
+#define IMMessagesFrameworkSupported 1
+#else
+#define IMMessagesFrameworkSupported 0
+#endif
+
 /**
 * @abstract Base class for coordinating with other ImojiSDK classes
 */

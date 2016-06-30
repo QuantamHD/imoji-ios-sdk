@@ -132,7 +132,9 @@
 }
 
 + (instancetype)optionsWithAnimationAndRenderSize:(IMImojiObjectRenderSize)renderSize {
-    return [[IMImojiObjectRenderingOptions alloc] initWithRenderSize:renderSize borderStyle:IMImojiObjectBorderStyleNone imageFormat:IMImojiObjectImageFormatAnimatedGif];
+    IMImojiObjectRenderingOptions* options = [[IMImojiObjectRenderingOptions alloc] initWithRenderSize:renderSize borderStyle:IMImojiObjectBorderStyleNone imageFormat:IMImojiObjectImageFormatAnimatedGif];
+    options.renderAnimatedIfSupported = YES;
+    return options;
 }
 
 @end

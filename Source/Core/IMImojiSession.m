@@ -37,6 +37,11 @@
 #import "IMMutableCategoryAttribution.h"
 #import "IMCategoryFetchOptions.h"
 
+#if IMMessagesFrameworkSupported
+#import <Messages/Messages.h>
+#import "BFTask+Utils.h"
+#endif
+
 NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
 
 @implementation IMImojiSession
@@ -719,7 +724,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
             NSError *exportError = nil;
             NSString *typeIdentifier = nil;
 
-            if (imoji.supportsAnimation) {
+            if (imoji.supportsAnimation && options.renderAnimatedIfSupported) {
                 if ([image isKindOfClass:[YYImage class]]) {
                     YYImage *yyImage = (YYImage *) image;
 
@@ -785,6 +790,71 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
             callback(image, attachmentData, typeIdentifier, exportError);
         }
     }];
+}
+
+- (nonnull NSOperation *)renderImojiAsMSSticker:(nonnull IMImojiObject *)imoji
+                                        options:(nonnull IMImojiObjectRenderingOptions *)options
+                                       callback:(nonnull IMImojiSessionMSStickerResponseCallback)callback {
+#if IMMessagesFrameworkSupported
+    if (!NSClassFromString(@"MSSticker")) {
+        [[NSException exceptionWithName:@"imoji runtime exception"
+                                 reason:@"MSSticker rendering only supported with iOS 10 SDK and higher"
+                               userInfo:nil] raise];
+
+        return self.cancellationTokenOperation;
+    }
+
+    __block NSURL *url = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@%@-%@.%@",
+                                                                   NSTemporaryDirectory(),
+                                                                   imoji.identifier,
+                                                                   @(options.hash),
+                                                                   imoji.supportsAnimation ? @"gif" : @"png"
+    ]];
+    __block void (^stickerCallback)() = ^{
+        NSError *stickerError;
+        MSSticker *sticker = [[MSSticker alloc] initWithContentsOfFileURL:url
+                                                     localizedDescription:imoji.identifier
+                                                                    error:&stickerError];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (stickerError) {
+                callback(nil, stickerError);
+            } else {
+                callback(sticker, nil);
+            }
+        });
+    };
+
+    if ([[NSFileManager defaultManager] fileExistsAtPath:url.path]) {
+        [BFTask im_concurrentBackgroundTaskWithBlock:^id(BFTask *task) {
+            stickerCallback();
+            return nil;
+        }];
+        
+        return self.cancellationTokenOperation;
+    }
+
+
+    return [self renderImojiForExport:imoji
+                              options:options
+                             callback:^(UIImage *image, NSData *data, NSString *typeIdentifier, NSError *error) {
+                                 [BFTask im_concurrentBackgroundTaskWithBlock:^id(BFTask *task) {
+                                     if (error) {
+                                         callback(nil, error);
+                                     } else {
+                                         [data writeToURL:url atomically:YES];
+                                         stickerCallback();
+                                     }
+                                     
+                                     return nil;
+                                 }];
+                             }];
+#else
+    [[NSException exceptionWithName:@"imoji runtime exception"
+                            reason:@"MSSticker rendering only supported with iOS 10 SDK and higher"
+                          userInfo:nil] raise];
+    
+    return self.cancellationTokenOperation;
+#endif
 }
 
 - (void)renderImoji:(IMMutableImojiObject *)imoji
