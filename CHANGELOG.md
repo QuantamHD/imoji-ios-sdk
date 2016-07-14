@@ -1,5 +1,9 @@
 # Imoji SDK Changes
 
+### Version 2.3.1
+
+* Expose initWithCachePath:persistentPath: in IMImojiSessionStoragePolicy for overriding
+
 ### Version 2.3.0
 
 * Adds support for rendering Imoji stickers as MSStickers for iOS 10! See [https://developer.apple.com/reference/messages/mssticker](https://developer.apple.com/reference/messages/mssticker)

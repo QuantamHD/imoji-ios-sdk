@@ -34,6 +34,14 @@
 @interface IMImojiSessionStoragePolicy : NSObject
 
 /**
+ *  @abstract Generates a storage policy that writes assets to a specified cache path and persistent information to
+ *  persistentPath. By default, assets stored to cachePath are removed after one day of non-usage.
+ *  @param cachePath URL path to store temporary files such as such as imoji images
+ *  @param persistentPath URL path to store persistent information such as authentication information
+ */
+- (instancetype)initWithCachePath:(NSURL *)cachePath persistentPath:(NSURL *)persistentPath;
+
+/**
  * @abstract Path in which to store temporary files such as downloaded Imoji images
  */
 @property(nonatomic, strong, readonly, nonnull) NSURL *cachePath;
