@@ -25,11 +25,15 @@
 
 #import <UIKit/UIKit.h>
 
-#import "IMImojiObject.h"
+#import "IMArtist.h"
+#import "IMCategoryAttribution.h"
+#import "IMCategoryFetchOptions.h"
 #import "IMImojiCategoryObject.h"
+#import "IMImojiObject.h"
 #import "IMImojiObjectRenderingOptions.h"
-#import "IMImojiSessionStoragePolicy.h"
+#import "IMImojiResultSetMetadata.h"
 #import "IMImojiSession.h"
+#import "IMImojiSessionStoragePolicy.h"
 
 #if __has_include(<Messages/Messages.h>)
 #define IMMessagesFrameworkSupported 1

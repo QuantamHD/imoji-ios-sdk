@@ -3,6 +3,7 @@
 ### Version 2.3.1
 
 * Expose initWithCachePath:persistentPath: in IMImojiSessionStoragePolicy for overriding
+* Fixes #18 - Adds core headers that were missing in ImojiSDK.h
 
 ### Version 2.3.0
 
