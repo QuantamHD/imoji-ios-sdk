@@ -39,7 +39,7 @@
  *  @param cachePath URL path to store temporary files such as such as imoji images
  *  @param persistentPath URL path to store persistent information such as authentication information
  */
-- (instancetype)initWithCachePath:(NSURL *)cachePath persistentPath:(NSURL *)persistentPath;
+- (instancetype)initWithCachePath:(nonnull NSURL *)cachePath persistentPath:(nonnull NSURL *)persistentPath;
 
 /**
  * @abstract Path in which to store temporary files such as downloaded Imoji images
