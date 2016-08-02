@@ -28,6 +28,30 @@
 @implementation IMImojiObjectRenderingOptions {
 
 }
+
+- (instancetype)initWithCoder:(NSCoder *)coder {
+    self = [super init];
+    if (self) {
+        self.renderSize = (IMImojiObjectRenderSize) [coder decodeIntForKey:@"renderSize"];
+        self.targetSize = [coder decodeObjectForKey:@"targetSize"];
+        self.aspectRatio = [coder decodeObjectForKey:@"aspectRatio"];
+        self.borderStyle = (IMImojiObjectBorderStyle) [coder decodeIntForKey:@"borderStyle"];
+        self.imageFormat = (IMImojiObjectImageFormat) [coder decodeIntForKey:@"imageFormat"];
+        self.renderAnimatedIfSupported = [coder decodeBoolForKey:@"renderAnimatedIfSupported"];
+    }
+
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)coder {
+    [coder encodeInt:self.renderSize forKey:@"renderSize"];
+    [coder encodeObject:self.targetSize forKey:@"targetSize"];
+    [coder encodeObject:self.aspectRatio forKey:@"aspectRatio"];
+    [coder encodeInt:self.borderStyle forKey:@"borderStyle"];
+    [coder encodeInt:self.imageFormat forKey:@"imageFormat"];
+    [coder encodeBool:self.renderAnimatedIfSupported forKey:@"renderAnimatedIfSupported"];
+}
+
 - (instancetype)init {
     self = [super init];
     if (self) {

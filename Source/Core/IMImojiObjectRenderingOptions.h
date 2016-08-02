@@ -96,7 +96,7 @@ typedef NS_ENUM(NSUInteger, IMImojiObjectImageFormat) {
 /**
 * @abstract Defines multiple options for rendering IMImojiObjects to images
 */
-@interface IMImojiObjectRenderingOptions : NSObject <NSCopying>
+@interface IMImojiObjectRenderingOptions : NSObject <NSCopying, NSCoding>
 
 /**
 * @abstract The desired size of the image to load. For best performance, use IMImojiObjectRenderSizeThumbnail. For

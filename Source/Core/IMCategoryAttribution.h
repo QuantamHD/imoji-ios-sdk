@@ -62,7 +62,7 @@ typedef NS_ENUM(NSUInteger, IMAttributionURLCategory) {
 /**
 *  @abstract Represents the attribution of the category.
 */
-@interface IMCategoryAttribution : NSObject
+@interface IMCategoryAttribution : NSObject <NSCoding>
 
 /**
  * @abstract A unique id for the attribution record.

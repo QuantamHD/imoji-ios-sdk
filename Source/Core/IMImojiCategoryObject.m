@@ -34,6 +34,27 @@ NSUInteger const IMImojiObjectPriorityNormal = 2;
 
 }
 
+- (instancetype)initWithCoder:(NSCoder *)coder {
+    self = [super init];
+    if (self) {
+        _identifier = [coder decodeObjectForKey:@"identifier"];
+        _title = [coder decodeObjectForKey:@"title"];
+        _previewImojis = [coder decodeObjectForKey:@"previewImojis"];
+        _order = (NSUInteger) [coder decodeIntegerForKey:@"order"];
+        _priority = (NSUInteger) [coder decodeIntegerForKey:@"priority"];
+    }
+
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)coder {
+    [coder encodeObject:self.identifier forKey:@"identifier"];
+    [coder encodeObject:self.title forKey:@"title"];
+    [coder encodeObject:self.previewImojis forKey:@"previewImojis"];
+    [coder encodeInteger:self.order forKey:@"order"];
+    [coder encodeInteger:self.priority forKey:@"priority"];
+}
+
 - (BOOL)isEqual:(id)other {
     if (other == self)
         return YES;

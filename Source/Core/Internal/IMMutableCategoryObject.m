@@ -31,6 +31,7 @@
 @implementation IMMutableCategoryObject {
 
 }
+
 - (instancetype)initWithIdentifier:(NSString *)identifier
                              order:(NSUInteger)order
                      previewImojis:(NSArray *)previewImojis
@@ -48,6 +49,29 @@
     }
 
     return self;
+}
+
+- (instancetype)initWithCoder:(NSCoder *)coder {
+    self = [super init];
+    if (self) {
+        _identifier = [coder decodeObjectForKey:@"identifier"];
+        _title = [coder decodeObjectForKey:@"title"];
+        _previewImojis = [coder decodeObjectForKey:@"previewImojis"];
+        _order = (NSUInteger) [coder decodeIntegerForKey:@"order"];
+        _priority = (NSUInteger) [coder decodeIntegerForKey:@"priority"];
+        _attribution = [coder decodeObjectForKey:@"attribution"];
+    }
+
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)coder {
+    [coder encodeObject:_identifier forKey:@"identifier"];
+    [coder encodeObject:_title forKey:@"title"];
+    [coder encodeObject:_previewImojis forKey:@"previewImojis"];
+    [coder encodeInteger:_order forKey:@"order"];
+    [coder encodeInteger:_priority forKey:@"priority"];
+    [coder encodeObject:_attribution forKey:@"attribution"];
 }
 
 - (NSString *)identifier {

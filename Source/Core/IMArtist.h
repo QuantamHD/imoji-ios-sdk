@@ -30,7 +30,7 @@
 /**
  * @abstract Represents a creator of an Imoji or Category
  */
-@interface IMArtist : NSObject
+@interface IMArtist : NSObject <NSCoding>
 
 /**
  * @abstract Unique id for the artist

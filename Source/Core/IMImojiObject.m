@@ -31,6 +31,31 @@
 
 }
 
+- (instancetype)initWithCoder:(NSCoder *)coder {
+    self = [super init];
+    if (self) {
+        _identifier = [coder decodeObjectForKey:@"identifier"];
+        _tags = [coder decodeObjectForKey:@"tags"];
+        _urls = [coder decodeObjectForKey:@"urls"];
+        _imageDimensions = [coder decodeObjectForKey:@"imageDimensions"];
+        _fileSizes = [coder decodeObjectForKey:@"fileSizes"];
+        _supportsAnimation = [coder decodeBoolForKey:@"supportsAnimation"];
+        self.licenseStyle = (IMImojiObjectLicenseStyle) [coder decodeIntegerForKey:@"licenseStyle"];
+    }
+
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)coder {
+    [coder encodeObject:self.identifier forKey:@"identifier"];
+    [coder encodeObject:self.tags forKey:@"tags"];
+    [coder encodeObject:self.urls forKey:@"urls"];
+    [coder encodeObject:self.imageDimensions forKey:@"imageDimensions"];
+    [coder encodeObject:self.fileSizes forKey:@"fileSizes"];
+    [coder encodeBool:self.supportsAnimation forKey:@"supportsAnimation"];
+    [coder encodeInteger:self.licenseStyle forKey:@"licenseStyle"];
+}
+
 - (BOOL)isEqual:(id)other {
     if (other == self)
         return YES;
