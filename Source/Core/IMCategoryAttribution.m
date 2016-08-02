@@ -28,6 +28,27 @@
 
 @implementation IMCategoryAttribution
 
+- (instancetype)initWithCoder:(NSCoder *)coder {
+    self = [super init];
+    if (self) {
+        _identifier = [coder decodeObjectForKey:@"identifier"];
+        _URL = [coder decodeObjectForKey:@"URL"];
+        self.urlCategory = (IMAttributionURLCategory) [coder decodeIntegerForKey:@"urlCategory"];
+        self.relatedTags = [coder decodeObjectForKey:@"relatedTags"];
+        self.licenseStyle = (IMImojiObjectLicenseStyle) [coder decodeIntegerForKey:@"licenseStyle"];
+    }
+
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)coder {
+    [coder encodeObject:self.identifier forKey:@"identifier"];
+    [coder encodeObject:self.URL forKey:@"URL"];
+    [coder encodeInteger:self.urlCategory forKey:@"urlCategory"];
+    [coder encodeObject:self.relatedTags forKey:@"relatedTags"];
+    [coder encodeInteger:self.licenseStyle forKey:@"licenseStyle"];
+}
+
 - (BOOL)isEqual:(id)other {
     if (other == self)
         return YES;

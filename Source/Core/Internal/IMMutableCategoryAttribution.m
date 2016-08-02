@@ -46,6 +46,30 @@
     return self;
 }
 
+- (instancetype)initWithCoder:(NSCoder *)coder {
+    self = [super initWithCoder:coder];
+    if (self) {
+        _identifier = [coder decodeObjectForKey:@"identifier"];
+        _artist = [coder decodeObjectForKey:@"artist"];
+        _URL = [coder decodeObjectForKey:@"URL"];
+        _urlCategory = (IMAttributionURLCategory) [coder decodeIntForKey:@"urlCategory"];
+        _relatedTags = [coder decodeObjectForKey:@"relatedTags"];
+        _licenseStyle = (IMImojiObjectLicenseStyle) [coder decodeIntForKey:@"licenseStyle"];
+    }
+
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)coder {
+    [super encodeWithCoder:coder];
+    [coder encodeObject:_identifier forKey:@"identifier"];
+    [coder encodeObject:_artist forKey:@"artist"];
+    [coder encodeObject:_URL forKey:@"URL"];
+    [coder encodeInt:_urlCategory forKey:@"urlCategory"];
+    [coder encodeObject:_relatedTags forKey:@"relatedTags"];
+    [coder encodeInt:_licenseStyle forKey:@"licenseStyle"];
+}
+
 - (NSString *)identifier {
     return _identifier;
 }

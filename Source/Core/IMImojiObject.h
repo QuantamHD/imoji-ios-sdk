@@ -47,7 +47,7 @@ typedef NS_ENUM(NSUInteger, IMImojiObjectLicenseStyle) {
 * An ImojiObject is a reference to a sticker within the ImojiSDK. Consumers should not create this object directly,
 * rather, they should use IMImojiSession to get them from the server.
 */
-@interface IMImojiObject : NSObject
+@interface IMImojiObject : NSObject <NSCoding>
 
 /**
 * @abstract A unique identifier for the imoji. This field is never nil.

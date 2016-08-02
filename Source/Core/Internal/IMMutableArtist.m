@@ -45,6 +45,26 @@
     return self;
 }
 
+- (instancetype)initWithCoder:(NSCoder *)coder {
+    self = [super initWithCoder:coder];
+    if (self) {
+        _identifier = [coder decodeObjectForKey:@"identifier"];
+        _name = [coder decodeObjectForKey:@"name"];
+        _summary = [coder decodeObjectForKey:@"summary"];
+        _previewImoji = [coder decodeObjectForKey:@"previewImoji"];
+    }
+
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)coder {
+    [super encodeWithCoder:coder];
+    [coder encodeObject:_identifier forKey:@"identifier"];
+    [coder encodeObject:_name forKey:@"name"];
+    [coder encodeObject:_summary forKey:@"summary"];
+    [coder encodeObject:_previewImoji forKey:@"previewImoji"];
+}
+
 - (NSString *)identifier {
     return _identifier;
 }

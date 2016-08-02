@@ -31,6 +31,25 @@
 
 }
 
+- (instancetype)initWithCoder:(NSCoder *)coder {
+    self = [super init];
+    if (self) {
+        _identifier = [coder decodeObjectForKey:@"identifier"];
+        _name = [coder decodeObjectForKey:@"name"];
+        _summary = [coder decodeObjectForKey:@"summary"];
+        _previewImoji = [coder decodeObjectForKey:@"previewImoji"];
+    }
+
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)coder {
+    [coder encodeObject:self.identifier forKey:@"identifier"];
+    [coder encodeObject:self.name forKey:@"name"];
+    [coder encodeObject:self.summary forKey:@"summary"];
+    [coder encodeObject:self.previewImoji forKey:@"previewImoji"];
+}
+
 - (BOOL)isEqual:(id)other {
     if (other == self)
         return YES;

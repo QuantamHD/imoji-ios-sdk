@@ -31,7 +31,7 @@
 @class IMCategoryAttribution;
 
 
-@interface IMMutableCategoryObject : IMImojiCategoryObject {
+@interface IMMutableCategoryObject : IMImojiCategoryObject <NSCoding> {
 @private
     NSString *_identifier;
     NSString *_title;
