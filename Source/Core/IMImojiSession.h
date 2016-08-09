@@ -290,9 +290,28 @@ typedef void (^IMImojiSessionImojiAttributionResponseCallback)(NSDictionary *__n
 * @param resultSetResponseCallback Callback triggered when the search results are available or if an error occurred.
 * @param imojiResponseCallback Callback triggered when an imoji is available to render.
 * @return An operation reference that can be used to cancel the request.
+* DEPRECATED: Use searchImojisWithTerm:offset:contributingImojiId:numberOfResults:resultSetResponseCallback:imojiResponseCallback: instead
 */
 - (nonnull NSOperation *)searchImojisWithTerm:(nullable NSString *)searchTerm
                                        offset:(nullable NSNumber *)offset
+                              numberOfResults:(nullable NSNumber *)numberOfResults
+                    resultSetResponseCallback:(nonnull IMImojiSessionResultSetResponseCallback)resultSetResponseCallback
+                        imojiResponseCallback:(nonnull IMImojiSessionImojiFetchedResponseCallback)imojiResponseCallback DEPRECATED_ATTRIBUTE;
+
+/**
+* @abstract Searches the imojis database with a given search term. The resultSetResponseCallback block is called once the results are available.
+* Imoji contents are downloaded individually and imojiResponseCallback is called once the thumbnail of that imoji has been downloaded.
+* @param searchTerm Search term to find imojis with. If nil or empty, the server will typically returned the featured set of imojis (this is subject to change).
+* @param offset The result offset from a previous search. This may be nil.
+* @param numberOfResults Number of results to fetch. This can be nil.
+* @param contributingImojiId The imoji identifier associated with a category's image. This can be nil. If not nil, the server returns a set of imojis with the contributing imoji as the first result.
+* @param resultSetResponseCallback Callback triggered when the search results are available or if an error occurred.
+* @param imojiResponseCallback Callback triggered when an imoji is available to render.
+* @return An operation reference that can be used to cancel the request.
+*/
+- (nonnull NSOperation *)searchImojisWithTerm:(nullable NSString *)searchTerm
+                                       offset:(nullable NSNumber *)offset
+                          contributingImojiId:(nullable NSString *)contributingImojiId
                               numberOfResults:(nullable NSNumber *)numberOfResults
                     resultSetResponseCallback:(nonnull IMImojiSessionResultSetResponseCallback)resultSetResponseCallback
                         imojiResponseCallback:(nonnull IMImojiSessionImojiFetchedResponseCallback)imojiResponseCallback;

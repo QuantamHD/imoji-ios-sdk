@@ -170,6 +170,15 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
                       numberOfResults:(NSNumber *)numberOfResults
             resultSetResponseCallback:(IMImojiSessionResultSetResponseCallback)resultSetResponseCallback
                 imojiResponseCallback:(IMImojiSessionImojiFetchedResponseCallback)imojiResponseCallback {
+    return [self searchImojisWithTerm:searchTerm offset:offset contributingImojiId:nil numberOfResults:numberOfResults resultSetResponseCallback:resultSetResponseCallback imojiResponseCallback:imojiResponseCallback];
+}
+
+- (NSOperation *)searchImojisWithTerm:(NSString *)searchTerm
+                               offset:(NSNumber *)offset
+                  contributingImojiId:(NSString *)contributingImojiId
+                      numberOfResults:(NSNumber *)numberOfResults
+            resultSetResponseCallback:(IMImojiSessionResultSetResponseCallback)resultSetResponseCallback
+                imojiResponseCallback:(IMImojiSessionImojiFetchedResponseCallback)imojiResponseCallback {
     __block NSOperation *cancellationToken = self.cancellationTokenOperation;
 
     if (numberOfResults && numberOfResults.integerValue <= 0) {
@@ -185,6 +194,10 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
             @"numResults" : numberOfResults != nil ? numberOfResults : [NSNull null],
             @"offset" : offset != nil ? offset : @0
     }];
+
+    if (contributingImojiId) {
+        parameters[@"contributingImojiId"] = contributingImojiId;
+    }
 
     [[self runValidatedGetTaskWithPath:@"/imoji/search" andParameters:parameters] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *getTask) {
         NSDictionary *results = getTask.result;

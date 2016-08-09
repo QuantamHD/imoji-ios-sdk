@@ -1,5 +1,11 @@
 # Imoji SDK Changes
 
+### Version 2.3.2
+
+* Adds new object type IMImojiImageReference
+* Adds new argument contributingImojiId to method searchImojisWithTerm. When contributingImojiId is not nil, the server returns a set of imojis with the contributing imoji as the first result.
+* Deprecated searchImojisWithTerm without the contributingImojiId argument. It is still supported.
+
 ### Version 2.3.1
 
 * Expose initWithCachePath:persistentPath: in IMImojiSessionStoragePolicy for overriding
