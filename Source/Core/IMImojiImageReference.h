@@ -25,10 +25,20 @@
 
 #import <Foundation/Foundation.h>
 
+/**
+* An IMImojiImageReference represents a sticker image and its identifier
+*/
 @interface IMImojiImageReference : NSObject
 
-@property(nonatomic, strong) UIImage *image;
-@property(nonatomic, strong) NSString *identifier;
+/**
+* @abstract The image associated with the imoji identifier. This field is never nil.
+*/
+@property(nonatomic, strong, nonnull) UIImage *image;
+
+/**
+* @abstract A unique identifier for the imoji. This field is never nil.
+*/
+@property(nonatomic, strong, nonnull) NSString *identifier;
 
 + (instancetype)referenceWithIdentifier:(NSString *)identifier image:(UIImage *)image;
 
