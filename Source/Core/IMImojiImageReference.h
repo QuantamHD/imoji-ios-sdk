@@ -24,6 +24,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 /**
 * An IMImojiImageReference represents a sticker image and its identifier
@@ -40,6 +41,6 @@
 */
 @property(nonatomic, strong, nonnull) NSString *identifier;
 
-+ (instancetype)referenceWithIdentifier:(NSString *)identifier image:(UIImage *)image;
++ (nonnull instancetype)referenceWithIdentifier:(nonnull NSString *)identifier image:(nonnull UIImage *)image;
 
 @end
