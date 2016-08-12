@@ -24,7 +24,6 @@
 //
 
 #import "IMImojiImageReference.h"
-#import "IMCategoryAttribution.h"
 
 @implementation IMImojiImageReference
 
