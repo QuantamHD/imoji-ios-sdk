@@ -28,7 +28,7 @@
 #import "IMArtist.h"
 
 NSUInteger const IMImojiObjectPriorityFeatured = 1;
-NSUInteger const IMImojiObjectPriorityNormal = 2;
+NSUInteger const IMImojiObjectPriorityDefault = 2;
 
 @implementation IMImojiCategoryObject {
 
