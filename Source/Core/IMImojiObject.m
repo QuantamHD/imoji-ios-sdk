@@ -99,6 +99,17 @@
         return url;
     }
 
+    // fallback to PNG if WebP does not exist
+    if (renderingOptions.imageFormat == IMImojiObjectImageFormatWebP) {
+        url = self.urls[[IMImojiObjectRenderingOptions optionsWithRenderSize:renderingOptions.renderSize
+                                                                 borderStyle:renderingOptions.borderStyle
+                                                                 imageFormat:IMImojiObjectImageFormatPNG]];
+    }
+
+    if (url && [url isKindOfClass:[NSURL class]]) {
+        return url;
+    }
+
     return nil;
 }
 
