@@ -91,23 +91,46 @@
         return [self generateImageUrlWithRenderingOptions:renderingOptions];
     }
 
-    id url = self.urls[[IMImojiObjectRenderingOptions optionsWithRenderSize:renderingOptions.renderSize
-                                                                borderStyle:renderingOptions.borderStyle
-                                                                imageFormat:renderingOptions.imageFormat]];
+    BOOL findFallback = YES;
+    IMImojiObjectRenderSize imageSize = renderingOptions.renderSize;
+    while (findFallback) {
+        id url = self.urls[[IMImojiObjectRenderingOptions optionsWithRenderSize:imageSize
+                                                                    borderStyle:renderingOptions.borderStyle
+                                                                    imageFormat:renderingOptions.imageFormat]];
 
-    if (url && [url isKindOfClass:[NSURL class]]) {
-        return url;
-    }
+        if (url && [url isKindOfClass:[NSURL class]]) {
+            return url;
+        }
 
-    // fallback to PNG if WebP does not exist
-    if (renderingOptions.imageFormat == IMImojiObjectImageFormatWebP) {
-        url = self.urls[[IMImojiObjectRenderingOptions optionsWithRenderSize:renderingOptions.renderSize
-                                                                 borderStyle:renderingOptions.borderStyle
-                                                                 imageFormat:IMImojiObjectImageFormatPNG]];
-    }
+        // fallback to PNG format, the contents are the same when returned to the caller
+        if (renderingOptions.imageFormat == IMImojiObjectImageFormatWebP) {
+            url = self.urls[[IMImojiObjectRenderingOptions optionsWithRenderSize:imageSize
+                                                                     borderStyle:renderingOptions.borderStyle
+                                                                     imageFormat:IMImojiObjectImageFormatPNG]];
+        }
 
-    if (url && [url isKindOfClass:[NSURL class]]) {
-        return url;
+        if (url && [url isKindOfClass:[NSURL class]]) {
+            return url;
+        }
+
+        // fallback to a smaller size if we can't find the requested one
+        switch (imageSize) {
+            case IMImojiObjectRenderSizeThumbnail:
+                findFallback = NO;
+                break;
+
+            case IMImojiObjectRenderSizeFullResolution:
+                imageSize = IMImojiObjectRenderSize512;
+                break;
+
+            case IMImojiObjectRenderSize320:
+                imageSize = IMImojiObjectRenderSizeThumbnail;
+                break;
+
+            case IMImojiObjectRenderSize512:
+                imageSize = IMImojiObjectRenderSize320;
+                break;
+        }
     }
 
     return nil;
