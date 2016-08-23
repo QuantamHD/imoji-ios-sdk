@@ -2,9 +2,12 @@
 
 ### Version 2.3.2
 
-* Adds new object type IMImojiImageReference
+* Adds new object type IMImojiImageReference.
 * Adds new argument contributingImojiId to method searchImojisWithTerm. When contributingImojiId is not nil, the server returns a set of imojis with the contributing imoji as the first result.
 * Deprecated searchImojisWithTerm without the contributingImojiId argument. It is still supported.
+* Support reading local webp stored images.
+* Support falling back to smaller sizes if the requested Rendering Option size is unavailable.
+* Support falling back to PNG if WebP Rendering Option image format is unavailable.
 
 ### Version 2.3.1
 
