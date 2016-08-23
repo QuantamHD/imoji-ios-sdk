@@ -613,7 +613,7 @@ NSUInteger const IMImojiSessionNumberOfRetriesForImojiDownload = 3;
 
         // local files are stored as PNGs. Used in creation process for temporary Imojis
         if (url.isFileURL) {
-            taskCompletionSource.result = [YYImage imageWithData:(NSData *) [NSData dataWithContentsOfURL:url] scale:[UIScreen mainScreen].scale];
+            taskCompletionSource.result = [YYImage imageWithData:[NSData dataWithContentsOfURL:url] scale:[UIScreen mainScreen].scale];
             return nil;
         }
 
