@@ -8,6 +8,8 @@
 * Support reading local webp stored images.
 * Support falling back to smaller sizes if the requested Rendering Option size is unavailable.
 * Support falling back to PNG if WebP Rendering Option image format is unavailable.
+* Allow for specifying maximum file size for downloaded Imoji stickers.
+* Avoid downloading the image if the file size is larger than what the server will send.
 
 ### Version 2.3.1
 
