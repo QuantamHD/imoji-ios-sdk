@@ -145,6 +145,11 @@ typedef NS_ENUM(NSUInteger, IMImojiObjectImageFormat) {
 @property(nonatomic) BOOL renderAnimatedIfSupported;
 
 /**
+* @abstract Maximum desired size of the sticker to download.
+ */
+@property(nonatomic, strong, nullable) NSNumber *maximumFileSize;
+
+/**
  * @abstract Creates rendering options for animated content.
  * @return A rendering option instance suitable for displaying animated content.
  */

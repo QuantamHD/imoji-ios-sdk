@@ -38,6 +38,7 @@
         self.borderStyle = (IMImojiObjectBorderStyle) [coder decodeIntForKey:@"borderStyle"];
         self.imageFormat = (IMImojiObjectImageFormat) [coder decodeIntForKey:@"imageFormat"];
         self.renderAnimatedIfSupported = [coder decodeBoolForKey:@"renderAnimatedIfSupported"];
+        self.maximumFileSize = [coder decodeObjectForKey:@"maximumFileSize"];
     }
 
     return self;
@@ -50,6 +51,7 @@
     [coder encodeInt:self.borderStyle forKey:@"borderStyle"];
     [coder encodeInt:self.imageFormat forKey:@"imageFormat"];
     [coder encodeBool:self.renderAnimatedIfSupported forKey:@"renderAnimatedIfSupported"];
+    [coder encodeObject:self.maximumFileSize forKey:@"maximumFileSize"];
 }
 
 - (instancetype)init {
@@ -104,6 +106,8 @@
         return NO;
     if (self.renderAnimatedIfSupported != options.renderAnimatedIfSupported)
         return NO;
+    if (self.maximumFileSize != options.maximumFileSize)
+        return NO;
     return YES;
 }
 
@@ -114,6 +118,7 @@
     hash = hash * 31u + (NSUInteger) self.borderStyle;
     hash = hash * 31u + (NSUInteger) self.imageFormat;
     hash = hash * 31u + (NSUInteger) self.renderAnimatedIfSupported;
+    hash = hash * 31u + [self.maximumFileSize hash];
     return hash;
 }
 
@@ -127,6 +132,7 @@
         copy.borderStyle = self.borderStyle;
         copy.imageFormat = self.imageFormat;
         copy.renderAnimatedIfSupported = self.renderAnimatedIfSupported;
+        copy.maximumFileSize = self.maximumFileSize;
     }
 
     return copy;

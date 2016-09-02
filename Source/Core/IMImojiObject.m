@@ -94,9 +94,20 @@
     BOOL findFallback = YES;
     IMImojiObjectRenderSize imageSize = renderingOptions.renderSize;
     while (findFallback) {
-        id url = self.urls[[IMImojiObjectRenderingOptions optionsWithRenderSize:imageSize
-                                                                    borderStyle:renderingOptions.borderStyle
-                                                                    imageFormat:renderingOptions.imageFormat]];
+        IMImojiObjectRenderingOptions *options = [IMImojiObjectRenderingOptions optionsWithRenderSize:imageSize
+                                                                                          borderStyle:renderingOptions.borderStyle
+                                                                                          imageFormat:renderingOptions.imageFormat];
+        id url = self.urls[options];
+
+        if (renderingOptions.maximumFileSize) {
+            NSNumber *size = self.fileSizes[options];
+            
+            // avoid the URL if the file size is larger than requested
+            if ([size isKindOfClass:[NSNumber class]] &&
+                    size.longLongValue > renderingOptions.maximumFileSize.longLongValue) {
+                url = nil;
+            }
+        }
 
         if (url && [url isKindOfClass:[NSURL class]]) {
             return url;
