@@ -67,7 +67,7 @@ const NSUInteger IMImojiSessionStoragePolicyDiskCacheSize = 15 * 1024 * 1024;
 }
 
 - (nonnull NSURLSessionConfiguration *)generateURLSessionConfiguration {
-    NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration ephemeralSessionConfiguration];
+    NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
     sessionConfiguration.HTTPMaximumConnectionsPerHost = 10;
     sessionConfiguration.networkServiceType = NSURLNetworkServiceTypeDefault;
     sessionConfiguration.URLCache = [[NSURLCache alloc] initWithMemoryCapacity:IMImojiSessionStoragePolicyMemoryCacheSize
