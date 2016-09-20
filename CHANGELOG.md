@@ -1,5 +1,10 @@
 # Imoji SDK Changes
 
+### Version 2.3.3
+
+* NSURLSessionConfiguration for IMImojiSession now uses defaultSessionConfiguration over ephemeralSessionConfiguration.
+* Fixed a bug in which archiving mutable versions of IMImojiObject's, IMArtist's or IMCategoryAttribution's would double encode the property values.
+
 ### Version 2.3.2
 
 * Adds new object type IMImojiImageReference.
