@@ -69,7 +69,6 @@
 }
 
 - (void)encodeWithCoder:(NSCoder *)coder {
-    [super encodeWithCoder:coder];
     [coder encodeObject:_identifier forKey:@"identifier"];
     [coder encodeObject:_tags forKey:@"tags"];
     [coder encodeObject:_urls forKey:@"urls"];

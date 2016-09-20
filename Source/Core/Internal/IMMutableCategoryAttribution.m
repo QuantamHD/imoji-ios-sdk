@@ -61,7 +61,6 @@
 }
 
 - (void)encodeWithCoder:(NSCoder *)coder {
-    [super encodeWithCoder:coder];
     [coder encodeObject:_identifier forKey:@"identifier"];
     [coder encodeObject:_artist forKey:@"artist"];
     [coder encodeObject:_URL forKey:@"URL"];

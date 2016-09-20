@@ -58,7 +58,6 @@
 }
 
 - (void)encodeWithCoder:(NSCoder *)coder {
-    [super encodeWithCoder:coder];
     [coder encodeObject:_identifier forKey:@"identifier"];
     [coder encodeObject:_name forKey:@"name"];
     [coder encodeObject:_summary forKey:@"summary"];

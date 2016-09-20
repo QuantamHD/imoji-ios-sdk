@@ -33,6 +33,7 @@
     if (self) {
         _identifier = [coder decodeObjectForKey:@"identifier"];
         _URL = [coder decodeObjectForKey:@"URL"];
+        _artist = [coder decodeObjectForKey:@"artist"];
         self.urlCategory = (IMAttributionURLCategory) [coder decodeIntegerForKey:@"urlCategory"];
         self.relatedTags = [coder decodeObjectForKey:@"relatedTags"];
         self.licenseStyle = (IMImojiObjectLicenseStyle) [coder decodeIntegerForKey:@"licenseStyle"];
@@ -43,6 +44,7 @@
 
 - (void)encodeWithCoder:(NSCoder *)coder {
     [coder encodeObject:self.identifier forKey:@"identifier"];
+    [coder encodeObject:self.artist forKey:@"artist"];
     [coder encodeObject:self.URL forKey:@"URL"];
     [coder encodeInteger:self.urlCategory forKey:@"urlCategory"];
     [coder encodeObject:self.relatedTags forKey:@"relatedTags"];
