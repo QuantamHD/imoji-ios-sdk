@@ -470,6 +470,7 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
 
                 // trigger completion of the temporary imoji
                 beginUploadCallback(localImoji, nil);
+		finishUploadCallback(localImoji, nil);
 
                 // call the server to create a new imoji
                 return [self runValidatedPostTaskWithPath:@"/imoji/create" andParameters:@{
