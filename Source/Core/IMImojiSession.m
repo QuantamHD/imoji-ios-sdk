@@ -453,7 +453,6 @@ NSString *const IMImojiSessionErrorDomain = @"IMImojiSessionErrorDomain";
                     finishUploadCallback:(nonnull IMImojiSessionCreationResponseCallback)finishUploadCallback {
     NSOperation *cancellationToken = self.cancellationTokenOperation;
 
-    __block NSString *imojiId;
     __block IMImojiObject *localImoji;
     [[self createLocalImojiWithRawImage:image
                              borderedImage:borderedImage
